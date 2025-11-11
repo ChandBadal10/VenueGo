@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
 
@@ -9,6 +9,7 @@ const Navbar = () => {
 
   const {setShowLogin, user, logout, axios} = useAppContext()
   const location = useLocation()
+  // const [open, setOpen] = useState(false)
   const navigate = useNavigate()
 
   return (

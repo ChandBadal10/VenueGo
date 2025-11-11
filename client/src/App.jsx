@@ -13,7 +13,7 @@ import AddVenue from './pages/owner/AddVenue'
 import ManageBookings from './pages/owner/ManageBookings'
 import { Toaster } from "react-hot-toast"
 import { useAppContext } from './context/AppContext'
-import Hero from './components/Hero'
+
 
 const App = () => {
 
@@ -26,7 +26,8 @@ const App = () => {
       {showLogin && <Login/>}
 
       {!isOwnerPath && <Navbar/>}
-      <Hero />
+
+
 
 
       <Routes>
@@ -37,8 +38,8 @@ const App = () => {
               <Route path='/trainer' element={<Trainer/>} />
               <Route path="/reset-password" element={ <ReserPassword />}   />
 
-              <Route path='/owner' element={<Layout/>}>
 
+              <Route path='/owner' element={<Layout/>}>
               <Route path="add-venue" element={<AddVenue/>} />
               <Route path="manage-bookings" element={<ManageBookings/>} />
 
