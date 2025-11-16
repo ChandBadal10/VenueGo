@@ -1,82 +1,80 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import {toast} from "react-hot-toast"
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-
-
-axios.defaults.baseURL = import.meta.env.VITE_BASE_URL
-
 
 export const AppContext = createContext();
 
-export const AppProvider = ({children}) => {
-
+export const AppProvider = ({ children }) => {
     const navigate = useNavigate();
+    const backendUrl = import.meta.env.VITE_BASE_URL;
+
+    // Configure Axios for backend
+    axios.defaults.baseURL = backendUrl;
+    axios.defaults.withCredentials = true;
 
     const [token, setToken] = useState(null);
     const [user, setUser] = useState(null);
     const [showLogin, setShowLogin] = useState(false);
 
-
-
-
-    //Function to check if user is logged in
-
-    const fetchUser = async() => {
-        try{
-            const {data} = await axios.get("/api/user/data")
-            if(data.success) {
-                setUser(data.user)
-            } else{
-                navigate("/")
+    // Fetch user data if logged in
+    const fetchUser = async () => {
+        try {
+            const { data } = await axios.get("/api/user/data");
+            if (data.success) {
+                setUser(data.user);
+            } else {
+                setUser(null);
             }
-        } catch(error) {
-            toast.error(error.message)
+        } catch (error) {
+            toast.error(error.message);
+            setUser(null);
         }
-    }
+    };
 
-    //UseEffect to retrive the token from localStorage
+    // Retrieve token from localStorage once
+    useEffect(() => {
+        const storedToken = localStorage.getItem("token");
+        if (storedToken) setToken(storedToken);
+    }, []);
 
-    useEffect(()=> {
-        const token = localStorage.getItem("token")
-        setToken(token)
-    },[])
-
-
-    //useEffect to fetch user data when token is available
-
-    useEffect(()=> {
-        if(token){
-            axios.defaults.headers.common["Authorization"] = `${token}`
-            fetchUser()
+    // Fetch user whenever token changes
+    useEffect(() => {
+        if (token) {
+            axios.defaults.headers.common["Authorization"] = token;
+            fetchUser();
+        } else {
+            delete axios.defaults.headers.common["Authorization"];
+            setUser(null);
         }
-    })
+    }, [token]);
 
-
-    // Function to logout the user
-
-
+    // Logout function
     const logout = () => {
-        localStorage.removeItem("token")
-        setToken(null)
-        setUser(null)
-        axios.defaults.headers.common["Authorization"] = ""
-        toast.success("You have been logged out")
-    }
-
-
-
+        localStorage.removeItem("token");
+        setToken(null);
+        setUser(null);
+        toast.success("You have been logged out");
+        navigate("/"); // Use navigate instead of window.location.href
+    };
 
     const value = {
-        navigate, axios, user, setUser, token, setToken, fetchUser, showLogin, setShowLogin, logout
-    }
+        navigate,
+        axios,
+        user,
+        setUser,
+        token,
+        setToken,
+        fetchUser,
+        showLogin,
+        setShowLogin,
+        logout,
+        backendUrl,
+    };
 
-    return (<AppContext.Provider value={value}>
-            { children }
-    </AppContext.Provider>)
-}
-
+    return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+};
 
 export const useAppContext = () => {
-    return useContext(AppContext)
-}
+    return useContext(AppContext);
+};
