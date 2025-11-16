@@ -13,7 +13,7 @@ import AddVenue from './pages/owner/AddVenue'
 import ManageBookings from './pages/owner/ManageBookings'
 import { Toaster } from "react-hot-toast"
 import { useAppContext } from './context/AppContext'
-
+import { ToastContainer } from "react-toastify";
 
 const App = () => {
 
@@ -22,6 +22,7 @@ const App = () => {
   const isOwnerPath = useLocation().pathname.startsWith("/owner")
   return (
     <>
+      <ToastContainer />
       <Toaster />
       {showLogin && <Login/>}
 

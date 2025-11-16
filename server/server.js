@@ -10,8 +10,10 @@ import userRouter from "./routes/userRoutes.js";
 const app = express()
 await connectDB()
 
+const allowedOrigins = ["http://localhost:5173"]
+
 // Middleware
-app.use(cors());
+app.use(cors({origin: allowedOrigins, credentials: true}));
 app.use(express.json());
 
 

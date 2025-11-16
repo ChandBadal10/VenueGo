@@ -20,8 +20,8 @@ const Hero = () => {
 
         {/* Subtitle */}
         <p className="mt-6 text-lg md:text-2xl text-gray-600 max-w-2xl mx-auto">
-          Book your favorite sports fields for ⚽ <b>football</b>, 🎾{" "}
-          <b>tennis</b>, 🏐 <b>volleyball</b>, and more, at the{" "}
+          Book your favorite sports fields for  <b className='text-blue-500'>football</b>, {" "}
+          <b className='text-blue-500'>cricket</b>,  <b className='text-blue-500'>basketball</b>, and more, at the{" "}
           <span className="text-gray-900 font-semibold">best locations</span>{" "}
           nearby.
         </p>
@@ -29,7 +29,7 @@ const Hero = () => {
         {/* Button */}
         <div
          className="mt-10">
-          <button onClick={()=> navigate("/my-bookings")} className="bg-blue-600 text-white px-8 py-4 rounded-lg shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-105 text-lg font-medium">
+          <button onClick={()=> navigate("/venues")} className="bg-blue-600 text-white px-8 py-4 rounded-lg shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-105 text-lg font-medium">
             Book Your Spot
           </button>
         </div>
