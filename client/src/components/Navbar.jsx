@@ -28,7 +28,7 @@ const Navbar = () => {
         max-sm:p-4 transition-all duration-300 z-50 ${location.pathname === "/" ? "bg-light" : "bg-white"}`}>
 
           <Link to="/" className="hover:text-blue-600 transition">Home</Link>
-          <Link to="/about" className="hover:text-blue-600 transition">About</Link>
+          {/* <Link to="/about" className="hover:text-blue-600 transition">About</Link> */}
           <Link to="/venues" className="hover:text-blue-600 transition">Venues</Link>
           <Link to="/my-bookings" className="hover:text-blue-600 transition">My Bookings</Link>
           <Link to="/trainer" className="hover:text-blue-600 transition">Trainer</Link>

@@ -7,7 +7,7 @@ const Login = () => {
   const { setShowLogin, axios, setToken, backendUrl } = useAppContext();
   const navigate = useNavigate();
 
-  const [state, setState] = React.useState('login'); // "login" or "register"
+  const [state, setState] = React.useState('login');
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');

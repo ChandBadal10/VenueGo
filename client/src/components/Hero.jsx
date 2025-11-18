@@ -1,52 +1,46 @@
-import React from 'react'
-import { useNavigate, useLocation } from 'react-router-dom';
+import React from "react";
 
-const Hero = () => {
-
-  const navigate = useNavigate();
-  const location = useLocation()
-
-
-
+const Home = () => {
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="text-center px-6 md:px-12">
-        {/* Title */}
-        <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-tight">
-          Quick <span className="text-gray-800 font-bold">and Easy</span>
-          <br />
-          Field Reservations
-        </h1>
+    <div className="min-h-screen bg-white text-gray-900">
 
-        {/* Subtitle */}
-        <p className="mt-6 text-lg md:text-2xl text-gray-600 max-w-2xl mx-auto">
-          Book your favorite sports fields for  <b className='text-blue-500'>football</b>, {" "}
-          <b className='text-blue-500'>cricket</b>,  <b className='text-blue-500'>basketball</b>, and more, at the{" "}
-          <span className="text-gray-900 font-semibold">best locations</span>{" "}
-          nearby.
-        </p>
+      {/* HERO BACKGROUND */}
+      <div
+        className="relative h-[90vh] flex items-center justify-center bg-cover bg-center"
+        style={{
+          backgroundImage:
+            "url('https://sports.kayacorp.com.np/wp-content/uploads/2024/06/badminton-pvc.webp')",
+        }}
+      >
 
-        {/* Button */}
-        <div
-         className="mt-10">
-          <button onClick={()=> navigate("/venues")} className="bg-blue-600 text-white px-8 py-4 rounded-lg shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-105 text-lg font-medium">
-            Book Your Spot
-          </button>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-white/80"></div>
 
-        {/* Rating
-        <div className="flex flex-col items-center justify-center mt-8">
-          <div className="flex items-center space-x-2">
-            <div className="text-yellow-400 text-2xl">⭐️⭐️⭐️⭐️⭐️</div>
-            <p className="text-gray-800 text-lg font-semibold">4.8</p>
-          </div>
-          <p className="text-green-600 font-medium mt-1 text-base md:text-lg">
-            Trusted by 10K people
+        <div className="relative z-10 text-center max-w-3xl px-6">
+          <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 drop-shadow-xl">
+            Book Your
+            <span className="text-blue-600"> Perfect Sports Venue</span>
+          </h1>
+
+          <p className="mt-4 text-lg md:text-xl text-gray-700 drop-shadow">
+            Fast, easy and reliable venue booking for futsal, cricket, badminton & more.
           </p>
-        </div> */}
+
+          {/* Search Bar  */}
+          <div className="mt-10 max-w-2xl mx-auto bg-white/50 backdrop-blur-xl border border-white/70 rounded-2xl shadow-2xl p-3 flex gap-3">
+            <input
+              type="text"
+              placeholder="Search futsal, cricket ground, badminton..."
+              className="flex-1 px-4 py-3 bg-transparent text-gray-700 outline-none"
+            />
+            <button className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition">
+              Search
+            </button>
+          </div>
+        </div>
       </div>
+
     </div>
   );
-}
+};
 
-export default Hero
+export default Home;
