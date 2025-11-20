@@ -1,15 +1,17 @@
 import React from "react";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Footer = () => {
+
+  const navigate = useNavigate();
   return (
     <div className="bg-gray-900 text-gray-200 pt-12">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
 
         {/* BRAND */}
         <div>
-          <h1 className="text-2xl font-bold text-white mb-4">
+          <h1 onClick={()=>{navigate("/")}} className="text-2xl cursor-pointer font-bold text-white mb-4">
             Venue<span className="text-blue-600">Go</span>
           </h1>
           <p className="text-gray-400">

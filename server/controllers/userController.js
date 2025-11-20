@@ -161,7 +161,7 @@ export const sendResetOtp = async (req, res) => {
     }
 
     try {
-        const user = await User.findOne({ email }); // FIXED
+        const user = await User.findOne({ email });
 
         if (!user) {
             return res.json({ success: false, message: "User not found" });
@@ -204,7 +204,7 @@ export const resetPassword = async (req, res) => {
     }
 
     try {
-        const user = await User.findOne({ email }); // FIXED
+        const user = await User.findOne({ email });
 
         if (!user) {
             return res.json({ success: false, message: "User not found" });
@@ -215,7 +215,7 @@ export const resetPassword = async (req, res) => {
         }
 
         if (user.resetOtpExpiredAt < Date.now()) {
-            return res.json({ success: false, message: "OTP expired" }); // FIXED
+            return res.json({ success: false, message: "OTP expired" });
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -235,3 +235,5 @@ export const resetPassword = async (req, res) => {
         return res.json({ success: false, message: error.message });
     }
 };
+
+

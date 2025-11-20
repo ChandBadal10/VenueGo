@@ -9,7 +9,6 @@ const Navbar = () => {
 
   const {setShowLogin, user, logout, axios} = useAppContext()
   const location = useLocation()
-  // const [open, setOpen] = useState(false)
   const navigate = useNavigate()
 
   return (
@@ -36,10 +35,10 @@ const Navbar = () => {
         </div>
 
 
-        <div className="hidden lg:flex items-center text-sm gap-2 border border-borderColor px-3 rounded-full max-w-56">
+        {/* <div className="hidden lg:flex items-center text-sm gap-2 border border-borderColor px-3 rounded-full max-w-56">
         <input type="text" className="py-1.5 w-full bg-transparent outline-none placeholder-gray-500" placeholder="Search products" />
 
-        </div>
+        </div> */}
 
         <div className='flex max-sm:flex-col items-start sm:items-center gap-6'>
           <button onClick={()=> navigate("/owner")} className='cursor-pointer'>Add Venue </button>
