@@ -15,6 +15,7 @@ import { Toaster } from "react-hot-toast"
 import { useAppContext } from './context/AppContext'
 import { ToastContainer } from "react-toastify";
 import VenueCard from './components/VenueCard'
+import RegisterationPage from './pages/owner/RegisterationPage'
 
 const App = () => {
 
@@ -42,9 +43,10 @@ const App = () => {
               <Route path="/reset-password" element={ <ReserPassword />}   />
 
 
-              <Route path='/owner' element={<Layout/>}>
+              <Route path='/owner' element={<RegisterationPage/>}>
               <Route path="add-venue" element={<AddVenue/>} />
               <Route path="manage-bookings" element={<ManageBookings/>} />
+
 
               </Route>
 
