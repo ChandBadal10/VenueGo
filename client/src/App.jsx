@@ -16,21 +16,24 @@ import { useAppContext } from './context/AppContext'
 import { ToastContainer } from "react-toastify";
 import VenueCard from './components/VenueCard'
 import RegisterationPage from './pages/owner/RegisterationPage'
+import AdminLayout from './pages/admin/AdminLayout'
+
 
 const App = () => {
 
   // const [showLogin, setShowLogin] = useState(false)
+  // const location = useLocation();
   const {showLogin} = useAppContext()
-  const isOwnerPath = useLocation().pathname.startsWith("/owner")
+  const isOwnerPath = useLocation().pathname.startsWith("/owner");
+  const isAdminPath = useLocation().pathname.startsWith("/admin");
   return (
     <>
       <ToastContainer />
       <Toaster />
       {showLogin && <Login/>}
 
-      {!isOwnerPath && <Navbar/>}
-
-
+      {/* {!isOwnerPath && <Navbar/>} */}
+      {!isOwnerPath && !isAdminPath && <Navbar />}
 
 
       <Routes>
@@ -43,12 +46,17 @@ const App = () => {
               <Route path="/reset-password" element={ <ReserPassword />}   />
 
 
-              <Route path='/owner' element={<RegisterationPage/>}>
+              <Route path='/owner' element={<RegisterationPage/>} />
               <Route path="add-venue" element={<AddVenue/>} />
               <Route path="manage-bookings" element={<ManageBookings/>} />
 
 
-              </Route>
+
+
+
+              <Route path='/admin' element={<AdminLayout />} />
+
+
 
 
       </Routes>

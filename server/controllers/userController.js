@@ -10,9 +10,9 @@ import transporter from "../configs/nodeMailer.js";
 //Generate JWT Token
 
 const generateToken = (userId) => {
-    const payload = userId;// db bata user role
-    return jwt.sign(payload, process.env.JWT_SECRET)
-}
+    const payload = {id: userId._id?.toString() || userId.id, role: userId.role || userId.role};// db bata user role
+    return jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: "7d" })
+};
 
 
 
@@ -22,7 +22,7 @@ const generateToken = (userId) => {
 export const registerUser = async (req, res)=> {
     try{
 
-        const {name, email, password} = req.body;
+        const {name, email, password, role} = req.body;
 
         if(!name || !email || !password){
             return res.json({success: false, message: "fill all the fields"})
@@ -36,17 +36,18 @@ export const registerUser = async (req, res)=> {
             return res.json({ success: false, message: "Password must be at least 8 characters" });
             }
 
-            const userExists = await User.findOne({email})
+            const userExists = await User.findOne({email});
 
             if(userExists){
                 return res.json({success: false, message: "User already exists"})
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
-            const user = await User.create({name, email, password: hashedPassword})
+
+            const user = await User.create({name, email, password: hashedPassword, role: role || "user"})
 
             const token = generateToken(user._id.toString())
-            res.json({success: true, token})
+            res.json({success: true, token, role: user.role, user: {id: user.Id, name: user.name, email: user.email, role: user.role}});
 
         // }
 
@@ -116,10 +117,14 @@ export const loginUser = async (req, res) => {
             return res.json({success: false, message: "Invalid Credentials"})
         }
 
-        const token = generateToken(user._id.toString())
-        res.json({success: true, token})
-
-
+        // const token = generateToken(user._id.toString())
+        const token = generateToken(user);
+        return res.json({
+            success: true,
+            token,
+            role: user.role,
+            user: { id: user._Id, name: user.name, email: user.email, role: user.role}
+        })
 
 
 
@@ -139,7 +144,7 @@ export const loginUser = async (req, res) => {
 export const getUserData = async (req, res) => {
     try{
         const {user} = req;
-        res.json({success: true, user});
+        return res.json({success: true, user});
 
     } catch(error) {
         console.log(error.message);
