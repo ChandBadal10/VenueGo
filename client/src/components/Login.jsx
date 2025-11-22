@@ -21,13 +21,22 @@ const Login = () => {
 
       if (data.success) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('role', data.role);
         setToken(data.token);
+
+        if(data.role === "admin") {
+          navigate("/admin", { replace: true });
+        } else {
+          navigate('/', { replace: true });
+        }
         setShowLogin(false);
         toast.success(`${state === 'login' ? 'Login' : 'Register'} successful`);
-        navigate('/');
+
       } else {
         toast.error(data.message);
       }
+
+
     } catch (error) {
       // Axios errors often have response.data
       toast.error(error.response?.data?.message || error.message);

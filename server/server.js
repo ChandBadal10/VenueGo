@@ -3,6 +3,7 @@ import "dotenv/config";
 import cors from "cors";
 import connectDB from "./configs/db.js";
 import userRouter from "./routes/userRoutes.js";
+import adminRouter from "./routes/adminRoutes.js"
 
 
 // Initialize Express App
@@ -22,6 +23,7 @@ app.get("/", (req,res)=> res.send("Server is running"))
 
 
 app.use("/api/user", userRouter);
+app.use("/api/admin", adminRouter);
 
 
 
