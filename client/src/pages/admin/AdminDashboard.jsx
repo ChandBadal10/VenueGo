@@ -1,9 +1,10 @@
-import React from 'react'
+import React from "react";
 
-const AdminDashboard = () => {
+export default function AdminDashboard() {
   return (
-    <div>AdminDashboard</div>
-  )
+    <div>
+      <h1 className="text-2xl font-bold">Welcome Admin</h1>
+      <p>This is the admin dashboard.</p>
+    </div>
+  );
 }
-
-export default AdminDashboard

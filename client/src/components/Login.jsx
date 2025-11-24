@@ -19,12 +19,16 @@ const Login = () => {
       const url = `${backendUrl}/api/user/${state}`;
       const { data } = await axios.post(url, { name, email, password });
 
-      if (data.success) {
+      if (data?.success) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('role', data.role);
         setToken(data.token);
 
-        if(data.role === "admin") {
+        // disable back navigation
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = () => window.history.go(1);
+
+        if(data.user.role === "admin") {
           navigate("/admin", { replace: true });
         } else {
           navigate('/', { replace: true });

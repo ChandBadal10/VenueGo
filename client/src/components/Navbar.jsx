@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
-
+import toast from 'react-hot-toast'
 
 
 
@@ -41,7 +41,16 @@ const Navbar = () => {
         </div> */}
 
         <div className='flex max-sm:flex-col items-start sm:items-center gap-6'>
-          <button onClick={()=> navigate("/owner")} className='cursor-pointer'>Add Venue </button>
+          <button onClick={() => {
+            if(user) {
+              navigate("/owner")
+            } else{
+              toast.error("You must login to add a venue");
+              setShowLogin(true);
+            }
+          }
+
+          } className='cursor-pointer'>Add Venue </button>
 
 
           <button onClick={()=> {user ? logout() : setShowLogin(true)}} className='cursor-pointer px-8 py-2 bg-blue-600 hover:bg-blue-600 transition-all text-white rounded-lg'>{ user ? "Logout" : "Login"} </button>
