@@ -16,7 +16,8 @@ import { useAppContext } from './context/AppContext'
 import { ToastContainer } from "react-toastify";
 import VenueCard from './components/VenueCard'
 import RegisterationPage from './pages/owner/RegisterationPage'
-import AdminLayout from './pages/admin/AdminLayout'
+import AdminDashboard from './pages/admin/AdminDashboard'
+
 
 
 const App = () => {
@@ -54,7 +55,7 @@ const App = () => {
 
 
 
-              <Route path='/admin' element={<AdminLayout />} />
+              <Route path='/admin' element={<AdminDashboard />} />
 
 
 
