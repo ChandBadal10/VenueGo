@@ -4,7 +4,7 @@ import cors from "cors";
 import connectDB from "./configs/db.js";
 import userRouter from "./routes/userRoutes.js";
 import adminRouter from "./routes/adminRoutes.js"
-
+import venueRouter from "./routes/venueRoutes.js";
 
 // Initialize Express App
 
@@ -24,7 +24,7 @@ app.get("/", (req,res)=> res.send("Server is running"))
 
 app.use("/api/user", userRouter);
 app.use("/api/admin", adminRouter);
-
+app.use("/api/venue", venueRouter);
 
 
 
