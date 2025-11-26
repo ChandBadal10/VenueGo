@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "mailboxvalidator-nodejs": "^2.0.0",
     "mongoose": "^8.19.2",
+    "multer": "^2.0.2",
     "nodemailer": "^7.0.10",
     "react-hot-toast": "^2.6.0",
     "transporter": "^0.0.1"
