@@ -51,4 +51,24 @@ router.post("/register", protect, upload.single("image"), async (req, res) => {
   }
 });
 
+
+
+// Check venue status
+router.get("/status", protect, async (req, res) => {
+  try {
+    const venue = await Venue.findOne({ ownerId: req.user._id });
+
+    if (!venue) return res.json({ exists: false });
+
+    return res.json({
+      exists: true,
+      status: venue.status, // pending / approved / rejected
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+
+
 export default router;

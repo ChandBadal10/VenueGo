@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const RegisterationPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     venueName: "",
     category: "",
@@ -23,58 +25,61 @@ const RegisterationPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Get token from localStorage
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setMessage("You must be logged in to register a venue");
-      return;
-    }
+  const token = localStorage.getItem("token");
+  if (!token) {
+    setMessage("You must be logged in to register a venue");
+    return;
+  }
 
-    const data = new FormData();
-    data.append("venueName", formData.venueName);
-    data.append("category", formData.category);
-    data.append("phone", formData.phone);
-    data.append("email", formData.email);
-    data.append("location", formData.location);
-    data.append("description", formData.description);
-    data.append("image", formData.image);
+  const data = new FormData();
+  data.append("venueName", formData.venueName);
+  data.append("category", formData.category);
+  data.append("phone", formData.phone);
+  data.append("email", formData.email);
+  data.append("location", formData.location);
+  data.append("description", formData.description);
+  data.append("image", formData.image);
 
-    try {
-      setLoading(true);
-      const res = await fetch("http://localhost:3000/api/venue/register", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`, // send token here
-        },
-        body: data, // FormData for file upload
+  try {
+    setLoading(true);
+    const res = await fetch("http://localhost:3000/api/venue/register", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: data,
+    });
+
+    const result = await res.json();
+    setLoading(false);
+
+    if (result.success) {
+      toast.success("Venue registered successfully! Waiting for admin approval.");
+
+      // Clear form
+      setFormData({
+        venueName: "",
+        category: "",
+        phone: "",
+        email: "",
+        location: "",
+        description: "",
+        image: null,
       });
 
-      const result = await res.json();
-      setLoading(false);
-
-      if (result.success) {
-        setMessage("Venue registered successfully! Waiting for admin approval.");
-        setFormData({
-          venueName: "",
-          category: "",
-          phone: "",
-          email: "",
-          location: "",
-          description: "",
-          image: null,
-        });
-      } else {
-        setMessage(result.message || "Something went wrong");
-      }
-      console.log(result);
-    } catch (err) {
-      setLoading(false);
-      console.log("Submit error:", err);
-      setMessage("Network error");
+      // Redirect to home page immediately
+      navigate("/");
+    } else {
+      toast.error(result.message || "Something went wrong");
     }
-  };
+  } catch (err) {
+    setLoading(false);
+    toast.error("Network error");
+  }
+};
+
 
 
 
@@ -197,6 +202,9 @@ const RegisterationPage = () => {
         </div>
 
         <button
+          onClick={() => {
+            navigate("/")
+          }}
           type="submit"
           className="mt-10 w-full py-3 rounded-lg bg-blue-600 text-white text-lg hover:bg-blue-700"
         >
