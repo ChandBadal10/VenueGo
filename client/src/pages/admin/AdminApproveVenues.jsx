@@ -105,10 +105,10 @@ const AdminApproveVenues = () => {
                     {venue.status}
                   </span>
                 </div>
-                <p className="text-gray-700 mb-2">{venue.description}</p>
-                <p className="text-gray-600">{venue.location}</p>
+                <p className="text-gray-700 mb-2">{venue.location}</p>
                 <p className="text-gray-600">{venue.phone}</p>
                 <p className="text-gray-600">{venue.email}</p>
+                <p className="text-gray-600">{venue.description}</p>
               </div>
 
               {/* Approve / Reject Buttons */}

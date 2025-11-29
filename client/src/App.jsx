@@ -17,6 +17,7 @@ import { ToastContainer } from "react-toastify";
 import VenueCard from './components/VenueCard'
 import RegisterationPage from './pages/owner/RegisterationPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import Dashboard from './pages/owner/Dashboard'
 
 
 
@@ -48,6 +49,7 @@ const App = () => {
 
 
               <Route path='/owner' element={<RegisterationPage/>} />
+              <Route path='/venue-dashboard' element={<Dashboard/>} />
               <Route path="add-venue" element={<AddVenue/>} />
               <Route path="manage-bookings" element={<ManageBookings/>} />
 

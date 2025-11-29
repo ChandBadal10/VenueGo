@@ -65,7 +65,7 @@ const Navbar = () => {
               } else if (data.status !== "approved") {
                 toast.error("Your venue is not approved yet.");
               } else {
-                navigate("/add-venue"); // approved → go to owner dashboard
+                navigate("/venue-dashboard"); // approved → go to owner dashboard
               }
             } catch (error) {
               toast.error("Error checking venue status");
