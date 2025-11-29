@@ -12,40 +12,49 @@ const Login = () => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
-  const onSubmitHandler = async (event) => {
-    event.preventDefault();
-    try {
-      // Use backendUrl to make sure requests hit backend server
-      const url = `${backendUrl}/api/user/${state}`;
-      const { data } = await axios.post(url, { name, email, password });
+ const onSubmitHandler = async (event) => {
+  event.preventDefault();
+  try {
+    const url = `${backendUrl}/api/user/${state}`; // 'login' or 'register'
+    const { data } = await axios.post(url, { name, email, password });
 
-      if (data?.success) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('role', data.role);
+    if (data?.success) {
+      if (state === "register") {
+        // Registration succeeded — do NOT auto-login.
+        // Switch modal to login form so user can sign in manually.
+        setState("login");
+        // Optionally clear the password field
+        setPassword("");
+        // Optionally pre-fill email in login form
+        setEmail(email);
+
+        toast.success("Registration successful — please log in.");
+      } else {
+        // Normal login flow
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
         setToken(data.token);
 
         // disable back navigation
         window.history.pushState(null, "", window.location.href);
         window.onpopstate = () => window.history.go(1);
 
-        if(data.user.role === "admin") {
-          navigate("/admin", { replace: true });
-        } else {
-          navigate('/', { replace: true });
-        }
+        const role = data.user?.role || data.role;
+        if (role === "admin") navigate("/admin", { replace: true });
+        else navigate("/", { replace: true });
+
         setShowLogin(false);
-        toast.success(`${state === 'login' ? 'Login' : 'Register'} successful`);
-
-      } else {
-        toast.error(data.message);
+        toast.success("Login successful");
       }
-
-
-    } catch (error) {
-      // Axios errors often have response.data
-      toast.error(error.response?.data?.message || error.message);
+    } else {
+      toast.error(data.message || "Operation failed");
     }
-  };
+  } catch (error) {
+    toast.error(error.response?.data?.message || error.message);
+  }
+};
+
 
 
 
