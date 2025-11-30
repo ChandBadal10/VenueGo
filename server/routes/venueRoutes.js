@@ -1,14 +1,8 @@
-
 import express from "express";
 import { protect } from "../middleware/auth.js";
+import { approveVenue, rejectVenue } from "../controllers/adminController.js";
 
-import {
-    upload,
-    registerVenue,
-    approveVenue,
-    rejectVenue,
-    checkVenueStatus
-} from "../controllers/venueController.js";
+import { upload, registerVenue,  checkVenueStatus } from "../controllers/venueController.js";
 
 const venueRouter = express.Router();
 
@@ -17,16 +11,12 @@ const venueRouter = express.Router();
 venueRouter.post("/register", protect, upload.single("image"), registerVenue);
 
 
-// Check venue status (Owner)
-venueRouter.get("/status", protect, checkVenueStatus);
-
-
-// Admin Approve
 venueRouter.put("/approve", protect, approveVenue);
 
 
-// Admin Reject
 venueRouter.put("/reject", protect, rejectVenue);
+// Check venue status (Owner)
+venueRouter.get("/status", protect, checkVenueStatus);
 
 
 export default venueRouter;
