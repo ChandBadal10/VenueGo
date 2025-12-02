@@ -7,7 +7,7 @@ export const protect = async (req, res, next) => {
     if (!token) return res.status(401).json({ success: false, message: "Not authorized" });
 
     if (token.startsWith("Bearer ")) {
-      token = token.split(" ")[1]; // ✅ use let instead of const
+      token = token.split(" ")[1];
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
