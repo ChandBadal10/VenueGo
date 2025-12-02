@@ -9,12 +9,12 @@ const connectDB = async ()=> {
         await mongoose.connect(`${process.env.MONGODB_URI}/ssvbp`)
 
 
-        const adminEmail = "admin@venuego.com";
+        const adminEmail = "badalchand636@gmail.com";
         const existingAdmin = await User.findOne({email: adminEmail, role: "admin"});
 
 
         if(!existingAdmin) {
-            const hashed = await bcrypt.hash("Admin@123", 10);
+            const hashed = await bcrypt.hash("##Badal12345", 10);
             await User.create({
                 name: "Super Admin",
                 email: adminEmail,
