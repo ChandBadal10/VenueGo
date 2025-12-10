@@ -58,15 +58,23 @@ const BOOKINGS = [
 const FILTERS = ["All", "Futsal", "Cricket", "Basketball", "Table Tennis"];
 
 function StatusBadge({ status }) {
-  let classes = "text-xs px-2 py-1 rounded ";
-  if (status === "Completed") classes += "bg-green-100 text-green-700";
-  else if (status === "Pending") classes += "bg-yellow-100 text-yellow-700";
-  else classes += "bg-red-100 text-red-700";
-
-  return <span className={classes}>{status}</span>;
+  return (
+    <span
+      className={`text-xs px-2 py-1 rounded ${
+        status === "Completed"
+          ? "bg-green-100 text-green-700"
+          : status === "Pending"
+          ? "bg-yellow-100 text-yellow-700"
+          : "bg-red-100 text-red-700"
+      }`}
+    >
+      {status}
+    </span>
+  );
 }
 
-export default function MyBookings() {
+
+ const MyBookings = () => {
   const [activeSport, setActiveSport] = useState("All");
 
   const filtered = BOOKINGS.filter((e) =>
@@ -146,3 +154,4 @@ export default function MyBookings() {
 
   );
 }
+export default MyBookings;
