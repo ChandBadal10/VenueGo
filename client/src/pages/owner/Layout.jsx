@@ -1,9 +1,14 @@
 import React from 'react'
+import NavBarOwner from '../../components/owner/NavBarOwner';
+
 
 const Layout = () => {
   return (
-    <div>Layout</div>
+    <div>
+      <NavBarOwner />
+
+    </div>
   )
 }
 
-export default Layout
+export default Layout;

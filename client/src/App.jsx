@@ -8,7 +8,6 @@ import VenueDetailPage from './pages/VenueDetailPage'
 import Login from './components/Login'
 import ReserPassword from './pages/ResetPassword'
 import Trainer from './pages/Trainer'
-import Layout from './pages/owner/Layout'
 import AddVenue from './pages/owner/AddVenue'
 import ManageBookings from './pages/owner/ManageBookings'
 import { Toaster } from "react-hot-toast"
@@ -17,16 +16,16 @@ import { ToastContainer } from "react-toastify";
 import VenueCard from './components/VenueCard'
 import RegisterationPage from './pages/owner/RegisterationPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
-import Dashboard from './pages/owner/Dashboard'
+import Layout from './pages/owner/Layout'
 
 
 
 const App = () => {
 
   // const [showLogin, setShowLogin] = useState(false)
-  // const location = useLocation();
+  const location = useLocation();
   const {showLogin} = useAppContext()
-  const isOwnerPath = useLocation().pathname.startsWith("/owner");
+  const isOwnerPath = useLocation().pathname.startsWith("/venue-dashboard");
   const isAdminPath = useLocation().pathname.startsWith("/admin");
   return (
     <>
@@ -49,7 +48,7 @@ const App = () => {
 
 
               <Route path='/owner' element={<RegisterationPage/>} />
-              <Route path='/venue-dashboard' element={<Dashboard/>} />
+              <Route path='/venue-dashboard' element={<Layout/>} />
               <Route path="add-venue" element={<AddVenue/>} />
               <Route path="manage-bookings" element={<ManageBookings/>} />
 
