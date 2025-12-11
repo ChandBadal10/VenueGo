@@ -2,7 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppContext } from '../../context/AppContext';
 const NavBarOwner = () => {
-  const { logout } = useAppContext();
+  const { user } = useAppContext();
   const navigate = useNavigate();
 
 
@@ -17,11 +17,14 @@ const NavBarOwner = () => {
         Venue<span className='text-blue-700'>Go</span>
       </div>
 
-    {/* Logout */}
-    <button className='cursor-pointer px-8 py-2 bg-blue-600 hover:bg-blue-600 transition-all text-white rounded-lg'
-    onClick={logout}>
-      Logout
-    </button>
+
+
+     <div className="flex items-center gap-4">
+        {/* User Name */}
+        <div className="text-xl font-medium text-gray-600">
+          Welcome,  {user?.name || "Venue Owner"}
+        </div>
+        </div>
     </div>
 
   )

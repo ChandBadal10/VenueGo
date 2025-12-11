@@ -17,6 +17,8 @@ import VenueCard from './components/VenueCard'
 import RegisterationPage from './pages/owner/RegisterationPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import Layout from './pages/owner/Layout'
+import ManageVenue from './pages/owner/ManageVenue'
+import Dashboard from './pages/owner/Dashboard'
 
 
 
@@ -47,16 +49,24 @@ const App = () => {
               <Route path="/reset-password" element={ <ReserPassword />}   />
 
 
-              <Route path='/owner' element={<RegisterationPage/>} />
-              <Route path='/venue-dashboard' element={<Layout/>} />
-              <Route path="add-venue" element={<AddVenue/>} />
-              <Route path="manage-bookings" element={<ManageBookings/>} />
+            {/* owner registration */}
+          <Route path='/owner' element={<RegisterationPage/>} />
 
+            {/* /OWNER AREA WITH LAYOUT */}
+            <Route path='/venue-dashboard' element={<Layout/>}>
+            {/* /venue-dashboard or /venue-dashboard/ */}
+            <Route index element={<Dashboard />} />
+            {/* /venue-dashboard/add-venue */}
+            <Route path="add-venue" element={<AddVenue />} />
+            {/* /venue-dashboard/manage-bookings */}
+            <Route path="manage-bookings" element={<ManageBookings />} />
+            {/* /venue-dashboard/manage-venue */}
+            <Route path="manage-venue" element={<ManageVenue />} />
+            <Route path="add-trainer" element={<Trainer />} />
+          </Route>
 
-
-
-
-              <Route path='/admin' element={<AdminDashboard />} />
+          {/* admin */}
+          <Route path='/admin' element={<AdminDashboard />} />
 
 
 
