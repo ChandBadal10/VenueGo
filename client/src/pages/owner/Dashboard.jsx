@@ -1,6 +1,19 @@
 import React from 'react'
+import { useState } from 'react';
+
 
 const Dashboard = () => {
+
+  const [data, setData] = useState({
+    totalVenues: 0,
+    totalBookings: 0,
+    pendingBookings: 0,
+    completedBookings: 0,
+    recentBookings: [],
+    monthlyRevenue: 0,
+  })
+
+
   return (
     <div className='p-8  min-h-screen'>
 
