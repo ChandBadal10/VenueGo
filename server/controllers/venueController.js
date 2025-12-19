@@ -65,57 +65,61 @@ export const registerVenue = async (req, res) => {
 
 
 
+
+
+
+
 // ------------------ Admin Approve Venue ------------------ //
 
-export const approveVenue = async (req, res) => {
-    try {
-        const { venueId } = req.body;
+// export const approveVenue = async (req, res) => {
+//     try {
+//         const { venueId } = req.body;
 
-        const venue = await Venue.findById(venueId);
+//         const venue = await Venue.findById(venueId);
 
-        if (!venue) {
-            return res.json({ success: false, message: "Venue not found" });
-        }
+//         if (!venue) {
+//             return res.json({ success: false, message: "Venue not found" });
+//         }
 
-        venue.status = "approved";
-        await venue.save();
+//         venue.status = "approved";
+//         await venue.save();
 
-        return res.json({
-            success: true,
-            message: "Venue approved successfully"
-        });
+//         return res.json({
+//             success: true,
+//             message: "Venue approved successfully"
+//         });
 
-    } catch (error) {
-        return res.json({ success: false, message: error.message });
-    }
-};
+//     } catch (error) {
+//         return res.json({ success: false, message: error.message });
+//     }
+// };
 
 
 
 // ------------------ Admin Reject Venue ------------------ //
 
-export const rejectVenue = async (req, res) => {
-    try {
-        const { venueId } = req.body;
+// export const rejectVenue = async (req, res) => {
+//     try {
+//         const { venueId } = req.body;
 
-        const venue = await Venue.findById(venueId);
+//         const venue = await Venue.findById(venueId);
 
-        if (!venue) {
-            return res.json({ success: false, message: "Venue not found" });
-        }
+//         if (!venue) {
+//             return res.json({ success: false, message: "Venue not found" });
+//         }
 
-        venue.status = "rejected";
-        await venue.save();
+//         venue.status = "rejected";
+//         await venue.save();
 
-        return res.json({
-            success: true,
-            message: "Venue rejected successfully"
-        });
+//         return res.json({
+//             success: true,
+//             message: "Venue rejected successfully"
+//         });
 
-    } catch (error) {
-        return res.json({ success: false, message: error.message });
-    }
-};
+//     } catch (error) {
+//         return res.json({ success: false, message: error.message });
+//     }
+// };
 
 
 
