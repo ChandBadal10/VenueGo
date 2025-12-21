@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Venue from "../models/Venue.js";
-
+import transporter from "../configs/nodeMailer.js";
 
 // Generate Admin Token
 const generateToken = (admin) => {
@@ -10,15 +10,16 @@ const generateToken = (admin) => {
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-
-
 // -------------------- Admin Login -------------------- //
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.json({ success: false, message: "Email and password required" });
+      return res.json({
+        success: false,
+        message: "Email and password required",
+      });
     }
 
     const admin = await User.findOne({ email, role: "admin" });
@@ -43,17 +44,14 @@ export const adminLogin = async (req, res) => {
         id: admin._id,
         name: admin.name,
         email: admin.email,
-        role: admin.role
-      }
+        role: admin.role,
+      },
     });
-
   } catch (error) {
     console.log("Admin Login Error:", error.message);
     return res.json({ success: false, message: error.message });
   }
 };
-
-
 
 // -------------------- Admin Dashboard -------------------- //
 export const getAdminDashboard = async (req, res) => {
@@ -64,15 +62,13 @@ export const getAdminDashboard = async (req, res) => {
       admin: {
         id: req.admin._id,
         name: req.admin.name,
-        email: req.admin.email
-      }
+        email: req.admin.email,
+      },
     });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
 };
-
-
 
 // -------------------- Get Pending Venues -------------------- //
 export const getPendingVenues = async (req, res) => {
@@ -84,8 +80,6 @@ export const getPendingVenues = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
-
-
 
 // -------------------- Approve Venue -------------------- //
 export const approveVenue = async (req, res) => {
@@ -105,13 +99,27 @@ export const approveVenue = async (req, res) => {
     venue.status = "approved";
     await venue.save();
 
-    return res.json({ success: true, message: "Venue approved successfully" });
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: venue.email,
+      subject: "Venue Approved",
+      text: `  Congratulations!  Your venue "${venue.venueName}"
+              has been approved by the admin. You can now add time slots and start accepting bookings from users. Thank you for choosing VenueGo
+              Best Regards,
+
+              VenueGo Team`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return res.json({
+      success: true,
+      message: "Venue approved and email sent to owner",
+    });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
 };
-
-
 
 // -------------------- Reject Venue -------------------- //
 export const rejectVenue = async (req, res) => {
