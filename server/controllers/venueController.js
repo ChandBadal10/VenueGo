@@ -55,6 +55,8 @@ export const registerVenue = async (req, res) => {
             venue
         });
 
+
+
     } catch (error) {
         console.log("Venue Register Error:", error.message);
         return res.json({ success: false, message: error.message });
