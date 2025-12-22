@@ -5,11 +5,11 @@ import connectDB from "./configs/db.js";
 import userRouter from "./routes/userRoutes.js";
 import adminRouter from "./routes/adminRoutes.js"
 import venueRouter from "./routes/venueRoutes.js";
-
 import addVenueRouter from "./routes/addVenueRoutes.js";
 
-// Initialize Express App
 
+
+// Initialize Express App
 const app = express()
 await connectDB()
 

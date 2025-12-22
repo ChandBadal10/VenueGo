@@ -1,74 +1,102 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Footer from "../components/Footer";
-import { Navigate, useNavigate } from "react-router-dom";
-const dummyVenues = Array.from({ length: 9 }, () => ({
-  id: Math.random(),
-  name: "Velocity Futsal",
-  location: "Kalopul, Kathmandu",
-  price: "Rs 1500/hrs",
-  image:
-    "https://media.istockphoto.com/id/1295248329/photo/beautiful-young-black-boy-training-on-the-football-pitch.jpg?s=612x612&w=0&k=20&c=ws4m_NoSF8fRZGNoq5kVlJSfNghREKihaxsOBXAHOw8=",
-}));
+import { useNavigate } from "react-router-dom";
 
 export default function VenueSection() {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
+  const [venues, setVenues] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const filters = ["All", "Futsal", "Cricket", "Basket-Ball", "Table-Tennis"];
+  const filters = ["All", "Futsal", "Cricket", "BasketBall", "Table Tennis"];
 
-  const filteredVenues = dummyVenues.filter((v) => {
-    const matchesQ =
-      v.name.toLowerCase().includes(search.toLowerCase()) ||
+  useEffect(() => {
+    const fetchVenues = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/addvenue/all");
+        const data = await res.json();
+        if (data.success) {
+          setVenues(data.venues);
+        }
+      } catch (err) {
+        console.log("Error fetching venues", err.message);
+      }
+      setLoading(false);
+    };
+
+    fetchVenues();
+  }, []);
+
+  // search + category filter
+  const filteredVenues = venues.filter((v) => {
+    const matchSearch =
+      v.venueName.toLowerCase().includes(search.toLowerCase()) ||
       v.location.toLowerCase().includes(search.toLowerCase());
 
-    const matchesFilter =
+    const matchFilter =
       activeFilter === "All" ||
-      (activeFilter === "Futsal" &&
-        v.name.toLowerCase().includes("futsal")) ||
-      v.location.toLowerCase().includes(activeFilter.toLowerCase());
+      v.venueType.toLowerCase() === activeFilter.toLowerCase();
 
-    return matchesQ && matchesFilter;
+    return matchSearch && matchFilter;
   });
+
+  // GROUP venues by same name + same location
+  const groupedVenues = Object.values(
+    filteredVenues.reduce((acc, v) => {
+      const key = (v.venueName.trim().toLowerCase() + "_" + v.location.trim().toLowerCase());
+      if (!acc[key]) {
+        acc[key] = {
+          ...v,
+          slots: [
+            {
+              _id: v._id,
+              date: v.date,
+              startTime: v.startTime,
+              endTime: v.endTime,
+            }
+          ]
+        };
+      } else {
+        acc[key].slots.push({
+          _id: v._id,
+          date: v.date,
+          startTime: v.startTime,
+          endTime: v.endTime,
+        });
+      }
+      return acc;
+    }, {})
+  );
+
+  if (loading) return <h2 className="p-10 text-center">Loading venues...</h2>;
 
   return (
     <div className="w-full bg-slate-50">
-      {/* --- MAIN CONTENT WRAPPER --- */}
       <div className="max-w-7xl mx-auto px-6 py-10">
-
-        {/* ---------------- HEADER SECTION ---------------- */}
         <div className="rounded-2xl p-8 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg">
           <h2 className="text-2xl font-bold">Available Venues</h2>
-          <p className="text-white/90 mt-1">
-            Browse our selection of premium venues available for your next game
-          </p>
+          <p className="text-white/90 mt-1">Browse our selection of premium venues</p>
 
-          {/* Search */}
           <div className="mt-5 flex gap-3 items-center">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name, location"
-              className="flex-1 rounded-full px-4 py-2 bg-white text-gray-800 focus:ring-4 focus:ring-white/30 outline-none"
+              className="flex-1 rounded-full px-4 py-2 bg-white text-gray-800 outline-none"
             />
-
-            <button
-              className="px-4 py-2 rounded-full bg-white text-blue-600 font-semibold shadow hover:scale-105 transition"
-            >
+            <button className="px-4 py-2 rounded-full bg-white text-blue-600 font-semibold shadow">
               Search
             </button>
           </div>
 
-          {/* Filter Chips */}
           <div className="mt-4 flex gap-2 flex-wrap">
             {filters.map((f) => (
               <button
                 key={f}
                 onClick={() => setActiveFilter(f)}
-                className={`text-sm px-3 py-1 rounded-full transition border ${
-                  activeFilter === f
-                    ? "bg-white text-blue-700 border-transparent"
-                    : "bg-white/10 text-white border-white/20"
+                className={`text-sm px-3 py-1 rounded-full border transition ${
+                  activeFilter === f ? "bg-white text-blue-700" : "bg-white/10 text-white"
                 }`}
               >
                 {f}
@@ -77,40 +105,42 @@ export default function VenueSection() {
           </div>
         </div>
 
-        {/* ----------------- COUNT ----------------- */}
         <p className="text-sm text-gray-600 mt-6 mb-3">
-          Showing <span className="font-semibold">{filteredVenues.length}</span> Venues
+          Showing <b>{groupedVenues.length}</b> venues
         </p>
 
-        {/* ----------------- GRID ------------------ */}
+        {/* Now show 1 card per venue */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 cursor-pointer">
-          {filteredVenues.map((venue) => (
-            <div onClick={() => {
-              navigate(`/venue-details/${venue._id}`);
-            }}
-              key={venue.id}
-              className="rounded-lg shadow hover:shadow-md transition bg-white p-2"
+          {groupedVenues.map((venue) => (
+            <div
+              key={venue._id}
+              onClick={() => navigate(`/venue-details/${venue._id}`)}
+              className="rounded-lg shadow bg-white hover:shadow-md transition p-2"
             >
-              <div className="relative">
-                <img
-                  src={venue.image}
-                  alt={venue.name}
-                  className="rounded-md w-full h-44 object-cover"
-                />
-                <span className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                  {venue.price}
-                </span>
-              </div>
+              <img
+                src={
+                  venue.image ||
+                  "https://images.unsplash.com/photo-1600679472829-3044539ce8ed"
+                }
+                alt={venue.venueName}
+                className="rounded-md w-full h-44 object-cover"
+              />
+              <div className="mt-2">
+                <h3 className="font-medium">{venue.venueName}</h3>
+                <p className="text-gray-600 text-sm">{venue.location}</p>
+                <p className="text-blue-600 text-sm">
+                  Rs {venue.price}/hr • {venue.venueType}
+                </p>
 
-              <h3 className="mt-2 font-medium">{venue.name}</h3>
-              <p className="text-sm text-gray-600">{venue.location}</p>
+                {/* show total slot count */}
+                <p className="text-xs text-gray-500 mt-1">
+                  {venue.slots.length} slot(s) available
+                </p>
+              </div>
             </div>
           ))}
         </div>
-
       </div>
-
-      {/* footer  */}
       <Footer />
     </div>
   );

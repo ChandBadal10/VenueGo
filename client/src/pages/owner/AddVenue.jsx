@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
+
 
 const AddVenue = () => {
   const [image, setImage] = useState(null);
+  const navigate = useNavigate();
 
   const [venue, setVenue] = useState({
     venueName: "",
@@ -49,6 +53,7 @@ const AddVenue = () => {
     });
 
     setImage(null);
+    navigate("/venue-dashboard")
   } else {
     toast.error(data.message || "Something went wrong");
   }

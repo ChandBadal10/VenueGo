@@ -2,13 +2,7 @@ import express from "express";
 import { protect } from "../middleware/auth.js";
 import { adminProtect } from "../middleware/adminAuth.js";
 
-import {
-  adminLogin,
-  getAdminDashboard,
-  getPendingVenues,
-  approveVenue,
-  rejectVenue
-} from "../controllers/adminController.js";
+import { adminLogin, getAdminDashboard, getPendingVenues, approveVenue,rejectVenue } from "../controllers/adminController.js";
 
 const adminRouter = express.Router();
 

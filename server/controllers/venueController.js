@@ -1,4 +1,3 @@
-// controllers/venueController.js
 import Venue from "../models/Venue.js";
 import multer from "multer";
 import path from "path";
@@ -37,17 +36,7 @@ export const registerVenue = async (req, res) => {
             return res.json({ success: false, message: "Venue Image is required" });
         }
 
-        const venue = await Venue.create({
-            ownerId: req.user._id,
-            venueName,
-            category,
-            phone,
-            email,
-            location,
-            description,
-            image: req.file.path,
-            status: "pending"
-        });
+        const venue = await Venue.create({ ownerId: req.user._id, venueName, category, phone, email, location, description, image: req.file.path, status: "pending"});
 
         return res.json({
             success: true,
