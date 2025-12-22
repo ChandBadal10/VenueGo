@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
-         required: true
+        required: true
     },
     email: {
         type: String,
@@ -18,7 +18,8 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         enum: ["owner", "user", "admin"],
-        default: "user"},
+        default: "user"
+    },
     image: {
         type: String,
         default: ""
@@ -46,5 +47,6 @@ const userSchema = new mongoose.Schema({
 
 
 const User = mongoose.models.User || mongoose.model("User", userSchema)
+
 
 export default User;

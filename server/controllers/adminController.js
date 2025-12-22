@@ -16,10 +16,7 @@ export const adminLogin = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.json({
-        success: false,
-        message: "Email and password required",
-      });
+      return res.json({ success: false, message: "Email and password required"});
     }
 
     const admin = await User.findOne({ email, role: "admin" });
