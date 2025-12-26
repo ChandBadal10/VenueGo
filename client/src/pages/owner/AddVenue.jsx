@@ -123,6 +123,7 @@ const AddVenue = () => {
               <option value="Cricket">Cricket</option>
               <option value="BasketBall">BasketBall</option>
               <option value="Table Tennis">Table Tennis</option>
+              <option value="GYM">GYM</option>
             </select>
           </div>
         </div>
