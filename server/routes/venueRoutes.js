@@ -4,19 +4,24 @@ import { approveVenue, rejectVenue } from "../controllers/adminController.js";
 
 import { upload, registerVenue,  checkVenueStatus } from "../controllers/venueController.js";
 
+import { deleteVenueGroup } from "../controllers/venueController.js";
+import { toggleVenueAvailability } from "../controllers/venueController.js";
+
 const venueRouter = express.Router();
 
 
 // Register venue (Owner)
 venueRouter.post("/register", protect, upload.single("image"), registerVenue);
 
-
+//Admin approve reject
 venueRouter.put("/approve", protect, approveVenue);
 
-
 venueRouter.put("/reject", protect, rejectVenue);
+
+
 // Check venue status (Owner)
 venueRouter.get("/status", protect, checkVenueStatus);
 
-
+venueRouter.delete("/delete-group", protect, deleteVenueGroup);
+venueRouter.patch("/toggle-availability", protect, toggleVenueAvailability);
 export default venueRouter;

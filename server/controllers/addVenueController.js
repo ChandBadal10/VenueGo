@@ -83,3 +83,25 @@ export const getVenueWithSlots = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+
+
+export const deleteVenueGroup = async (req, res) => {
+  try {
+    const { venueName, location } = req.body;
+
+    await AddVenue.deleteMany({
+      venueName: { $regex: new RegExp("^" + venueName + "$", "i") },
+      location: { $regex: new RegExp("^" + location + "$", "i") }
+    });
+
+    return res.json({
+      success: true,
+      message: "Venue deleted successfully"
+    });
+
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+

@@ -1,7 +1,7 @@
 import Venue from "../models/Venue.js";
 import multer from "multer";
 import path from "path";
-
+import AddVenue from "../models/AddVenue.js";
 
 // ------------------ Multer Storage ------------------ //
 
@@ -56,64 +56,6 @@ export const registerVenue = async (req, res) => {
 
 
 
-
-
-
-
-// ------------------ Admin Approve Venue ------------------ //
-
-// export const approveVenue = async (req, res) => {
-//     try {
-//         const { venueId } = req.body;
-
-//         const venue = await Venue.findById(venueId);
-
-//         if (!venue) {
-//             return res.json({ success: false, message: "Venue not found" });
-//         }
-
-//         venue.status = "approved";
-//         await venue.save();
-
-//         return res.json({
-//             success: true,
-//             message: "Venue approved successfully"
-//         });
-
-//     } catch (error) {
-//         return res.json({ success: false, message: error.message });
-//     }
-// };
-
-
-
-// ------------------ Admin Reject Venue ------------------ //
-
-// export const rejectVenue = async (req, res) => {
-//     try {
-//         const { venueId } = req.body;
-
-//         const venue = await Venue.findById(venueId);
-
-//         if (!venue) {
-//             return res.json({ success: false, message: "Venue not found" });
-//         }
-
-//         venue.status = "rejected";
-//         await venue.save();
-
-//         return res.json({
-//             success: true,
-//             message: "Venue rejected successfully"
-//         });
-
-//     } catch (error) {
-//         return res.json({ success: false, message: error.message });
-//     }
-// };
-
-
-
 // ------------------ Check Venue Status ------------------ //
 
 export const checkVenueStatus = async (req, res) => {
@@ -132,4 +74,51 @@ export const checkVenueStatus = async (req, res) => {
     } catch (error) {
         return res.json({ success: false, message: error.message });
     }
+};
+
+// Delete Venue
+export const deleteVenueGroup = async (req, res) => {
+    try {
+    const { venueName, location } = req.body;
+
+    await AddVenue.deleteMany({
+      venueName: new RegExp(`^${venueName}$`, "i"),
+      location: new RegExp(`^${location}$`, "i")
+    });
+
+    res.json({ success: true, message: "Venue deleted" });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
+// Toggle Availability
+
+export const toggleVenueAvailability = async (req, res) => {
+  try {
+    const { venueName, location } = req.body;
+
+    const venues = await AddVenue.find({
+      venueName: new RegExp(`^${venueName}$`, "i"),
+      location: new RegExp(`^${location}$`, "i")
+    });
+
+    if (!venues.length)
+      return res.json({ success: false, message: "Venue not found" });
+
+    const newStatus = !venues[0].isActive;
+
+    await AddVenue.updateMany(
+      { venueName: venues[0].venueName, location: venues[0].location },
+      { isActive: newStatus }
+    );
+
+    res.json({
+      success: true,
+      status: newStatus ? "Available" : "Unavailable"
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
 };
