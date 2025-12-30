@@ -99,19 +99,39 @@ export const toggleVenueAvailability = async (req, res) => {
   try {
     const { venueName, location } = req.body;
 
-    const venues = await AddVenue.find({
-      venueName: new RegExp(`^${venueName}$`, "i"),
-      location: new RegExp(`^${location}$`, "i")
+    if (!venueName || !location) {
+      return res.json({
+        success: false,
+        message: "venueName and location required"
+      });
+    }
+
+    // Read current state
+    const slot = await AddVenue.findOne({
+      venueName,
+      location,
+      ownerId: req.user._id
     });
 
-    if (!venues.length)
-      return res.json({ success: false, message: "Venue not found" });
+    if (!slot) {
+      return res.json({
+        success: false,
+        message: "Venue not found"
+      });
+    }
 
-    const newStatus = !venues[0].isActive;
+    const newStatus = !slot.isActive;
 
+    // Toggle ALL slots of that venue
     await AddVenue.updateMany(
-      { venueName: venues[0].venueName, location: venues[0].location },
-      { isActive: newStatus }
+      {
+        venueName,
+        location,
+        ownerId: req.user._id
+      },
+      {
+        $set: { isActive: newStatus }
+      }
     );
 
     res.json({
