@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const normalize = (v) => v?.toString().trim().toLowerCase();
 
 const getPriceRange = (slots) => {
-  const prices = slots.map(s => s.price);
+  const prices = slots.map((s) => s.price);
   const min = Math.min(...prices);
   const max = Math.max(...prices);
   return min === max ? `Rs ${min}/hr` : `Rs ${min} – Rs ${max}/hr`;
@@ -17,23 +17,29 @@ const VenueCard = () => {
 
   useEffect(() => {
     fetch("http://localhost:3000/api/addvenue/all")
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.success) setVenues(data.venues);
         setLoading(false);
       });
   }, []);
 
-  if (loading) return <p className="text-center mt-20">Loading venues...</p>;
+  if (loading) {
+    return <p className="text-center mt-20">Loading venues...</p>;
+  }
 
+  // ✅ ONLY SHOW ACTIVE VENUES
+  const activeVenues = venues.filter((v) => v.isActive === true);
+
+  // ✅ GROUP BY VENUE NAME + LOCATION
   const groupedVenues = Object.values(
-    venues.reduce((acc, v) => {
+    activeVenues.reduce((acc, v) => {
       const key = normalize(v.venueName) + "_" + normalize(v.location);
 
       if (!acc[key]) {
         acc[key] = {
           ...v,
-          slots: []
+          slots: [],
         };
       }
 
@@ -42,7 +48,7 @@ const VenueCard = () => {
         date: v.date,
         startTime: v.startTime,
         endTime: v.endTime,
-        price: v.price
+        price: v.price,
       });
 
       return acc;
@@ -51,7 +57,9 @@ const VenueCard = () => {
 
   return (
     <div className="px-6 pb-20 max-w-7xl mx-auto mt-20">
-      <h2 className="text-3xl font-bold text-center mb-10">Popular Venues</h2>
+      <h2 className="text-3xl font-bold text-center mb-10">
+        Popular Venues
+      </h2>
 
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-10">
         {groupedVenues.slice(0, 6).map((venue) => (
@@ -60,7 +68,10 @@ const VenueCard = () => {
             className="bg-white rounded-2xl shadow-md hover:shadow-xl border transition overflow-hidden"
           >
             <img
-              src={venue.image || "https://images.unsplash.com/photo-1600679472829-3044539ce8ed"}
+              src={
+                venue.image ||
+                "https://images.unsplash.com/photo-1600679472829-3044539ce8ed"
+              }
               className="h-52 w-full object-cover"
               alt={venue.venueName}
             />
@@ -86,6 +97,12 @@ const VenueCard = () => {
             </div>
           </div>
         ))}
+
+        {groupedVenues.length === 0 && (
+          <p className="col-span-full text-center text-gray-500">
+            No venues available right now
+          </p>
+        )}
       </div>
     </div>
   );

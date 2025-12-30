@@ -8,7 +8,7 @@ export const createVenue = async (req, res) => {
       return res.json({ success: false, message: "All fields are required" });
     }
 
-    const venue = await AddVenue.create({ ownerId: req.user._id, venueName, venueType, price, date, startTime, endTime, location, description });
+    const venue = await AddVenue.create({ ownerId: req.user._id, venueName, venueType, price, date, startTime, endTime, location, description, isAvailable: true  });
 
     return res.json({ success: true, message: "Venue added successfully", venue });
 
@@ -103,5 +103,6 @@ export const deleteVenueGroup = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+
 
 

@@ -49,11 +49,6 @@ const venueSchema = new mongoose.Schema(
             default: "pending"
         },
 
-        isAvailable: {
-        type: Boolean,
-        default: true
-}
-
     },
     {timestamps: true}
 );

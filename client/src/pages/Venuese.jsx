@@ -18,7 +18,14 @@ export default function VenueSection() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const filters = ["All", "Futsal", "Cricket", "BasketBall", "Table Tennis", "GYM"];
+  const filters = [
+    "All",
+    "Futsal",
+    "Cricket",
+    "BasketBall",
+    "Table Tennis",
+    "GYM"
+  ];
 
   useEffect(() => {
     fetch("http://localhost:3000/api/addvenue/all")
@@ -29,8 +36,15 @@ export default function VenueSection() {
       });
   }, []);
 
+  if (loading) {
+    return <h2 className="p-10 text-center">Loading venues...</h2>;
+  }
+
+  // ✅ ONLY ACTIVE VENUES (IMPORTANT)
+  const activeVenues = venues.filter((v) => v.isActive === true);
+
   // 🔹 SEARCH + FILTER LOGIC (UNCHANGED)
-  const filteredVenues = venues.filter((v) => {
+  const filteredVenues = activeVenues.filter((v) => {
     const matchSearch =
       normalize(v.venueName).includes(normalize(search)) ||
       normalize(v.location).includes(normalize(search));
@@ -54,7 +68,7 @@ export default function VenueSection() {
           location: v.location,
           venueType: v.venueType,
           image: v.image,
-          slots: [],
+          slots: []
         };
       }
 
@@ -63,14 +77,12 @@ export default function VenueSection() {
         date: v.date,
         startTime: v.startTime,
         endTime: v.endTime,
-        price: v.price,
+        price: v.price
       });
 
       return acc;
     }, {})
   );
-
-  if (loading) return <h2 className="p-10 text-center">Loading venues...</h2>;
 
   return (
     <div className="w-full bg-slate-50">
@@ -95,10 +107,6 @@ export default function VenueSection() {
                   className="w-full outline-none text-gray-700 text-sm"
                 />
               </div>
-
-              <button className="bg-white text-blue-600 font-semibold px-6 py-3 rounded-full hover:bg-gray-100 transition">
-                Search
-              </button>
             </div>
 
             {/* Filter Pills */}
@@ -119,13 +127,13 @@ export default function VenueSection() {
             </div>
           </div>
 
-          {/* Result Count */}
           <p className="mt-6 text-sm text-gray-600">
             Showing{" "}
             <span className="font-semibold">{groupedVenues.length}</span> venues
           </p>
         </div>
 
+        {/* ================= VENUE GRID ================= */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {groupedVenues.map((venue) => (
             <div
@@ -156,9 +164,13 @@ export default function VenueSection() {
               </div>
             </div>
           ))}
+
+          {groupedVenues.length === 0 && (
+            <p className="col-span-full text-center text-gray-500">
+              No venues available
+            </p>
+          )}
         </div>
-
-
       </div>
       <Footer />
     </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Trash2, ToggleLeft, ToggleRight } from "lucide-react";
+
 import { toast } from "react-hot-toast";
 
 const normalize = (v) => v?.toString().trim().toLowerCase();
@@ -9,6 +9,9 @@ const ManageVenues = () => {
   const [venues, setVenues] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedVenue, setSelectedVenue] = useState(null);
+
   const token = localStorage.getItem("token");
 
   // ---------------- FETCH OWNER VENUES ----------------
@@ -16,8 +19,8 @@ const ManageVenues = () => {
     try {
       const res = await axios.get("http://localhost:3000/api/addvenue/all", {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (res.data.success) {
@@ -46,7 +49,7 @@ const ManageVenues = () => {
           venueType: v.venueType,
           image: v.image,
           isActive: v.isActive,
-          slots: []
+          slots: [],
         };
       }
 
@@ -56,24 +59,32 @@ const ManageVenues = () => {
   );
 
   // ---------------- DELETE VENUE ----------------
-  const handleDelete = async (venueName, location) => {
-    if (!window.confirm("Delete this venue permanently?")) return;
+  const handleDeleteClick = (venueName, location) => {
+    setSelectedVenue({ venueName, location });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedVenue) return;
 
     try {
       const res = await axios.delete(
         "http://localhost:3000/api/venue/delete-group",
         {
           headers: { Authorization: `Bearer ${token}` },
-          data: { venueName, location }
+          data: selectedVenue,
         }
       );
 
       if (res.data.success) {
-        toast.success("Venue deleted");
+        toast.success("Venue deleted successfully");
         fetchVenues();
       }
     } catch {
       toast.error("Delete failed");
+    } finally {
+      setShowDeleteModal(false);
+      setSelectedVenue(null);
     }
   };
 
@@ -158,24 +169,29 @@ const ManageVenues = () => {
                       onClick={() =>
                         toggleAvailability(venue.venueName, venue.location)
                       }
-                      className="text-blue-600 hover:scale-110 transition"
+                      className="transition hover:scale-110"
                       title="Toggle availability"
                     >
-                      {venue.isActive ? (
-                        <ToggleRight size={22} />
-                      ) : (
-                        <ToggleLeft size={22} />
-                      )}
+                      <span
+                        className={`material-symbols-outlined text-[30px] ${
+                          venue.isActive ? "text-green-600" : "text-gray-400"
+                        }`}
+                        style={{ fontVariationSettings: "'wght' 500" }}
+                      >
+                        {venue.isActive ? "toggle_on" : "toggle_off"}
+                      </span>
                     </button>
 
                     <button
                       onClick={() =>
-                        handleDelete(venue.venueName, venue.location)
+                        handleDeleteClick(venue.venueName, venue.location)
                       }
-                      className="text-red-600 hover:scale-110 transition"
+                      className="text-black-600 hover:scale-110 transition"
                       title="Delete venue"
                     >
-                      <Trash2 size={20} />
+                      <span className="material-symbols-outlined text-[22px]">
+                        delete
+                      </span>
                     </button>
                   </div>
                 </td>
@@ -192,6 +208,40 @@ const ManageVenues = () => {
           </tbody>
         </table>
       </div>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 animate-scaleIn">
+            <h2 className="text-xl font-semibold text-gray-800 mb-3">
+              Delete Venue
+            </h2>
+
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to permanently delete{" "}
+              <span className="font-semibold text-red-600">
+                {selectedVenue?.venueName}
+              </span>
+              ? This action cannot be undone.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 rounded-lg border text-gray-700 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
