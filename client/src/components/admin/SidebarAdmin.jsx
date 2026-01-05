@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
 
-const Sidebar = () => {
-  const { user } = useAppContext();              // get user from context
+const AdminSidebar = () => {
+  const { user, logout } = useAppContext();
   const location = useLocation();
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
@@ -25,17 +26,18 @@ const Sidebar = () => {
       : user?.image ||
         "https://www.dreamstime.com/vector-illustration-avatar-dummy-logo-collection-image-icon-stock-isolated-object-set-symbol-web-image137160339";
 
-  const navItems = [
-  { label: "Dashboard", path: "/venue-dashboard" },
-  { label: "Add Venue", path: "/venue-dashboard/add-venue" },
-  // { label: "Manage Bookings", path: "/venue-dashboard/manage-bookings" },
-  { label: "Manage Venues", path: "/venue-dashboard/manage-venue" },
-  { label: "Add Trainer", path: "/venue-dashboard/add-trainer" },
 
-];
+  const navItems = [
+    { label: "Dashboard", path: "/admin" },
+    { label: "Approve Venues", path: "/admin/approve-venue-page" },
+    { label: "All Users", path: "/admin/users" },
+    { label: "All Bookings", path: "/admin/bookings" }
+  ];
+
+
   return (
     <aside className="min-h-screen w-64 border-r border-borderColor bg-white flex flex-col items-center pt-8 text-sm">
-      {/* Avatar + overlay */}
+      {/* Avatar */}
       <div className="relative group">
         <label htmlFor="image">
           <img
@@ -68,12 +70,12 @@ const Sidebar = () => {
         </button>
       )}
 
-      {/* User name */}
-      <p className="mt-3 text-base max-md:hidden">
-        {user?.name || user?.fullName || "Venue Owner"}
+      {/* Admin name */}
+      <p className="mt-3 text-base max-md:hidden font-medium">
+        {user?.name || "Admin"}
       </p>
 
-      {/* Navigation links */}
+      {/* Navigation */}
       <nav className="w-full mt-6">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
@@ -95,8 +97,10 @@ const Sidebar = () => {
           );
         })}
       </nav>
+
+
     </aside>
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;

@@ -1,3 +1,14 @@
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -48,29 +59,31 @@ const VenueDetails = () => {
   useEffect(() => {
     const fetchVenue = async () => {
       try {
-        // Get the main venue
-        const res = await axios.get(`http://localhost:3000/api/addvenue/${id}`);
+        const res = await axios.get(
+          `http://localhost:3000/api/addvenue/${id}`
+        );
+
         if (res.data.success) {
           setVenue(res.data.venue);
 
-          // Get all venues to find matching ones
           const allRes = await axios.get(
             "http://localhost:3000/api/addvenue/all"
           );
+
           if (allRes.data.success) {
-            // Filter venues with same name and location
-            const normalize = (val) => val?.toString().trim().toLowerCase();
+            const normalize = (val) =>
+              val?.toString().trim().toLowerCase();
 
             const matchingVenues = allRes.data.venues.filter(
               (v) =>
                 normalize(v.venueName) ===
                   normalize(res.data.venue.venueName) &&
-                normalize(v.location) === normalize(res.data.venue.location)
+                normalize(v.location) ===
+                  normalize(res.data.venue.location)
             );
 
             setAllVenues(matchingVenues);
 
-            // Set first available date
             if (matchingVenues.length > 0) {
               const dates = [
                 ...new Set(matchingVenues.map((v) => v.date)),
@@ -82,8 +95,9 @@ const VenueDetails = () => {
       } catch (err) {
         console.error("Error fetching venue:", err);
         toast.error("Failed to load venue details");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchVenue();
@@ -95,12 +109,15 @@ const VenueDetails = () => {
       if (!selectedDate) return;
 
       try {
-        const response = await axios.get("/api/bookings/slots", {
-          params: {
-            venueId: id,
-            date: selectedDate,
-          },
-        });
+        const response = await axios.get(
+          "http://localhost:3000/api/bookings/slots",
+          {
+            params: {
+              venueId: id,
+              date: selectedDate,
+            },
+          }
+        );
 
         if (response.data.success) {
           setBookedSlots(response.data.bookedSlots || []);
@@ -117,22 +134,19 @@ const VenueDetails = () => {
 
   // Check if a specific slot is booked
   const isSlotBooked = (slotDate, slotStartTime, slotEndTime) => {
-    return bookedSlots.some((slot) => {
-      return (
+    return bookedSlots.some(
+      (slot) =>
         slot.date === slotDate &&
         slot.startTime === slotStartTime &&
         slot.endTime === slotEndTime
-      );
-    });
+    );
   };
 
   // Group venues by date
   const getSlotsByDate = () => {
     const grouped = {};
     allVenues.forEach((v) => {
-      if (!grouped[v.date]) {
-        grouped[v.date] = [];
-      }
+      if (!grouped[v.date]) grouped[v.date] = [];
       grouped[v.date].push(v);
     });
     return grouped;
@@ -140,16 +154,14 @@ const VenueDetails = () => {
 
   const calculatePrice = (slot) => {
     if (!slot) return 0;
-
     const start = parseInt(slot.startTime.split(":")[0]);
     const end = parseInt(slot.endTime.split(":")[0]);
-    const hours = end - start;
-
-    return hours * slot.price;
+    return (end - start) * slot.price;
   };
 
   const handleBookNow = async () => {
     const token = localStorage.getItem("token");
+
     if (!token) {
       toast.error("Please login to book a venue");
       navigate("/login");
@@ -161,9 +173,12 @@ const VenueDetails = () => {
       return;
     }
 
-    // Check if already booked
     if (
-      isSlotBooked(selectedDate, selectedSlot.startTime, selectedSlot.endTime)
+      isSlotBooked(
+        selectedDate,
+        selectedSlot.startTime,
+        selectedSlot.endTime
+      )
     ) {
       toast.error("This slot is already booked");
       return;
@@ -184,23 +199,30 @@ const VenueDetails = () => {
         description: venue.description,
       };
 
-      const response = await axios.post("/api/bookings/create", bookingData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/bookings/create",
+        bookingData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.data.success) {
         toast.success("Booking confirmed successfully!");
 
-        // Refresh booked slots
-        const res = await axios.get("/api/bookings/slots", {
-          params: {
-            venueId: id,
-            date: selectedDate,
-          },
-        });
+        const res = await axios.get(
+          "http://localhost:3000/api/bookings/slots",
+          {
+            params: {
+              venueId: id,
+              date: selectedDate,
+            },
+          }
+        );
+
         if (res.data.success) {
           setBookedSlots(res.data.bookedSlots || []);
         }
@@ -231,6 +253,7 @@ const VenueDetails = () => {
   const currentSlots = slotsByDate[selectedDate] || [];
 
   return (
+    /* 🔥 YOUR UI BELOW — UNCHANGED 🔥 */
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
         {/* Venue Header */}

@@ -1,13 +1,9 @@
-import React from "react";
-import AdminApproveVenues from "./AdminApproveVenues";
+import React from 'react'
 
-export default function AdminDashboard() {
+const AdminDashboard = () => {
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Welcome Admin</h1>
-      <p>This is the admin dashboard.</p>
-
-      <AdminApproveVenues />
-    </div>
-  );
+    <div>AdminDashboard</div>
+  )
 }
+
+export default AdminDashboard
