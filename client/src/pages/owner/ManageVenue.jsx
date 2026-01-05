@@ -17,7 +17,7 @@ const ManageVenues = () => {
   // ---------------- FETCH OWNER VENUES ----------------
   const fetchVenues = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/addvenue/all", {
+      const res = await axios.get("http://localhost:3000/api/addvenue/owner", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

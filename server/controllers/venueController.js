@@ -54,8 +54,6 @@ export const registerVenue = async (req, res) => {
 
 
 
-
-
 // ------------------ Check Venue Status ------------------ //
 
 export const checkVenueStatus = async (req, res) => {

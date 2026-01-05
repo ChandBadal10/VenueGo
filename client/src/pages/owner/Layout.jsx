@@ -1,4 +1,3 @@
-// src/pages/owner/Layout.jsx
 import React from 'react'
 import NavBarOwner from '../../components/owner/NavBarOwner';
 import Sidebar from '../../components/owner/Sidebar';

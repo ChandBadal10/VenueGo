@@ -27,6 +27,28 @@ export const getAllVenues = async (req, res) => {
   }
 };
 
+// ✅ Get venues ONLY for logged-in owner
+export const getOwnerVenues = async (req, res) => {
+  try {
+    const ownerId = req.user._id;
+
+    const venues = await AddVenue.find({ ownerId }).sort({
+      createdAt: -1
+    });
+
+    return res.json({
+      success: true,
+      venues
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+
 //  Get single venue by ID
 export const getVenueById = async (req, res) => {
   try {
