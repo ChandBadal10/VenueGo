@@ -30,7 +30,7 @@ const AdminSidebar = () => {
   const navItems = [
     { label: "Dashboard", path: "/admin" },
     { label: "Approve Venues", path: "/admin/approve-venue-page" },
-    { label: "All Users", path: "/admin/users" },
+    { label: "Manage Venues", path: "/admin/manage-venues" },
     { label: "All Bookings", path: "/admin/bookings" }
   ];
 

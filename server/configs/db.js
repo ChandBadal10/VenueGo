@@ -23,7 +23,7 @@ const connectDB = async ()=> {
 
             });
 
-            console.log("Default admin created: admin@venuego.com / Admin@123");
+            console.log("Default admin created.");
         }
          else if (existingAdmin.role !== "admin"){
             existingAdmin.role = "admin";

@@ -16,7 +16,10 @@ export const adminLogin = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.json({ success: false, message: "Email and password required"});
+      return res.json({
+        success: false,
+        message: "Email and password required",
+      });
     }
 
     const admin = await User.findOne({ email, role: "admin" });
@@ -50,7 +53,7 @@ export const adminLogin = async (req, res) => {
   }
 };
 
-// -------------------- Admin Dashboard -------------------- //
+// Admin Dashboard
 export const getAdminDashboard = async (req, res) => {
   try {
     return res.json({
@@ -67,7 +70,7 @@ export const getAdminDashboard = async (req, res) => {
   }
 };
 
-// -------------------- Get Pending Venues -------------------- //
+// Get Pending Venues
 export const getPendingVenues = async (req, res) => {
   try {
     const venues = await Venue.find({ status: "pending" });
@@ -78,7 +81,7 @@ export const getPendingVenues = async (req, res) => {
   }
 };
 
-// -------------------- Approve Venue -------------------- //
+//Approve Venue
 export const approveVenue = async (req, res) => {
   try {
     const { venueId } = req.body;
@@ -118,7 +121,7 @@ export const approveVenue = async (req, res) => {
   }
 };
 
-// -------------------- Reject Venue -------------------- //
+//  Reject Venue
 export const rejectVenue = async (req, res) => {
   try {
     const { venueId } = req.body;
@@ -135,6 +138,19 @@ export const rejectVenue = async (req, res) => {
 
     venue.status = "rejected";
     await venue.save();
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: venue.email,
+      subject: "Venue Rejected",
+      text: `Hello ${venue.venueName}, We regret to inform you that your venue has not been approved by the admin at this time.
+            After reviewing the submitted details, your venue did not meet the current approval requirements. You are welcome to update your venue information and submit it again for review.
+            If you have any questions or need assistance, feel free to contact our support team.
+            Best Regards,
+            VenueGo Team`,
+    };
+
+    await transporter.sendMail(mailOptions);
 
     return res.json({ success: true, message: "Venue rejected successfully" });
   } catch (error) {

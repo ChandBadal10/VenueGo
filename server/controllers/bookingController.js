@@ -7,17 +7,7 @@ import AddVenue from "../models/AddVenue.js";
  */
 export const createBooking = async (req, res) => {
   try {
-    const {
-      venueId,
-      venueName,
-      venueType,
-      price,
-      date,
-      startTime,
-      endTime,
-      location,
-      description
-    } = req.body;
+    const { venueId, venueName, venueType, price, date, startTime, endTime, location, description } = req.body;
 
     if (!venueId || !date || !startTime || !endTime) {
       return res.json({
@@ -36,12 +26,7 @@ export const createBooking = async (req, res) => {
     }
 
     // Prevent double booking
-    const alreadyBooked = await Booking.findOne({
-      venueId,
-      date,
-      startTime,
-      endTime
-    });
+    const alreadyBooked = await Booking.findOne({ venueId, date, startTime, endTime });
 
     if (alreadyBooked) {
       return res.json({
