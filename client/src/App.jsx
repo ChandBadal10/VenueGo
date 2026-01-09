@@ -21,6 +21,7 @@ import Dashboard from "./pages/owner/Dashboard";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminApproveVenues from "./pages/admin/AdminApproveVenues";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import ManageVenuePage from "./pages/admin/ManageVenuePage";
 
 const App = () => {
   // const [showLogin, setShowLogin] = useState(false)
@@ -66,6 +67,7 @@ const App = () => {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="approve-venue-page" element={<AdminApproveVenues />} />
+          <Route path="manage-venues" element={<ManageVenuePage />} />
         </Route>
       </Routes>
 

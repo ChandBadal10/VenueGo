@@ -3,7 +3,7 @@ import multer from "multer";
 import path from "path";
 import AddVenue from "../models/AddVenue.js";
 
-// ------------------ Multer Storage ------------------ //
+//  Multer Storage
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -22,7 +22,7 @@ export const upload = multer({ storage });
 
 
 
-// ------------------ Register Venue ------------------ //
+// Register Venue
 
 export const registerVenue = async (req, res) => {
     try {

@@ -2,16 +2,48 @@ import AddVenue from "../models/AddVenue.js";
 
 export const createVenue = async (req, res) => {
   try {
-    const { venueName, venueType, price, date, startTime, endTime, location, description } = req.body;
+    const {
+      venueName,
+      venueType,
+      price,
+      date,
+      startTime,
+      endTime,
+      location,
+      description,
+    } = req.body;
 
-    if (!venueName || !venueType || !price || !date || !startTime || !endTime || !location || !description) {
+    if (
+      !venueName ||
+      !venueType ||
+      !price ||
+      !date ||
+      !startTime ||
+      !endTime ||
+      !location ||
+      !description
+    ) {
       return res.json({ success: false, message: "All fields are required" });
     }
 
-    const venue = await AddVenue.create({ ownerId: req.user._id, venueName, venueType, price, date, startTime, endTime, location, description, isAvailable: true  });
+    const venue = await AddVenue.create({
+      ownerId: req.user._id,
+      venueName,
+      venueType,
+      price,
+      date,
+      startTime,
+      endTime,
+      location,
+      description,
+      isAvailable: true,
+    });
 
-    return res.json({ success: true, message: "Venue added successfully", venue });
-
+    return res.json({
+      success: true,
+      message: "Venue added successfully",
+      venue,
+    });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
@@ -27,27 +59,26 @@ export const getAllVenues = async (req, res) => {
   }
 };
 
-// ✅ Get venues ONLY for logged-in owner
+//  Get venues ONLY for logged-in owner
 export const getOwnerVenues = async (req, res) => {
   try {
     const ownerId = req.user._id;
 
     const venues = await AddVenue.find({ ownerId }).sort({
-      createdAt: -1
+      createdAt: -1,
     });
 
     return res.json({
       success: true,
-      venues
+      venues,
     });
   } catch (error) {
     return res.json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
-
 
 //  Get single venue by ID
 export const getVenueById = async (req, res) => {
@@ -63,9 +94,6 @@ export const getVenueById = async (req, res) => {
   }
 };
 
-
-
-
 // Get venue with all its time slots
 export const getVenueWithSlots = async (req, res) => {
   try {
@@ -79,11 +107,14 @@ export const getVenueWithSlots = async (req, res) => {
     }
 
     // Find all venues with the same name and location (all time slots)
-    const allSlots = await Venue.find({ venueName: mainVenue.venueName, location: mainVenue.location }).sort({ date: 1, startTime: 1 });
+    const allSlots = await Venue.find({
+      venueName: mainVenue.venueName,
+      location: mainVenue.location,
+    }).sort({ date: 1, startTime: 1 });
 
     // Group slots by date
     const slotsByDate = {};
-    allSlots.forEach(venue => {
+    allSlots.forEach((venue) => {
       if (!slotsByDate[venue.date]) {
         slotsByDate[venue.date] = [];
       }
@@ -91,7 +122,7 @@ export const getVenueWithSlots = async (req, res) => {
         _id: venue._id,
         startTime: venue.startTime,
         endTime: venue.endTime,
-        date: venue.date
+        date: venue.date,
       });
     });
 
@@ -99,32 +130,9 @@ export const getVenueWithSlots = async (req, res) => {
       success: true,
       venue: mainVenue,
       allSlots: allSlots,
-      slotsByDate: slotsByDate
+      slotsByDate: slotsByDate,
     });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
 };
-
-
-export const deleteVenueGroup = async (req, res) => {
-  try {
-    const { venueName, location } = req.body;
-
-    await AddVenue.deleteMany({
-      venueName: { $regex: new RegExp("^" + venueName + "$", "i") },
-      location: { $regex: new RegExp("^" + location + "$", "i") }
-    });
-
-    return res.json({
-      success: true,
-      message: "Venue deleted successfully"
-    });
-
-  } catch (error) {
-    return res.json({ success: false, message: error.message });
-  }
-};
-
-
-
