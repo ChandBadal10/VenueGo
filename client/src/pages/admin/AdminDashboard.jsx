@@ -28,11 +28,14 @@ const revenueData = [
 ];
 
 const bookingData = [
+  { day: "Sun", bookings: 40 },
   { day: "Mon", bookings: 18 },
   { day: "Tue", bookings: 24 },
   { day: "Wed", bookings: 15 },
   { day: "Thu", bookings: 28 },
   { day: "Fri", bookings: 40 },
+  { day: "Sat", bookings: 40 },
+
 ];
 
 
