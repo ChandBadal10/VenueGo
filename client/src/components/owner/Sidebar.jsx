@@ -28,9 +28,9 @@ const Sidebar = () => {
   const navItems = [
   { label: "Dashboard", path: "/venue-dashboard" },
   { label: "Add Venue", path: "/venue-dashboard/add-venue" },
-  // { label: "Manage Bookings", path: "/venue-dashboard/manage-bookings" },
   { label: "Manage Venues", path: "/venue-dashboard/manage-venue" },
   { label: "Add Trainer", path: "/venue-dashboard/add-trainer" },
+  { label: "All Bookings", path: "/venue-dashboard/all-bookings" },
 
 ];
   return (

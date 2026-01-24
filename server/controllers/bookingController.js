@@ -84,3 +84,33 @@ export const getBookedSlots = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+
+// get all bookings
+
+export const getOwnerBookings = async (req, res) => {
+  try {
+    const ownerId = req.user._id;
+
+    const bookings = await Booking.find({ ownerId })
+      .populate("userId", "name email")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      bookings: bookings.map(b => ({
+        _id: b._id,
+        venueName: b.venueName,
+        date: b.date,
+        startTime: b.startTime,
+        endTime: b.endTime,
+        price: b.price,
+        user: {
+          name: b.userId?.name,
+          email: b.userId?.email
+        }
+      }))
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
