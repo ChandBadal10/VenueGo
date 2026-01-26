@@ -114,3 +114,73 @@ export const getOwnerBookings = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+
+// get user bookings
+
+
+
+export const getUserBookings = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const bookings = await Booking.find({ userId })
+      .populate("venueId", "venueName location")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      bookings
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+
+
+// export const cancelBooking = async (req, res) => {
+//   try {
+//     const bookingId = req.params.id;
+//     const userId = req.user._id;
+
+//     const booking = await Booking.findOne({
+//       _id: bookingId,
+//       userId
+//     });
+
+//     if (!booking) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Booking not found"
+//       });
+//     }
+
+//     if (booking.status === "Cancelled") {
+//       return res.json({
+//         success: false,
+//         message: "Booking already cancelled"
+//       });
+//     }
+
+//     booking.status = "Cancelled";
+//     await booking.save();
+
+//     res.json({
+//       success: true,
+//       message: "Booking cancelled successfully"
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: error.message
+//     });
+//   }
+// };
+
+
+
+

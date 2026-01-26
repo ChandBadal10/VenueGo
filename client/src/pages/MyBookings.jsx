@@ -1,69 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Footer from "../components/Footer";
-
-// Simple dummy data
-const BOOKINGS = [
-  {
-    id: "BKG-001",
-    sport: "Futsal",
-    venue: "Shantinagar Futsal Arena",
-    date: "2025-12-12",
-    time: "4 pm - 5 pm",
-    location: "Shantinagar, Kathmandu",
-    price: "Rs 1600",
-    status: "Pending",
-  },
-  {
-    id: "BKG-002",
-    sport: "Cricket",
-    venue: "Baneshwor Indoor Nets",
-    date: "2025-02-22",
-    time: "2 pm - 4 pm",
-    location: "Baneshwor, Kathmandu",
-    price: "Rs 2200",
-    status: "Completed",
-  },
-  {
-    id: "BKG-003",
-    sport: "Basketball",
-    venue: "Velocity Hoops Court",
-    date: "2025-01-05",
-    time: "6 pm - 7:30 pm",
-    location: "Ratopul, Kathmandu",
-    price: "Rs 1200",
-    status: "Completed",
-  },
-  {
-    id: "BKG-004",
-    sport: "Table Tennis",
-    venue: "SpinPoint TT Club",
-    date: "2024-12-18",
-    time: "5:30 pm - 6:30 pm",
-    location: "New Baneshwor, Kathmandu",
-    price: "Rs 400",
-    status: "Completed",
-  },
-  {
-    id: "BKG-005",
-    sport: "Futsal",
-    venue: "Velocity Futsal",
-    date: "2024-11-02",
-    time: "7 pm - 8 pm",
-    location: "Tinkune, Kathmandu",
-    price: "Rs 1500",
-    status: "Completed",
-  },
-];
 
 const FILTERS = ["All", "Futsal", "Cricket", "Basketball", "Table Tennis"];
 
 function StatusBadge({ status }) {
   return (
     <span
-      className={`text-xs px-2 py-1 rounded ${
-        status === "Completed"
+      className={`text-xs px-2 py-1 rounded font-medium ${
+        status === "confirmed"
           ? "bg-green-100 text-green-700"
-          : status === "Pending"
+          : status === "cancelled"
           ? "bg-yellow-100 text-yellow-700"
           : "bg-red-100 text-red-700"
       }`}
@@ -73,21 +20,51 @@ function StatusBadge({ status }) {
   );
 }
 
-
- const MyBookings = () => {
+const MyBookings = () => {
+  const [bookings, setBookings] = useState([]);
   const [activeSport, setActiveSport] = useState("All");
+  const [loading, setLoading] = useState(true);
 
-  const filtered = BOOKINGS.filter((e) =>
-    activeSport === "All" ? true : e.sport === activeSport
+  const token = localStorage.getItem("token");
+
+  // Fetch bookings
+  const fetchBookings = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:3000/api/bookings/user",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        setBookings(res.data.bookings);
+      }
+    } catch (error) {
+      console.error("Failed to load bookings", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  //  Filter logic
+  const filteredBookings = bookings.filter((b) =>
+    activeSport === "All" ? true : b.sport === activeSport
   );
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      <div className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
         {/* Header */}
-        <h1 className="text-2xl font-bold text-gray-900">My Past Bookings</h1>
+        <h1 className="text-2xl font-bold text-gray-900">My Bookings</h1>
         <p className="text-sm text-gray-600 mb-4">
-          All your previous sports bookings.
+          View all your past and upcoming bookings
         </p>
 
         {/* Filters */}
@@ -96,7 +73,7 @@ function StatusBadge({ status }) {
             <button
               key={sport}
               onClick={() => setActiveSport(sport)}
-              className={`px-3 py-1 text-sm rounded border ${
+              className={`px-3 py-1 text-sm rounded border transition ${
                 activeSport === sport
                   ? "bg-blue-600 text-white border-blue-600"
                   : "bg-white text-gray-800 hover:bg-gray-100"
@@ -107,51 +84,64 @@ function StatusBadge({ status }) {
           ))}
         </div>
 
-        {/* Booking list */}
-        {filtered.length === 0 ? (
-          <p className="text-center text-gray-500">No bookings found.</p>
-        ) : (
-          <div className="space-y-4">
-            {filtered.map((booking) => (
-              <div
-                key={booking.id}
-                className="bg-white rounded-lg shadow border p-4"
-              >
-                <div className="flex justify-between items-center mb-1">
-                  <h3 className="font-semibold text-gray-900">
-                    {booking.venue}
-                  </h3>
-                  <StatusBadge status={booking.status} />
-                </div>
-
-                <p className="text-sm text-gray-700">
-                  <span className="font-semibold">Sport:</span>{" "}
-                  {booking.sport}
-                </p>
-                <p className="text-sm text-gray-700">
-                  <span className="font-semibold">Date:</span>{" "}
-                  {booking.date}
-                </p>
-                <p className="text-sm text-gray-700">
-                  <span className="font-semibold">Time:</span>{" "}
-                  {booking.time}
-                </p>
-                <p className="text-sm text-gray-700">
-                  <span className="font-semibold">Location:</span>{" "}
-                  {booking.location}
-                </p>
-                <p className="text-sm text-gray-900 mt-1">
-                  <span className="font-semibold">Price:</span>{" "}
-                  {booking.price}
-                </p>
-              </div>
-            ))}
-          </div>
+        {/* Loading */}
+        {loading && (
+          <p className="text-center text-gray-500 mt-10">
+            Loading bookings...
+          </p>
         )}
-      </div>
-    <Footer />
-    </div>
 
+        {/* Empty */}
+        {!loading && filteredBookings.length === 0 && (
+          <p className="text-center text-gray-500 mt-10">
+            No bookings found.
+          </p>
+        )}
+
+        {/* Booking Cards */}
+        <div className="space-y-4">
+          {filteredBookings.map((booking) => (
+            <div
+              key={booking._id}
+              className="bg-white rounded-lg shadow border p-4"
+            >
+              <div className="flex justify-between items-center mb-1">
+                <h3 className="font-semibold text-gray-900">
+                  {booking.venueName}
+                </h3>
+                <StatusBadge status={booking.status} />
+              </div>
+
+              <p className="text-sm text-gray-700">
+                <span className="font-semibold">Sport:</span> {booking.sport}
+              </p>
+
+              <p className="text-sm text-gray-700">
+                <span className="font-semibold">Date:</span> {booking.date}
+              </p>
+
+              <p className="text-sm text-gray-700">
+                <span className="font-semibold">Time:</span>{" "}
+                {booking.startTime} - {booking.endTime}
+              </p>
+
+              <p className="text-sm text-gray-700">
+                <span className="font-semibold">Location:</span>{" "}
+                {booking.location}
+              </p>
+
+              <p className="text-sm text-gray-900 mt-1">
+                <span className="font-semibold">Price:</span> Rs{" "}
+                {booking.price}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Footer />
+    </div>
   );
-}
+};
+
 export default MyBookings;
