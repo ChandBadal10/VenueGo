@@ -9,6 +9,9 @@ import addVenueRouter from "./routes/addVenueRoutes.js";
 
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js"
+import authRoute from "./routes/authRoute.js";
+
+
 // Initialize Express App
 const app = express()
 await connectDB()
@@ -30,6 +33,9 @@ app.use("/api/venue", venueRouter);
 app.use("/api/addvenue", addVenueRouter);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/bookings", bookingRoutes)
+
+
+app.use ("/auth", authRoute)
 
 
 const PORT = process.env.PORT || 3000;
