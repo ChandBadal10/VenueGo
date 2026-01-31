@@ -1,16 +1,17 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAppContext } from '../context/AppContext';
-import { toast } from 'react-toastify';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
+import { toast } from "react-toastify";
+import { FcGoogle } from "react-icons/fc";
 
 export default function Login() {
   const { setShowLogin, axios, setToken, backendUrl } = useAppContext();
   const navigate = useNavigate();
 
-  const [state, setState] = React.useState('login');
-  const [name, setName] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [state, setState] = React.useState("login");
+  const [name, setName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
 
   const onSubmitHandler = async (event) => {
@@ -27,7 +28,8 @@ export default function Login() {
         } else {
           localStorage.setItem("token", data.token);
           localStorage.setItem("role", data.role);
-          axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+          axios.defaults.headers.common["Authorization"] =
+            `Bearer ${data.token}`;
           setToken(data.token);
 
           window.history.pushState(null, "", window.location.href);
@@ -45,7 +47,7 @@ export default function Login() {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
-      console.error('Login error:', error);
+      console.error("Login error:", error);
     }
   };
 
@@ -66,9 +68,14 @@ export default function Login() {
             </svg>
           </div> */}
 
-          <h2 className="text-2xl font-semibold">Welcome to <span className="font-extrabold">VenueGo</span></h2>
+          <h2 className="text-2xl font-semibold">
+            Welcome to <span className="font-extrabold">VenueGo</span>
+          </h2>
           <p className="text-center max-w-xs text-sm/relaxed">
-            Secure, fast and delightful authentication. {state === 'login' ? 'Sign in to continue.' : 'Create an account to get started.'}
+            Secure, fast and delightful authentication.{" "}
+            {state === "login"
+              ? "Sign in to continue."
+              : "Create an account to get started."}
           </p>
 
           <div className="mt-2 flex gap-3 text-[13px] opacity-90">
@@ -83,13 +90,18 @@ export default function Login() {
         </div>
 
         {/* Right: form panel */}
-        <form onSubmit={onSubmitHandler} className="p-8 md:p-10 flex flex-col gap-4">
+        <form
+          onSubmit={onSubmitHandler}
+          className="p-8 md:p-10 flex flex-col gap-4"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-gray-700">
-                {state === 'login' ? 'Sign in' : 'Create account'}
+                {state === "login" ? "Sign in" : "Create account"}
               </h3>
-              <p className="text-xs text-gray-400">Fast, secure access to your dashboard</p>
+              <p className="text-xs text-gray-400">
+                Fast, secure access to your dashboard
+              </p>
             </div>
 
             <button
@@ -101,7 +113,7 @@ export default function Login() {
             </button>
           </div>
 
-          {state === 'register' && (
+          {state === "register" && (
             <label className="relative group">
               <span className="text-xs text-gray-500">Name</span>
               <input
@@ -135,7 +147,7 @@ export default function Login() {
                 onClick={() => setShowPassword((s) => !s)}
                 className="text-xs text-blue-600 hover:underline"
               >
-                {showPassword ? 'Hide' : 'Show'}
+                {showPassword ? "Hide" : "Show"}
               </button>
             </div>
 
@@ -144,7 +156,7 @@ export default function Login() {
               value={password}
               placeholder="••••••••"
               className="mt-1 w-full rounded-lg border border-gray-200 p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               required
             />
           </label>
@@ -153,35 +165,48 @@ export default function Login() {
             <p
               onClick={() => {
                 setShowLogin(false);
-                navigate('/reset-password');
+                navigate("/reset-password");
               }}
               className="text-sm text-blue-600 cursor-pointer"
             >
               Forgot password?
             </p>
-
-
           </div>
 
           <button
             className="mt-2 w-full py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium hover:from-blue-700 hover:to-indigo-700 transition-all"
             type="submit"
           >
-            {state === 'register' ? 'Create Account' : 'Login'}
+            {state === "register" ? "Create Account" : "Login"}
+          </button>
+
+          <button
+            onClick={() => window.open("http://localhost:3000/auth/google", "_self")}
+            type="button"
+            className="w-full py-3 rounded-lg border border-gray-300 flex items-center justify-center gap-3 text-gray-700 font-medium hover:bg-gray-50 transition-all"
+          >
+            <FcGoogle className="text-xl" />
+            Continue with Google
           </button>
 
           <div className="mt-3 text-center text-sm text-gray-500">
-            {state === 'register' ? (
+            {state === "register" ? (
               <>
-                Already have account?{' '}
-                <span onClick={() => setState('login')} className="text-blue-600 cursor-pointer underline">
+                Already have account?{" "}
+                <span
+                  onClick={() => setState("login")}
+                  className="text-blue-600 cursor-pointer underline"
+                >
                   click here
                 </span>
               </>
             ) : (
               <>
-                Create an account?{' '}
-                <span onClick={() => setState('register')} className="text-blue-600 cursor-pointer underline">
+                Create an account?{" "}
+                <span
+                  onClick={() => setState("register")}
+                  className="text-blue-600 cursor-pointer underline"
+                >
                   click here
                 </span>
               </>
@@ -189,7 +214,9 @@ export default function Login() {
           </div>
 
           <div className="mt-4 text-center text-xs text-gray-400">
-            By continuing you agree to our <span className="text-blue-600">Terms</span> and <span className="text-blue-600">Privacy</span>.
+            By continuing you agree to our{" "}
+            <span className="text-blue-600">Terms</span> and{" "}
+            <span className="text-blue-600">Privacy</span>.
           </div>
         </form>
       </div>

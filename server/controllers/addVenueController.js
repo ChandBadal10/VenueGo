@@ -94,6 +94,7 @@ export const getVenueById = async (req, res) => {
   }
 };
 
+
 // Get venue with all its time slots
 export const getVenueWithSlots = async (req, res) => {
   try {

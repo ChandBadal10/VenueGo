@@ -85,7 +85,7 @@ export const getBookedSlots = async (req, res) => {
   }
 };
 
-// get all bookings
+// get all bookings for the venue owner
 
 export const getOwnerBookings = async (req, res) => {
   try {
@@ -116,7 +116,7 @@ export const getOwnerBookings = async (req, res) => {
 };
 
 
-// get user bookings
+// get user bookings for the user
 
 
 
