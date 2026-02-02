@@ -24,6 +24,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageVenuePage from "./pages/admin/ManageVenuePage";
 import AllBookings from "./pages/owner/AllBookings";
 import AddTrainer from "./pages/owner/AddTrainer";
+import AuthSuccess from "./pages/AuthSuccess";
 
 const App = () => {
   // const [showLogin, setShowLogin] = useState(false)
@@ -42,6 +43,7 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/auth-success" element={<AuthSuccess />} />
         <Route path="/venue-details/:id" element={<VenueDetailPage />} />
         <Route path="/venues" element={<Venuese />} />
         <Route path="/venueCard" element={<VenueCard />} />
