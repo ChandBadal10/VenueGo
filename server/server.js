@@ -10,7 +10,8 @@ import addVenueRouter from "./routes/addVenueRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js"
 import authRoute from "./routes/authRoute.js";
-
+import passport from "passport";
+import "./configs/passport.js"
 
 // Initialize Express App
 const app = express()
@@ -36,6 +37,7 @@ app.use("/api/bookings", bookingRoutes)
 
 
 app.use ("/auth", authRoute)
+app.use(passport.initialize());
 
 
 const PORT = process.env.PORT || 3000;
