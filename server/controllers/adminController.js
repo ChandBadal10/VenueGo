@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Venue from "../models/Venue.js";
 import transporter from "../configs/nodeMailer.js";
+import Booking from "../models/Booking.js";
+import AddVenue from "../models/AddVenue.js";
 
 // Generate Admin Token
 const generateToken = (admin) => {
@@ -53,22 +55,7 @@ export const adminLogin = async (req, res) => {
   }
 };
 
-// Admin Dashboard
-export const getAdminDashboard = async (req, res) => {
-  try {
-    return res.json({
-      success: true,
-      message: "Welcome admin",
-      admin: {
-        id: req.admin._id,
-        name: req.admin.name,
-        email: req.admin.email,
-      },
-    });
-  } catch (error) {
-    return res.json({ success: false, message: error.message });
-  }
-};
+
 
 // Get Pending Venues
 export const getPendingVenues = async (req, res) => {
@@ -154,6 +141,96 @@ export const rejectVenue = async (req, res) => {
 
     return res.json({ success: true, message: "Venue rejected successfully" });
   } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+
+
+export const getAdminDashboard = async (req, res) => {
+  try {
+    // -------- USER COUNTS --------
+    const totalUsers = await User.countDocuments({ role: "user" });
+
+    // -------- VENUE OWNERS COUNT (unique owners in AddVenue) --------
+    const ownerIds = await AddVenue.distinct("ownerId");
+    const totalVenueOwners = ownerIds.length;
+
+    // -------- VENUE COUNTS --------
+    const totalVenues = await AddVenue.countDocuments({ isActive: true });
+
+    // -------- BOOKING COUNTS --------
+    const totalBookings = await Booking.countDocuments();
+
+    // -------- TOTAL REVENUE --------
+    const revenueResult = await Booking.aggregate([
+      { $match: { status: "confirmed" } },
+      { $group: { _id: null, total: { $sum: "$price" } } }
+    ]);
+    const totalRevenue = revenueResult[0]?.total || 0;
+
+    // -------- MONTHLY REVENUE --------
+    const monthlyRevenue = await Booking.aggregate([
+      { $match: { status: "confirmed" } },
+      {
+        $group: {
+          _id: { month: { $month: "$createdAt" } },
+          revenue: { $sum: "$price" }
+        }
+      },
+      { $sort: { "_id.month": 1 } }
+    ]);
+
+    const monthNames = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    const revenueData = monthlyRevenue.map(item => ({
+      month: monthNames[item._id.month - 1],
+      revenue: item.revenue
+    }));
+
+    // -------- WEEKLY BOOKING TREND --------
+    const weeklyBookings = await Booking.aggregate([
+      {
+        $group: {
+          _id: { day: { $dayOfWeek: "$createdAt" } },
+          bookings: { $sum: 1 }
+        }
+      },
+      { $sort: { "_id.day": 1 } }
+    ]);
+
+    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    const bookingData = weeklyBookings.map(item => ({
+      day: dayNames[item._id.day - 1],
+      bookings: item.bookings
+    }));
+
+    return res.json({
+      success: true,
+
+      // main stats
+      totalUsers,
+      totalVenueOwners,
+      addVenues: totalVenues,
+      totalBookings,
+      totalRevenue,
+
+      // charts
+      revenueData,
+      bookingData,
+
+      admin: {
+        id: req.admin._id,
+        name: req.admin.name,
+        email: req.admin.email
+      }
+    });
+  } catch (error) {
+    console.log("Dashboard Error:", error.message);
     return res.json({ success: false, message: error.message });
   }
 };
