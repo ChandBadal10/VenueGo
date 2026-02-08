@@ -151,6 +151,7 @@ const RegisterationPage = () => {
               <option value="Swimming">Swimming</option>
               <option value="Tennis">Tennis</option>
               <option value="Badminton">Badminton</option>
+              <option value="Cricket">Cricket</option>
             </select>
           </div>
 
