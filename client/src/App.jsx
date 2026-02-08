@@ -25,6 +25,9 @@ import ManageVenuePage from "./pages/admin/ManageVenuePage";
 import AllBookings from "./pages/owner/AllBookings";
 import AddTrainer from "./pages/owner/AddTrainer";
 import AuthSuccess from "./pages/AuthSuccess";
+import AllVenueBookings from "./pages/admin/AllVenueBookings";
+
+
 
 const App = () => {
   // const [showLogin, setShowLogin] = useState(false)
@@ -73,6 +76,8 @@ const App = () => {
           <Route index element={<AdminDashboard />} />
           <Route path="approve-venue-page" element={<AdminApproveVenues />} />
           <Route path="manage-venues" element={<ManageVenuePage />} />
+          <Route path="all-booking" element={<AllVenueBookings />} />
+
         </Route>
       </Routes>
 

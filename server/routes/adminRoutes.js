@@ -2,7 +2,7 @@ import express from "express";
 import { protect } from "../middleware/auth.js";
 import { adminProtect } from "../middleware/adminAuth.js";
 
-import { adminLogin, getAdminDashboard, getPendingVenues, approveVenue,rejectVenue } from "../controllers/adminController.js";
+import { adminLogin, getAdminDashboard, getPendingVenues, approveVenue,rejectVenue, getAllVenuesAdmin, deleteVenueGroupAdmin, toggleVenueAvailabilityAdmin } from "../controllers/adminController.js";
 
 const adminRouter = express.Router();
 
@@ -27,4 +27,13 @@ adminRouter.post("/venue/approve", protect, adminProtect, approveVenue);
 adminRouter.post("/venue/reject", protect, adminProtect, rejectVenue);
 
 
+// Get all venues
+adminRouter.get("/venues", protect, adminProtect,  getAllVenuesAdmin);
+
+
+// Delete venue (global)
+adminRouter.delete( "/venue/delete-group", protect, adminProtect, deleteVenueGroupAdmin);
+
+// Toggle availability (global)
+adminRouter.patch( "/venue/toggle-availability", protect, adminProtect, toggleVenueAvailabilityAdmin);
 export default adminRouter;
