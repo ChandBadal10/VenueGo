@@ -149,27 +149,27 @@ export const rejectVenue = async (req, res) => {
 
 export const getAdminDashboard = async (req, res) => {
   try {
-    // -------- USER COUNTS --------
+
     const totalUsers = await User.countDocuments({ role: "user" });
 
-    // -------- VENUE OWNERS COUNT (unique owners in AddVenue) --------
+
     const ownerIds = await AddVenue.distinct("ownerId");
     const totalVenueOwners = ownerIds.length;
 
-    // -------- VENUE COUNTS --------
+
     const totalVenues = await AddVenue.countDocuments({ isActive: true });
 
-    // -------- BOOKING COUNTS --------
+
     const totalBookings = await Booking.countDocuments();
 
-    // -------- TOTAL REVENUE --------
+
     const revenueResult = await Booking.aggregate([
       { $match: { status: "confirmed" } },
       { $group: { _id: null, total: { $sum: "$price" } } }
     ]);
     const totalRevenue = revenueResult[0]?.total || 0;
 
-    // -------- MONTHLY REVENUE --------
+
     const monthlyRevenue = await Booking.aggregate([
       { $match: { status: "confirmed" } },
       {
@@ -191,7 +191,7 @@ export const getAdminDashboard = async (req, res) => {
       revenue: item.revenue
     }));
 
-    // -------- WEEKLY BOOKING TREND --------
+    //  WEEKLY BOOKING TREND
     const weeklyBookings = await Booking.aggregate([
       {
         $group: {
@@ -232,5 +232,101 @@ export const getAdminDashboard = async (req, res) => {
   } catch (error) {
     console.log("Dashboard Error:", error.message);
     return res.json({ success: false, message: error.message });
+  }
+};
+
+
+
+
+// manage venue part
+
+export const getAllVenuesAdmin = async (req, res) => {
+  try {
+    const venues = await AddVenue.find()
+      .populate("ownerId", "name email")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      venues
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
+
+
+
+export const deleteVenueGroupAdmin = async (req, res) => {
+  try {
+    const { venueName, location } = req.body;
+
+    if (!venueName || !location) {
+      return res.json({
+        success: false,
+        message: "venueName and location required"
+      });
+    }
+
+    // delete all slots
+    await AddVenue.deleteMany({
+      venueName: new RegExp(`^${venueName}$`, "i"),
+      location: new RegExp(`^${location}$`, "i")
+    });
+
+    // delete main venue
+    await Venue.deleteMany({
+      venueName: new RegExp(`^${venueName}$`, "i"),
+      location: new RegExp(`^${location}$`, "i")
+    });
+
+    res.json({
+      success: true,
+      message: "Venue deleted from platform"
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
+export const toggleVenueAvailabilityAdmin = async (req, res) => {
+  try {
+    const { venueName, location } = req.body;
+
+    if (!venueName || !location) {
+      return res.json({
+        success: false,
+        message: "venueName and location required"
+      });
+    }
+
+    const slot = await AddVenue.findOne({
+      venueName,
+      location
+    });
+
+    if (!slot) {
+      return res.json({
+        success: false,
+        message: "Venue not found"
+      });
+    }
+
+    const newStatus = !slot.isActive;
+
+    await AddVenue.updateMany(
+      { venueName, location },
+      { $set: { isActive: newStatus } }
+    );
+
+    res.json({
+      success: true,
+      status: newStatus ? "Available" : "Unavailable"
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
   }
 };

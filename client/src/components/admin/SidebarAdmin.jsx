@@ -31,7 +31,7 @@ const AdminSidebar = () => {
     { label: "Dashboard", path: "/admin" },
     { label: "Approve Venues", path: "/admin/approve-venue-page" },
     { label: "Manage Venues", path: "/admin/manage-venues" },
-    { label: "All Bookings", path: "/admin/bookings" }
+    { label: "All Bookings", path: "/admin/all-booking" }
   ];
 
 

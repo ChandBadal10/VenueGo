@@ -21,9 +21,7 @@ const AdminDashboard = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (token) {
-      fetchDashboardData();
-    }
+    if (token) fetchDashboardData();
   }, [token]);
 
   const fetchDashboardData = async () => {
@@ -41,7 +39,6 @@ const AdminDashboard = () => {
         return;
       }
 
-      // Stats for cards
       setStats([
         { title: "Total Users", value: data.totalUsers },
         { title: "Total Venue Owners", value: data.totalVenueOwners },
@@ -66,7 +63,7 @@ const AdminDashboard = () => {
   if (!token)
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-lg shadow max-w-md w-full text-center border">
+        <div className="bg-white p-6 sm:p-8 rounded-lg shadow max-w-sm w-full text-center border">
           <p className="text-gray-700 text-lg">
             You must login as admin to view the dashboard.
           </p>
@@ -78,7 +75,7 @@ const AdminDashboard = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 mb-4"></div>
+          <div className="inline-block animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-900 mb-3"></div>
           <p className="text-gray-700">Loading dashboard...</p>
         </div>
       </div>
@@ -87,11 +84,11 @@ const AdminDashboard = () => {
   if (error)
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-lg shadow max-w-md w-full text-center border">
+        <div className="bg-white p-6 sm:p-8 rounded-lg shadow max-w-sm w-full text-center border">
           <p className="text-red-600 mb-4">{error}</p>
           <button
             onClick={fetchDashboardData}
-            className="bg-gray-900 text-white px-6 py-2 rounded hover:bg-gray-800"
+            className="bg-gray-900 text-white px-4 sm:px-6 py-2 rounded hover:bg-gray-800"
           >
             Try Again
           </button>
@@ -100,64 +97,84 @@ const AdminDashboard = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 py-6 px-3 sm:px-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+        <div className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Admin Dashboard
+          </h1>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           {stats.map((item, index) => (
             <div
               key={index}
-              className="bg-white rounded-lg shadow p-6 border hover:shadow-md transition-shadow"
+              className="bg-white rounded-lg shadow p-4 sm:p-6 border hover:shadow-md transition-shadow"
             >
-              <p className="text-sm text-gray-600 mb-2">{item.title}</p>
-              <p className="text-2xl font-bold text-gray-900">{item.value}</p>
+              <p className="text-sm sm:text-base text-gray-600 mb-1">
+                {item.title}
+              </p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">
+                {item.value}
+              </p>
             </div>
           ))}
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Monthly Revenue Chart */}
-          <div className="bg-white rounded-lg shadow p-4 border">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
+          <div className="bg-white rounded-lg shadow p-3 sm:p-4 border">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
               Monthly Revenue
             </h2>
-            <div className="h-52">
+            <div className="h-48 sm:h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="month" tick={{ fill: "#6b7280" }} />
-                  <YAxis tick={{ fill: "#6b7280" }} />
-                  <Tooltip />
-                  <Bar dataKey="revenue" fill="#374151" radius={[4, 4, 0, 0]} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e0f2fe" />
+                  <XAxis dataKey="month" tick={{ fill: "#374151" }} />
+                  <YAxis tick={{ fill: "#374151" }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#e0f2fe",
+                      borderRadius: 6,
+                    }}
+                  />
+                  <Bar
+                    dataKey="revenue"
+                    fill="#3b82f6" // Blue bars
+                    radius={[4, 4, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
 
           {/* Weekly Bookings Chart */}
-          <div className="bg-white rounded-lg shadow p-4 border">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
+          <div className="bg-white rounded-lg shadow p-3 sm:p-4 border">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
               Weekly Bookings
             </h2>
-            <div className="h-52">
+            <div className="h-48 sm:h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={bookingData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="day" tick={{ fill: "#6b7280" }} />
-                  <YAxis tick={{ fill: "#6b7280" }} />
-                  <Tooltip />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e0f2fe" />
+                  <XAxis dataKey="day" tick={{ fill: "#374151" }} />
+                  <YAxis tick={{ fill: "#374151" }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#e0f2fe",
+                      borderRadius: 6,
+                    }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="bookings"
-                    stroke="#374151"
+                    stroke="#3b82f6" // Blue line
                     strokeWidth={2}
-                    dot={{ fill: "#374151", r: 3 }}
+                    dot={{ fill: "#3b82f6", r: 3 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
