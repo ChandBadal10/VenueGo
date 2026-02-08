@@ -7,12 +7,22 @@ import AddVenue from "../models/AddVenue.js";
  */
 export const createBooking = async (req, res) => {
   try {
-    const { venueId, venueName, venueType, price, date, startTime, endTime, location, description } = req.body;
+    const {
+      venueId,
+      venueName,
+      venueType,
+      price,
+      date,
+      startTime,
+      endTime,
+      location,
+      description,
+    } = req.body;
 
     if (!venueId || !date || !startTime || !endTime) {
       return res.json({
         success: false,
-        message: "Missing booking details"
+        message: "Missing booking details",
       });
     }
 
@@ -21,17 +31,22 @@ export const createBooking = async (req, res) => {
     if (!venueSlot || !venueSlot.isActive) {
       return res.json({
         success: false,
-        message: "Venue not available"
+        message: "Venue not available",
       });
     }
 
     // Prevent double booking
-    const alreadyBooked = await Booking.findOne({ venueId, date, startTime, endTime });
+    const alreadyBooked = await Booking.findOne({
+      venueId,
+      date,
+      startTime,
+      endTime,
+    });
 
     if (alreadyBooked) {
       return res.json({
         success: false,
-        message: "Slot already booked"
+        message: "Slot already booked",
       });
     }
 
@@ -46,13 +61,13 @@ export const createBooking = async (req, res) => {
       startTime,
       endTime,
       location,
-      description
+      description,
     });
 
     return res.json({
       success: true,
       message: "Booking confirmed",
-      booking
+      booking,
     });
   } catch (error) {
     return res.json({ success: false, message: error.message });
@@ -73,17 +88,19 @@ export const getBookedSlots = async (req, res) => {
 
     const bookedSlots = await Booking.find({
       venueId,
-      date
+      date,
     }).select("date startTime endTime");
 
     return res.json({
       success: true,
-      bookedSlots
+      bookedSlots,
     });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
 };
+
+
 
 // get all bookings for the venue owner
 
@@ -97,7 +114,7 @@ export const getOwnerBookings = async (req, res) => {
 
     res.json({
       success: true,
-      bookings: bookings.map(b => ({
+      bookings: bookings.map((b) => ({
         _id: b._id,
         venueName: b.venueName,
         date: b.date,
@@ -106,19 +123,16 @@ export const getOwnerBookings = async (req, res) => {
         price: b.price,
         user: {
           name: b.userId?.name,
-          email: b.userId?.email
-        }
-      }))
+          email: b.userId?.email,
+        },
+      })),
     });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
 
-
 // get user bookings for the user
-
-
 
 export const getUserBookings = async (req, res) => {
   try {
@@ -130,57 +144,46 @@ export const getUserBookings = async (req, res) => {
 
     res.json({
       success: true,
-      bookings
+      bookings,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
 
 
 
-// export const cancelBooking = async (req, res) => {
-//   try {
-//     const bookingId = req.params.id;
-//     const userId = req.user._id;
-
-//     const booking = await Booking.findOne({
-//       _id: bookingId,
-//       userId
-//     });
-
-//     if (!booking) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Booking not found"
-//       });
-//     }
-
-//     if (booking.status === "Cancelled") {
-//       return res.json({
-//         success: false,
-//         message: "Booking already cancelled"
-//       });
-//     }
-
-//     booking.status = "Cancelled";
-//     await booking.save();
-
-//     res.json({
-//       success: true,
-//       message: "Booking cancelled successfully"
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
+// get all bookings for the admin
 
 
+export const getAllBookingsAdmin = async (req, res) => {
+  try {
+    // Optional: ensure only admin can access
+    if (req.user.role !== "admin") {
+      return res.json({
+        success: false,
+        message: "Access denied. Admin only",
+      });
+    }
 
+    const bookings = await Booking.find()
+      .populate("userId", "name email")
+      .populate("venueId", "venueName location")
+      .sort({ createdAt: -1 });
 
+    res.json({
+      success: true,
+      total: bookings.length,
+      bookings,
+    });
+
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

@@ -36,4 +36,6 @@ adminRouter.delete( "/venue/delete-group", protect, adminProtect, deleteVenueGro
 
 // Toggle availability (global)
 adminRouter.patch( "/venue/toggle-availability", protect, adminProtect, toggleVenueAvailabilityAdmin);
+
+
 export default adminRouter;
