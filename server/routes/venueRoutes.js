@@ -2,8 +2,8 @@ import express from "express";
 import { protect } from "../middleware/auth.js";
 import { approveVenue, rejectVenue } from "../controllers/adminController.js";
 
-import { upload, registerVenue,  checkVenueStatus } from "../controllers/venueController.js";
-
+import {  registerVenue,  checkVenueStatus } from "../controllers/venueController.js";
+import upload from "../configs/multer.js";
 import { deleteVenueGroup } from "../controllers/venueController.js";
 import { toggleVenueAvailability } from "../controllers/venueController.js";
 

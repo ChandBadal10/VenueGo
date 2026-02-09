@@ -36,6 +36,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/bookings", bookingRoutes)
 
 
+
 app.use ("/auth", authRoute)
 app.use(passport.initialize());
 

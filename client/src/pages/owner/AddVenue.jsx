@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-
-
 const AddVenue = () => {
   const [image, setImage] = useState(null);
   const navigate = useNavigate();
@@ -16,49 +14,83 @@ const AddVenue = () => {
     startTime: "",
     endTime: "",
     location: "",
-    description: ""
+    description: "",
   });
 
   const handleAddVenue = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    toast.error("User not logged in");
-    return;
-  }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("User not logged in");
+      return;
+    }
 
-  const res = await fetch("http://localhost:3000/api/addvenue/create", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(venue)
-  });
+    // Validate required fields
+    if (
+      !venue.venueName ||
+      !venue.venueType ||
+      !venue.price ||
+      !venue.date ||
+      !venue.startTime ||
+      !venue.endTime ||
+      !venue.location ||
+      !venue.description
+    ) {
+      toast.error("Please fill all fields");
+      return;
+    }
 
-  const data = await res.json();
+    if (!image) {
+      toast.error("Please upload an image of the venue");
+      return;
+    }
 
-  if (data.success) {
-    toast.success(data.message || "Venue added successfully");
+    try {
+      const formData = new FormData();
+      formData.append("venueName", venue.venueName);
+      formData.append("venueType", venue.venueType);
+      formData.append("price", venue.price);
+      formData.append("date", venue.date);
+      formData.append("startTime", venue.startTime);
+      formData.append("endTime", venue.endTime);
+      formData.append("location", venue.location);
+      formData.append("description", venue.description);
+      formData.append("image", image);
 
-    // Reset form
-    setVenue({
-      venueName: "",
-      venueType: "",
-      price: "",
-      date: "",
-      startTime: "",
-      endTime: "",
-      location: "",
-      description: ""
-    });
+      const res = await fetch("http://localhost:3000/api/addvenue/create", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
 
-    setImage(null);
-    navigate("/venue-dashboard")
-  } else {
-    toast.error(data.message || "Something went wrong");
-  }
-};
+      const data = await res.json();
 
+      if (data.success) {
+        toast.success(data.message || "Venue added successfully");
+
+        // Reset form
+        setVenue({
+          venueName: "",
+          venueType: "",
+          price: "",
+          date: "",
+          startTime: "",
+          endTime: "",
+          location: "",
+          description: "",
+        });
+        setImage(null);
+
+        navigate("/venue-dashboard");
+      } else {
+        toast.error(data.message || "Something went wrong");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Network error");
+    }
+  };
 
   return (
     <div className="px-4 py-10 md:px-10 flex-1">
@@ -169,7 +201,9 @@ const AddVenue = () => {
               type="time"
               className="w-full mt-1 bg-gray-200 px-4 py-2 rounded-md outline-none"
               value={venue.endTime}
-              onChange={(e) => setVenue({ ...venue, endTime: e.target.value })}
+              onChange={(e) =>
+                setVenue({ ...venue, endTime: e.target.value })
+              }
             />
           </div>
         </div>
