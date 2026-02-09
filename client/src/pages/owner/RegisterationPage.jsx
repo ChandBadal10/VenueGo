@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
-
-const RegisterationPage = () => {
+const RegistrationPage = () => {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     venueName: "",
     category: "",
@@ -16,8 +16,8 @@ const RegisterationPage = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
 
+  // Handle form input change
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData({
@@ -26,74 +26,64 @@ const RegisterationPage = () => {
     });
   };
 
+  // Submit form
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const token = localStorage.getItem("token");
-  if (!token) {
-    setMessage("You must be logged in to register a venue");
-    return;
-  }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("You must be logged in to register a venue");
+      return;
+    }
 
-  const data = new FormData();
-  data.append("venueName", formData.venueName);
-  data.append("category", formData.category);
-  data.append("phone", formData.phone);
-  data.append("email", formData.email);
-  data.append("location", formData.location);
-  data.append("description", formData.description);
-  data.append("image", formData.image);
-
-  try {
-    setLoading(true);
-    const res = await fetch("http://localhost:3000/api/venue/register", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: data,
+    // Prepare FormData
+    const data = new FormData();
+    Object.keys(formData).forEach((key) => {
+      if (formData[key]) data.append(key, formData[key]);
     });
 
-    const result = await res.json();
-    setLoading(false);
-
-    if (result.success) {
-      toast.success("Venue registered successfully! Waiting for admin approval.");
-
-      // Clear form
-      setFormData({
-        venueName: "",
-        category: "",
-        phone: "",
-        email: "",
-        location: "",
-        description: "",
-        image: null,
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:3000/api/venue/register", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: data,
       });
 
-      // Redirect to home page immediately
-      navigate("/");
-    } else {
-      toast.error(result.message || "Something went wrong");
+      const result = await res.json();
+      setLoading(false);
+
+      if (result.success) {
+        toast.success(result.message || "Venue registered successfully!");
+        setFormData({
+          venueName: "",
+          category: "",
+          phone: "",
+          email: "",
+          location: "",
+          description: "",
+          image: null,
+        });
+        navigate("/"); // redirect after registration
+      } else {
+        toast.error(result.message || "Something went wrong");
+      }
+    } catch (err) {
+      setLoading(false);
+      toast.error("Network error");
     }
-  } catch (err) {
-    setLoading(false);
-    toast.error("Network error");
-  }
-};
-
-
-
+  };
 
   return (
-    <div className='minh-screen flex items-center justify-center bg-white p-6'>
-      <div className="min-h-screen flex items-center justify-center bg-white p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-3xl bg-white p-10 rounded-2xl shadow-md border"
       >
         <h2 className="text-3xl font-semibold text-center mb-10 text-blue-600">
-          Register
+          Register Your Venue
         </h2>
 
         {/* Image Upload */}
@@ -119,7 +109,7 @@ const RegisterationPage = () => {
             />
           </label>
           <p className="text-sm text-gray-600 mt-2">
-            Upload a picture of a Venue
+            Upload a picture of your venue
           </p>
         </div>
 
@@ -130,10 +120,11 @@ const RegisterationPage = () => {
             <input
               type="text"
               name="venueName"
-              placeholder="e.g: Velocity Futsal"
+              placeholder="e.g. Velocity Futsal"
               value={formData.venueName}
               onChange={handleChange}
               className="w-full p-3 bg-gray-100 rounded-lg outline-none"
+              required
             />
           </div>
 
@@ -144,6 +135,7 @@ const RegisterationPage = () => {
               value={formData.category}
               onChange={handleChange}
               className="w-full p-3 bg-gray-100 rounded-lg outline-none"
+              required
             >
               <option value="">Select a category</option>
               <option value="Futsal">Futsal</option>
@@ -164,6 +156,7 @@ const RegisterationPage = () => {
               value={formData.phone}
               onChange={handleChange}
               className="w-full p-3 bg-gray-100 rounded-lg outline-none"
+              required
             />
           </div>
 
@@ -172,10 +165,11 @@ const RegisterationPage = () => {
             <input
               type="email"
               name="email"
-              placeholder="email"
+              placeholder="email@example.com"
               value={formData.email}
               onChange={handleChange}
               className="w-full p-3 bg-gray-100 rounded-lg outline-none"
+              required
             />
           </div>
         </div>
@@ -185,10 +179,11 @@ const RegisterationPage = () => {
           <input
             type="text"
             name="location"
-            placeholder="e.g: Shantinagar, Kathmandu"
+            placeholder="e.g. Shantinagar, Kathmandu"
             value={formData.location}
             onChange={handleChange}
             className="w-full p-3 bg-gray-100 rounded-lg outline-none"
+            required
           />
         </div>
 
@@ -196,28 +191,27 @@ const RegisterationPage = () => {
           <label className="text-sm text-gray-600">Description</label>
           <textarea
             name="description"
-            placeholder="e.g: Great futsal."
+            placeholder="Write a short description of your venue"
             value={formData.description}
             onChange={handleChange}
             rows="4"
             className="w-full p-3 bg-gray-100 rounded-lg outline-none"
+            required
           />
         </div>
 
         <button
-          onClick={() => {
-            navigate("/")
-          }}
           type="submit"
-          className="mt-10 w-full py-3 rounded-lg bg-blue-600 text-white text-lg hover:bg-blue-700"
+          disabled={loading}
+          className={`mt-10 w-full py-3 rounded-lg text-white text-lg ${
+            loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+          }`}
         >
-          Submit
+          {loading ? "Submitting..." : "Submit"}
         </button>
       </form>
     </div>
+  );
+};
 
-    </div>
-  )
-}
-
-export default RegisterationPage
+export default RegistrationPage;

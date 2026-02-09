@@ -1,5 +1,7 @@
 import AddVenue from "../models/AddVenue.js";
+import imagekit from "../configs/imagekit.js";
 
+// ------------------ Create Venue with Image ------------------
 export const createVenue = async (req, res) => {
   try {
     const {
@@ -26,6 +28,29 @@ export const createVenue = async (req, res) => {
       return res.json({ success: false, message: "All fields are required" });
     }
 
+    // Image upload
+    let imageUrl = "";
+    if (req.file) {
+      try {
+        const base64File = req.file.buffer.toString("base64");
+        const imageUpload = await imagekit.upload({
+          file: base64File,
+          fileName: `${Date.now()}_${req.file.originalname}`,
+          folder: "/venues",
+        });
+        imageUrl = imageUpload.url;
+        console.log("Image uploaded successfully:", imageUrl);
+      } catch (err) {
+        console.error("ImageKit upload failed:", err);
+        return res.json({
+          success: false,
+          message: "Image upload failed: " + (err.message || "Unknown error"),
+        });
+      }
+    } else {
+      return res.json({ success: false, message: "Venue image is required" });
+    }
+
     const venue = await AddVenue.create({
       ownerId: req.user._id,
       venueName,
@@ -36,7 +61,8 @@ export const createVenue = async (req, res) => {
       endTime,
       location,
       description,
-      isAvailable: true,
+      image: imageUrl, // store uploaded image URL
+      isActive: true,
     });
 
     return res.json({
@@ -45,11 +71,12 @@ export const createVenue = async (req, res) => {
       venue,
     });
   } catch (error) {
-    return res.json({ success: false, message: error.message });
+    console.error("Create Venue Error:", error);
+    return res.json({ success: false, message: error.message || "Server error" });
   }
 };
 
-// Get all venues
+// ------------------ Get All Venues ------------------
 export const getAllVenues = async (req, res) => {
   try {
     const venues = await AddVenue.find().sort({ createdAt: -1 });
@@ -59,34 +86,22 @@ export const getAllVenues = async (req, res) => {
   }
 };
 
-//  Get venues ONLY for logged-in owner
+// ------------------ Get Owner Venues ------------------
 export const getOwnerVenues = async (req, res) => {
   try {
     const ownerId = req.user._id;
-
-    const venues = await AddVenue.find({ ownerId }).sort({
-      createdAt: -1,
-    });
-
-    return res.json({
-      success: true,
-      venues,
-    });
+    const venues = await AddVenue.find({ ownerId }).sort({ createdAt: -1 });
+    return res.json({ success: true, venues });
   } catch (error) {
-    return res.json({
-      success: false,
-      message: error.message,
-    });
+    return res.json({ success: false, message: error.message });
   }
 };
 
-//  Get single venue by ID
+// ------------------ Get Single Venue by ID ------------------
 export const getVenueById = async (req, res) => {
   try {
     const venue = await AddVenue.findById(req.params.id);
-    if (!venue) {
-      return res.json({ success: false, message: "Venue not found" });
-    }
+    if (!venue) return res.json({ success: false, message: "Venue not found" });
 
     return res.json({ success: true, venue });
   } catch (error) {
@@ -94,44 +109,41 @@ export const getVenueById = async (req, res) => {
   }
 };
 
-
-// Get venue with all its time slots
+// ------------------ Get Venue With All Slots ------------------
 export const getVenueWithSlots = async (req, res) => {
   try {
     const { id } = req.params;
 
     // Get the main venue
-    const mainVenue = await Venue.findById(id);
+    const mainVenue = await AddVenue.findById(id);
+    if (!mainVenue) return res.json({ success: false, message: "Venue not found" });
 
-    if (!mainVenue) {
-      return res.json({ success: false, message: "Venue not found" });
-    }
-
-    // Find all venues with the same name and location (all time slots)
-    const allSlots = await Venue.find({
+    // Find all time slots for this venue (by name + location)
+    const allSlots = await AddVenue.find({
       venueName: mainVenue.venueName,
       location: mainVenue.location,
     }).sort({ date: 1, startTime: 1 });
 
     // Group slots by date
     const slotsByDate = {};
-    allSlots.forEach((venue) => {
-      if (!slotsByDate[venue.date]) {
-        slotsByDate[venue.date] = [];
-      }
-      slotsByDate[venue.date].push({
-        _id: venue._id,
-        startTime: venue.startTime,
-        endTime: venue.endTime,
-        date: venue.date,
+    allSlots.forEach((slot) => {
+      if (!slotsByDate[slot.date]) slotsByDate[slot.date] = [];
+      slotsByDate[slot.date].push({
+        _id: slot._id,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        date: slot.date,
+        price: slot.price,
+        isActive: slot.isActive,
+        image: slot.image, // include image for frontend display
       });
     });
 
     return res.json({
       success: true,
       venue: mainVenue,
-      allSlots: allSlots,
-      slotsByDate: slotsByDate,
+      allSlots,
+      slotsByDate,
     });
   } catch (error) {
     return res.json({ success: false, message: error.message });

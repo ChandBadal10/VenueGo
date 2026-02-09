@@ -47,12 +47,17 @@ const addVenueSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+
+    // ImageKit URL for the venue image
+    image: {
+      type: String,
+      default: ""
+    },
+
     isActive: {
       type: Boolean,
       default: true
     },
-
-
   },
   { timestamps: true }
 );
