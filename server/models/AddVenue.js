@@ -48,7 +48,6 @@ const addVenueSchema = new mongoose.Schema(
       required: true
     },
 
-    // ImageKit URL for the venue image
     image: {
       type: String,
       default: ""
@@ -58,6 +57,17 @@ const addVenueSchema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
+
+    // Auto-set based on venue type
+    capacity: {
+      type: Number,
+      default: 1
+    },
+
+    bookedCount: {
+      type: Number,
+      default: 0
+    }
   },
   { timestamps: true }
 );

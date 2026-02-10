@@ -2,8 +2,7 @@ import Booking from "../models/Booking.js";
 import AddVenue from "../models/AddVenue.js";
 
 /**
- * CREATE BOOKING
- * POST /api/bookings/create
+ * CREATE BOOKING (WITH CAPACITY CHECK)
  */
 export const createBooking = async (req, res) => {
   try {
@@ -19,6 +18,11 @@ export const createBooking = async (req, res) => {
       description,
     } = req.body;
 
+    // console.log("=== BOOKING ATTEMPT ===");
+    // console.log("Venue ID:", venueId);
+    // console.log("Date:", date);
+    // console.log("Time:", startTime, "-", endTime);
+
     if (!venueId || !date || !startTime || !endTime) {
       return res.json({
         success: false,
@@ -29,27 +33,55 @@ export const createBooking = async (req, res) => {
     const venueSlot = await AddVenue.findById(venueId);
 
     if (!venueSlot || !venueSlot.isActive) {
+      console.log(" Venue not available");
       return res.json({
         success: false,
         message: "Venue not available",
       });
     }
 
-    // Prevent double booking
-    const alreadyBooked = await Booking.findOne({
+    console.log("Venue capacity:", venueSlot.capacity);
+
+    // Count ACTUAL bookings for this exact slot
+    const bookingCount = await Booking.countDocuments({
       venueId,
       date,
       startTime,
       endTime,
     });
 
-    if (alreadyBooked) {
+    console.log("Current bookings:", bookingCount);
+    console.log("Check:", bookingCount, ">=", venueSlot.capacity, "?");
+
+    // Check capacity
+    if (bookingCount >= venueSlot.capacity) {
+      console.log(" Fully booked");
       return res.json({
         success: false,
-        message: "Slot already booked",
+        message: `Venue is fully booked (${bookingCount}/${venueSlot.capacity})`,
       });
     }
 
+    // Check if THIS USER already booked this slot
+    const userAlreadyBooked = await Booking.findOne({
+      userId: req.user._id,
+      venueId,
+      date,
+      startTime,
+      endTime,
+    });
+
+    if (userAlreadyBooked) {
+      console.log(" User already booked this slot");
+      return res.json({
+        success: false,
+        message: "You have already booked this slot",
+      });
+    }
+
+    console.log(" Creating booking...");
+
+    // Create booking
     const booking = await Booking.create({
       userId: req.user._id,
       ownerId: venueSlot.ownerId,
@@ -64,20 +96,28 @@ export const createBooking = async (req, res) => {
       description,
     });
 
+    // Update booked count
+    await AddVenue.findByIdAndUpdate(venueId, {
+      bookedCount: bookingCount + 1,
+    });
+
+    console.log("Booking created successfully");
+    console.log("New booked count:", bookingCount + 1);
+
     return res.json({
       success: true,
       message: "Booking confirmed",
       booking,
     });
   } catch (error) {
+    console.error("Booking error:", error);
     return res.json({ success: false, message: error.message });
   }
 };
 
-/**
- * GET BOOKED SLOTS
- * GET /api/bookings/slots
- */
+
+//  GET BOOKED SLOTS WITH AVAILABILITY
+
 export const getBookedSlots = async (req, res) => {
   try {
     const { venueId, date } = req.query;
@@ -86,23 +126,35 @@ export const getBookedSlots = async (req, res) => {
       return res.json({ success: false });
     }
 
+    const venue = await AddVenue.findById(venueId);
+
+    if (!venue) {
+      return res.json({ success: false, message: "Venue not found" });
+    }
+
+    // Count actual bookings
+    const bookingCount = await Booking.countDocuments({
+      venueId,
+      date,
+    });
+
     const bookedSlots = await Booking.find({
       venueId,
       date,
-    }).select("date startTime endTime");
+    }).select("date startTime endTime userId");
 
     return res.json({
       success: true,
       bookedSlots,
+      capacity: venue.capacity,
+      bookedCount: bookingCount,
+      availableSlots: venue.capacity - bookingCount,
+      isFull: bookingCount >= venue.capacity,
     });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
 };
-
-
-
-// get all bookings for the venue owner
 
 export const getOwnerBookings = async (req, res) => {
   try {
@@ -132,8 +184,6 @@ export const getOwnerBookings = async (req, res) => {
   }
 };
 
-// get user bookings for the user
-
 export const getUserBookings = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -154,14 +204,8 @@ export const getUserBookings = async (req, res) => {
   }
 };
 
-
-
-// get all bookings for the admin
-
-
 export const getAllBookingsAdmin = async (req, res) => {
   try {
-    // Optional: ensure only admin can access
     if (req.user.role !== "admin") {
       return res.json({
         success: false,
@@ -179,7 +223,6 @@ export const getAllBookingsAdmin = async (req, res) => {
       total: bookings.length,
       bookings,
     });
-
   } catch (error) {
     res.json({
       success: false,
@@ -187,3 +230,42 @@ export const getAllBookingsAdmin = async (req, res) => {
     });
   }
 };
+
+
+
+// export const cancelBooking = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const userId = req.user._id;
+
+//     const booking = await Booking.findById(id);
+
+//     if (!booking) {
+//       return res.json({ success: false, message: "Booking not found" });
+//     }
+
+//     if (booking.userId.toString() !== userId.toString() && req.user.role !== "admin") {
+//       return res.json({ success: false, message: "Unauthorized" });
+//     }
+
+//     const remainingCount = await Booking.countDocuments({
+//       venueId: booking.venueId,
+//       date: booking.date,
+//       startTime: booking.startTime,
+//       endTime: booking.endTime,
+//     }) - 1;
+
+//     await Booking.findByIdAndDelete(id);
+
+//     await AddVenue.findByIdAndUpdate(booking.venueId, {
+//       bookedCount: Math.max(0, remainingCount),
+//     });
+
+//     return res.json({
+//       success: true,
+//       message: "Booking cancelled successfully",
+//     });
+//   } catch (error) {
+//     return res.json({ success: false, message: error.message });
+//   }
+// };

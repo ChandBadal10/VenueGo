@@ -51,6 +51,26 @@ export const createVenue = async (req, res) => {
       return res.json({ success: false, message: "Venue image is required" });
     }
 
+    // AUTO-SET CAPACITY BASED ON VENUE TYPE
+    let capacity = 1; // Default for single-person venues
+
+    const venueTypeLower = venueType.toLowerCase();
+
+    // Group venues that can accommodate multiple people
+    if (
+      venueTypeLower.includes("gym") ||
+      venueTypeLower.includes("swimming") ||
+      venueTypeLower.includes("pool") ||
+      venueTypeLower.includes("fitness") ||
+      venueTypeLower.includes("yoga") ||
+      venueTypeLower.includes("dance")
+
+    ) {
+      capacity = 3; // Set to 30 for group venues
+    }
+
+    console.log(`Venue type: ${venueType}, Auto-set capacity: ${capacity}`);
+
     const venue = await AddVenue.create({
       ownerId: req.user._id,
       venueName,
@@ -61,8 +81,10 @@ export const createVenue = async (req, res) => {
       endTime,
       location,
       description,
-      image: imageUrl, // store uploaded image URL
+      image: imageUrl,
       isActive: true,
+      capacity: capacity,  // AUTO-SET CAPACITY
+      bookedCount: 0,
     });
 
     return res.json({
@@ -114,17 +136,14 @@ export const getVenueWithSlots = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Get the main venue
     const mainVenue = await AddVenue.findById(id);
     if (!mainVenue) return res.json({ success: false, message: "Venue not found" });
 
-    // Find all time slots for this venue (by name + location)
     const allSlots = await AddVenue.find({
       venueName: mainVenue.venueName,
       location: mainVenue.location,
     }).sort({ date: 1, startTime: 1 });
 
-    // Group slots by date
     const slotsByDate = {};
     allSlots.forEach((slot) => {
       if (!slotsByDate[slot.date]) slotsByDate[slot.date] = [];
@@ -135,7 +154,9 @@ export const getVenueWithSlots = async (req, res) => {
         date: slot.date,
         price: slot.price,
         isActive: slot.isActive,
-        image: slot.image, // include image for frontend display
+        image: slot.image,
+        capacity: slot.capacity,
+        bookedCount: slot.bookedCount,
       });
     });
 
