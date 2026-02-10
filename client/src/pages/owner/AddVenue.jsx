@@ -156,6 +156,10 @@ const AddVenue = () => {
               <option value="BasketBall">BasketBall</option>
               <option value="Table Tennis">Table Tennis</option>
               <option value="GYM">GYM</option>
+              <option value="Swimming">Swimming</option>
+              <option value="Yoga">Yoga</option>
+              <option value="Dance">Dance</option>
+              <option value="Swimming">Swimming</option>
             </select>
           </div>
         </div>
