@@ -18,10 +18,7 @@ export const createBooking = async (req, res) => {
       description,
     } = req.body;
 
-    // console.log("=== BOOKING ATTEMPT ===");
-    // console.log("Venue ID:", venueId);
-    // console.log("Date:", date);
-    // console.log("Time:", startTime, "-", endTime);
+
 
     if (!venueId || !date || !startTime || !endTime) {
       return res.json({

@@ -256,7 +256,7 @@ const VenueCard = () => {
       {filteredVenues.length > 6 && (
         <div className="text-center mt-10">
           <button
-            onClick={() => navigate('/all-venues')}
+            onClick={() => navigate('/venues')}
             className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-medium"
           >
             View All {filteredVenues.length} Venues

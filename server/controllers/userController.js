@@ -216,3 +216,19 @@ export const resetPassword = async (req, res) => {
 };
 
 
+// DELETE USER ACCOUNT
+export const deleteAccount = async (req, res) => {
+  try {
+    const userId = req.user._id; // from protect middleware
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    await User.findByIdAndDelete(userId);
+
+    return res.json({ success: true, message: "Account deleted successfully" });
+  } catch (error) {
+    console.log("Delete Account Error:", error.message);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
