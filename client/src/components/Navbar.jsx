@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 import { FaBars, FaTimes, FaUserCircle } from "react-icons/fa";
+import ManageProfile from "./ManageProfile";
 
 const Navbar = () => {
   const { setShowLogin, user, logout, axios } = useAppContext();
@@ -11,7 +12,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false); // New state for modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false); // New state for profile modal
 
   const profileRef = useRef();
 
@@ -90,7 +92,7 @@ const Navbar = () => {
                 return;
               }
               try {
-                const { data } = await axios.get("/venue/status");
+                const { data } = await axios.get("/api/venue/status");
                 if (!data.exists) navigate("/owner");
                 else if (data.status !== "approved") toast.error("Your venue is not approved yet.");
                 else navigate("/venue-dashboard");
@@ -117,10 +119,13 @@ const Navbar = () => {
               {profileOpen && (
                 <div className="absolute right-0 mt-3 w-48 bg-white shadow-lg rounded-lg border z-50">
                   <button
-                    onClick={() => { navigate("/profile"); setProfileOpen(false); }}
+                    onClick={() => {
+                      setShowProfileModal(true);
+                      setProfileOpen(false);
+                    }}
                     className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                   >
-                    My Profile
+                    Manage Profile
                   </button>
 
                   <button
@@ -175,7 +180,15 @@ const Navbar = () => {
 
             {user && (
               <>
-                <Link to="/profile" onClick={() => setMenuOpen(false)}>My Profile</Link>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setShowProfileModal(true);
+                  }}
+                  className="text-left"
+                >
+                  Manage Profile
+                </button>
 
                 <button
                   onClick={() => { setMenuOpen(false); setShowDeleteModal(true); }}
@@ -225,6 +238,14 @@ const Navbar = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Manage Profile Modal */}
+      {showProfileModal && (
+        <ManageProfile
+          isOpen={showProfileModal}
+          onClose={() => setShowProfileModal(false)}
+        />
       )}
 
     </header>
