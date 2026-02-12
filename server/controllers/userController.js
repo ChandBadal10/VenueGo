@@ -232,3 +232,84 @@ export const deleteAccount = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
+
+// UPDATE PROFILE AND CHANGE PASSWORD
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { name, email, oldPassword, newPassword } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+
+    //    UPDATE NAME & EMAIL
+
+    if (name && email) {
+      // Check if email already exists
+      const existingUser = await User.findOne({ email });
+
+      if (
+        existingUser &&
+        existingUser._id.toString() !== userId.toString()
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Email already in use",
+        });
+      }
+
+      user.name = name;
+      user.email = email;
+    }
+
+
+    //    CHANGE PASSWORD
+
+
+    if (oldPassword && newPassword) {
+
+      // Check old password
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+      if (!isMatch) {
+        return res.status(400).json({
+          success: false,
+          message: "Old password is incorrect",
+        });
+      }
+
+      // Hash new password
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(newPassword, salt);
+    }
+
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+
+  } catch (error) {
+    console.log("Update Profile Error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

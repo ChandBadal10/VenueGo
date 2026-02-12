@@ -1,5 +1,5 @@
 import express from "express"
-import { getUserData, loginUser, registerUser, resetPassword, sendResetOtp, deleteAccount } from "../controllers/userController.js";
+import { getUserData, loginUser, registerUser, resetPassword, sendResetOtp, deleteAccount, updateProfile } from "../controllers/userController.js";
 import { protect } from "../middleware/auth.js";
 
 const userRouter = express.Router();
@@ -13,4 +13,7 @@ userRouter.post("/send-reset-otp", sendResetOtp);
 userRouter.post("/reset-password", resetPassword);
 
 userRouter.delete("/delete-account", protect, deleteAccount);
+
+userRouter.put("/update-profile", protect, updateProfile);
+
 export default userRouter;
