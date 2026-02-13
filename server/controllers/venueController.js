@@ -105,3 +105,6 @@ export const toggleVenueAvailability = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+
+
