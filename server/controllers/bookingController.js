@@ -230,39 +230,3 @@ export const getAllBookingsAdmin = async (req, res) => {
 
 
 
-// export const cancelBooking = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const userId = req.user._id;
-
-//     const booking = await Booking.findById(id);
-
-//     if (!booking) {
-//       return res.json({ success: false, message: "Booking not found" });
-//     }
-
-//     if (booking.userId.toString() !== userId.toString() && req.user.role !== "admin") {
-//       return res.json({ success: false, message: "Unauthorized" });
-//     }
-
-//     const remainingCount = await Booking.countDocuments({
-//       venueId: booking.venueId,
-//       date: booking.date,
-//       startTime: booking.startTime,
-//       endTime: booking.endTime,
-//     }) - 1;
-
-//     await Booking.findByIdAndDelete(id);
-
-//     await AddVenue.findByIdAndUpdate(booking.venueId, {
-//       bookedCount: Math.max(0, remainingCount),
-//     });
-
-//     return res.json({
-//       success: true,
-//       message: "Booking cancelled successfully",
-//     });
-//   } catch (error) {
-//     return res.json({ success: false, message: error.message });
-//   }
-// };

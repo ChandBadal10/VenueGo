@@ -24,4 +24,7 @@ venueRouter.get("/status", protect, checkVenueStatus);
 
 venueRouter.delete("/delete-group", protect, deleteVenueGroup);
 venueRouter.patch("/toggle-availability", protect, toggleVenueAvailability);
+
+
+
 export default venueRouter;
