@@ -1,27 +1,30 @@
 import Trainer from "../models/Trainer.js";
-import Venue from "../models/Venue.js";
+import imagekit from "../configs/imagekit.js"; // ImageKit config
 
 // CREATE TRAINER (OWNER ONLY)
 export const createTrainer = async (req, res) => {
   try {
     const ownerId = req.user.id;
+    const { name, email, phone, experience, specialization, bio } = req.body;
 
-    const { name, email, phone, experience, specialization, bio, venueId } =
-      req.body;
-
-    if (!name || !email || !phone || !experience || !specialization || !venueId) {
-      return res.json({ success: false, message: "Fill all required fields" });
+    // Validation
+    if (!name || !email || !phone || !experience || !specialization) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Fill all required fields" });
     }
 
-    // Check venue belongs to owner
-    const venue = await Venue.findOne({ _id: venueId, owner: ownerId });
-    if (!venue) {
-      return res.json({
-        success: false,
-        message: "You can only add trainer to your own venue",
+    // Upload image if provided
+    let imageUrl = "";
+    if (req.file) {
+      const result = await imagekit.upload({
+        file: req.file.buffer, // multer memory storage
+        fileName: `trainer-${Date.now()}`, // unique filename
       });
+      imageUrl = result.url;
     }
 
+    // Create trainer
     const trainer = await Trainer.create({
       name,
       email,
@@ -29,7 +32,7 @@ export const createTrainer = async (req, res) => {
       experience,
       specialization,
       bio,
-      venue: venueId,
+      image: imageUrl,
       owner: ownerId,
     });
 
@@ -39,78 +42,84 @@ export const createTrainer = async (req, res) => {
       trainer,
     });
   } catch (error) {
-    console.log("Create Trainer Error:", error);
-    return res.json({ success: false, message: error.message });
+    console.error("Create Trainer Error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: error.message });
   }
 };
 
-// GET ALL TRAINERS (USER SIDE)
+// GET ALL TRAINERS (User dashboard)
 export const getAllTrainers = async (req, res) => {
   try {
-    const trainers = await Trainer.find()
-      .populate("venue", "name location")
-      .sort({ createdAt: -1 });
-
+    const trainers = await Trainer.find().sort({ createdAt: -1 });
     return res.json({ success: true, trainers });
   } catch (error) {
-    return res.json({ success: false, message: error.message });
+    console.error("Get All Trainers Error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: error.message });
   }
 };
 
-// GET OWNER TRAINERS
+// GET OWNER TRAINERS (Owner dashboard)
 export const getOwnerTrainers = async (req, res) => {
   try {
     const ownerId = req.user.id;
-
-    const trainers = await Trainer.find({ owner: ownerId }).populate(
-      "venue",
-      "name"
-    );
-
+    const trainers = await Trainer.find({ owner: ownerId }).sort({
+      createdAt: -1,
+    });
     return res.json({ success: true, trainers });
   } catch (error) {
-    return res.json({ success: false, message: error.message });
+    console.error("Get Owner Trainers Error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: error.message });
   }
 };
 
 // GET SINGLE TRAINER
 export const getTrainerById = async (req, res) => {
   try {
-    const trainer = await Trainer.findById(req.params.id).populate(
-      "venue",
-      "name location"
-    );
-
-    if (!trainer) {
-      return res.json({ success: false, message: "Trainer not found" });
-    }
+    const trainer = await Trainer.findById(req.params.id);
+    if (!trainer)
+      return res
+        .status(404)
+        .json({ success: false, message: "Trainer not found" });
 
     return res.json({ success: true, trainer });
   } catch (error) {
-    return res.json({ success: false, message: error.message });
+    console.error("Get Trainer By ID Error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: error.message });
   }
 };
 
-// DELETE TRAINER
+// DELETE TRAINER (Owner only)
 export const deleteTrainer = async (req, res) => {
   try {
-    const trainerId = req.params.id;
     const ownerId = req.user.id;
+    const trainerId = req.params.id;
 
     const trainer = await Trainer.findOneAndDelete({
       _id: trainerId,
       owner: ownerId,
     });
 
-    if (!trainer) {
-      return res.json({ success: false, message: "Trainer not found" });
-    }
+    if (!trainer)
+      return res
+        .status(404)
+        .json({ success: false, message: "Trainer not found" });
 
     return res.json({
       success: true,
       message: "Trainer deleted successfully",
     });
   } catch (error) {
-    return res.json({ success: false, message: error.message });
+    console.error("Delete Trainer Error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: error.message });
   }
 };

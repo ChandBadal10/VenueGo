@@ -66,7 +66,7 @@ export const createVenue = async (req, res) => {
       venueTypeLower.includes("dance")
 
     ) {
-      capacity = 3; // Set to 30 for group venues
+      capacity = 20; // Set to 20 for group venues
     }
 
     console.log(`Venue type: ${venueType}, Auto-set capacity: ${capacity}`);

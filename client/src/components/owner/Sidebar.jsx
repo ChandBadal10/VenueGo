@@ -27,6 +27,7 @@ const Sidebar = () => {
     { label: "Manage Venues", path: "/venue-dashboard/manage-venue" },
     { label: "Add Trainer", path: "/venue-dashboard/add-trainer" },
     { label: "All Bookings", path: "/venue-dashboard/all-bookings" },
+    { label: "Manage Trainer", path: "/venue-dashboard/manage-trainer" },
   ];
 
   return (
