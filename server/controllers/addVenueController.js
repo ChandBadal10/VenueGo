@@ -51,12 +51,12 @@ export const createVenue = async (req, res) => {
       return res.json({ success: false, message: "Venue image is required" });
     }
 
-    // AUTO-SET CAPACITY BASED ON VENUE TYPE
-    let capacity = 1; // Default for single-person venues
+    // AUTO-SET CAPACITY & USER BOOKING LIMIT BASED ON VENUE TYPE
+    let capacity = 1;
+    let maxBookingsPerUser = 0; // 0 = unlimited
 
     const venueTypeLower = venueType.toLowerCase();
 
-    // Group venues that can accommodate multiple people
     if (
       venueTypeLower.includes("gym") ||
       venueTypeLower.includes("swimming") ||
@@ -64,12 +64,12 @@ export const createVenue = async (req, res) => {
       venueTypeLower.includes("fitness") ||
       venueTypeLower.includes("yoga") ||
       venueTypeLower.includes("dance")
-
     ) {
-      capacity = 20; // Set to 20 for group venues
+      capacity = 20;
+      maxBookingsPerUser = 5; //  LIMIT ADDED HERE
     }
 
-    console.log(`Venue type: ${venueType}, Auto-set capacity: ${capacity}`);
+    console.log(`Venue type: ${venueType}, Capacity: ${capacity}, Max/User: ${maxBookingsPerUser}`);
 
     const venue = await AddVenue.create({
       ownerId: req.user._id,
@@ -83,8 +83,9 @@ export const createVenue = async (req, res) => {
       description,
       image: imageUrl,
       isActive: true,
-      capacity: capacity,  // AUTO-SET CAPACITY
+      capacity: capacity,
       bookedCount: 0,
+      maxBookingsPerUser, //  NEW FIELD
     });
 
     return res.json({
@@ -157,6 +158,7 @@ export const getVenueWithSlots = async (req, res) => {
         image: slot.image,
         capacity: slot.capacity,
         bookedCount: slot.bookedCount,
+        maxBookingsPerUser: slot.maxBookingsPerUser, // ✅ included
       });
     });
 

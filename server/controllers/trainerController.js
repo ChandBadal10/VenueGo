@@ -1,5 +1,5 @@
 import Trainer from "../models/Trainer.js";
-import imagekit from "../configs/imagekit.js"; // ImageKit config
+import imagekit from "../configs/imagekit.js";
 
 // CREATE TRAINER (OWNER ONLY)
 export const createTrainer = async (req, res) => {
