@@ -1,5 +1,6 @@
 import express from "express";
 import { protect } from "../middleware/auth.js";
+import upload from "../configs/multer.js";
 import {
   createTrainer,
   getOwnerTrainers,
@@ -8,21 +9,21 @@ import {
   deleteTrainer,
 } from "../controllers/trainerController.js";
 
-const trainerRouter = express.Router();
+const router = express.Router();
 
-// OWNER CREATE
-trainerRouter.post("/create", protect, createTrainer);
+// OWNER CREATE TRAINER WITH IMAGE
+router.post("/create", protect, upload.single("image"), createTrainer);
 
 // OWNER VIEW HIS TRAINERS
-trainerRouter.get("/owner", protect, getOwnerTrainers);
+router.get("/owner", protect, getOwnerTrainers);
 
-// USERS VIEW ALL
-trainerRouter.get("/all", getAllTrainers);
+// USERS VIEW ALL TRAINERS
+router.get("/all", getAllTrainers);
 
-// GET SINGLE
-trainerRouter.get("/:id", getTrainerById);
+// GET SINGLE TRAINER
+router.get("/:id", getTrainerById);
 
-// DELETE
-trainerRouter.delete("/:id", protect, deleteTrainer);
+// DELETE TRAINER
+router.delete("/:id", protect, deleteTrainer);
 
-export default trainerRouter;
+export default router;

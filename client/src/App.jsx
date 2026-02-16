@@ -26,6 +26,7 @@ import AllBookings from "./pages/owner/AllBookings";
 import AddTrainer from "./pages/owner/AddTrainer";
 import AuthSuccess from "./pages/AuthSuccess";
 import AllVenueBookings from "./pages/admin/AllVenueBookings";
+import ManageTrainer from "./pages/owner/ManageTrainer";
 
 
 
@@ -70,6 +71,7 @@ const App = () => {
           <Route path="manage-venue" element={<ManageVenue />} />
           <Route path="add-trainer" element={<AddTrainer />} />
           <Route path="all-bookings" element={<AllBookings />} />
+          <Route path="manage-trainer" element={<ManageTrainer />} />
         </Route>
 
         {/* admin  */}
