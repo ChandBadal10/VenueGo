@@ -67,7 +67,12 @@ const addVenueSchema = new mongoose.Schema(
     bookedCount: {
       type: Number,
       default: 0
-    }
+    },
+
+    maxBookingsPerUser: {
+  type: Number,
+  default: 0,
+},
   },
   { timestamps: true }
 );

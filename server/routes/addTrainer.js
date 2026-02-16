@@ -9,21 +9,21 @@ import {
   deleteTrainer,
 } from "../controllers/trainerController.js";
 
-const router = express.Router();
+const addTrainerRouter = express.Router();
 
 // OWNER CREATE TRAINER WITH IMAGE
-router.post("/create", protect, upload.single("image"), createTrainer);
+addTrainerRouter.post("/create", protect, upload.single("image"), createTrainer);
 
 // OWNER VIEW HIS TRAINERS
-router.get("/owner", protect, getOwnerTrainers);
+addTrainerRouter.get("/owner", protect, getOwnerTrainers);
 
 // USERS VIEW ALL TRAINERS
-router.get("/all", getAllTrainers);
+addTrainerRouter.get("/all", getAllTrainers);
 
 // GET SINGLE TRAINER
-router.get("/:id", getTrainerById);
+addTrainerRouter.get("/:id", getTrainerById);
 
 // DELETE TRAINER
-router.delete("/:id", protect, deleteTrainer);
+addTrainerRouter.delete("/:id", protect, deleteTrainer);
 
-export default router;
+export default addTrainerRouter;
