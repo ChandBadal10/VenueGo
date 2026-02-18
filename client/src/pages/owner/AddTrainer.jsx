@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { User, Mail, Phone, Award, Target, Upload, X } from "lucide-react";
+import { User, Mail, Phone, Award, Target, Upload, X, Calendar, Clock } from "lucide-react";
 
 const AddTrainer = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +11,9 @@ const AddTrainer = () => {
     experience: "",
     specialization: "",
     bio: "",
+    venueName: "",
+    startTime: "",
+    endTime: "",
     image: null,
   });
 
@@ -44,9 +47,9 @@ const AddTrainer = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, phone, experience, specialization } = formData;
+    const { name, email, phone, experience, specialization, venueName, startTime, endTime } = formData;
 
-    if (!name || !email || !phone || !experience || !specialization) {
+    if (!name || !email || !phone || !experience || !specialization || !venueName || !startTime || !endTime) {
       toast.error("Please fill all required fields");
       return;
     }
@@ -75,6 +78,9 @@ const AddTrainer = () => {
           experience: "",
           specialization: "",
           bio: "",
+          venueName: "",
+          startTime: "",
+          endTime: "",
           image: null,
         });
         setImagePreview(null);
@@ -92,7 +98,6 @@ const AddTrainer = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
       <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg p-6">
-        {/* Header */}
         <div className="mb-6 text-center">
           <h2 className="text-2xl font-bold text-gray-800">Add New Trainer</h2>
         </div>
@@ -131,13 +136,11 @@ const AddTrainer = () => {
               )}
             </div>
 
-            {/* Middle & Right Columns - Form Fields */}
+            {/* Right Columns - Form Fields */}
             <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -153,9 +156,7 @@ const AddTrainer = () => {
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -171,9 +172,7 @@ const AddTrainer = () => {
 
               {/* Phone */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -189,9 +188,7 @@ const AddTrainer = () => {
 
               {/* Experience */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Experience <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Experience *</label>
                 <div className="relative">
                   <Award className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -207,9 +204,7 @@ const AddTrainer = () => {
 
               {/* Specialization */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Specialization <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Specialization *</label>
                 <div className="relative">
                   <Target className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -223,11 +218,55 @@ const AddTrainer = () => {
                 </div>
               </div>
 
-              {/* Bio */}
+              {/* Venue Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Bio
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Venue Name *</label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    name="venueName"
+                    placeholder="Venue name"
+                    value={formData.venueName}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Start Time */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Start Time *</label>
+                <div className="relative">
+                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="time"
+                    name="startTime"
+                    value={formData.startTime}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* End Time */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">End Time *</label>
+                <div className="relative">
+                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="time"
+                    name="endTime"
+                    value={formData.endTime}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Bio */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
                 <textarea
                   name="bio"
                   placeholder="Brief bio..."
