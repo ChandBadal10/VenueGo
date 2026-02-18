@@ -5,47 +5,76 @@ import imagekit from "../configs/imagekit.js";
 export const createTrainer = async (req, res) => {
   try {
     const ownerId = req.user.id;
-    const { name, email, phone, experience, specialization, bio } = req.body;
 
-    // Validation
-    if (!name || !email || !phone || !experience || !specialization) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Fill all required fields" });
-    }
-
-    // Upload image if provided
-    let imageUrl = "";
-    if (req.file) {
-      const result = await imagekit.upload({
-        file: req.file.buffer, // multer memory storage
-        fileName: `trainer-${Date.now()}`, // unique filename
-      });
-      imageUrl = result.url;
-    }
-
-    // Create trainer
-    const trainer = await Trainer.create({
+    const {
       name,
       email,
       phone,
       experience,
       specialization,
       bio,
-      image: imageUrl,
-      owner: ownerId,
-    });
+      startTime,
+      endTime,
+      venueName
+    } = req.body;
 
-    return res.json({
+if (
+  !name ||
+  !email ||
+  !phone ||
+  !experience ||
+  !specialization ||
+  !startTime ||
+  !endTime ||
+  !venueName // <--- add this
+) {
+  return res
+    .status(400)
+    .json({ success: false, message: "Fill all required fields" });
+}
+
+
+    // Validate time logic
+    if (startTime >= endTime) {
+      return res.json({
+        success: false,
+        message: "Start time must be before end time",
+      });
+    }
+
+    let imageUrl = "";
+    if (req.file && req.file.buffer) {
+      // Upload to ImageKit
+      const result = await imagekit.upload({
+        file: req.file.buffer,
+        fileName: `trainer-${Date.now()}`,
+      });
+      imageUrl = result.url; // This is the full URL
+    }
+
+const trainer = await Trainer.create({
+  name,
+  email,
+  phone,
+  experience,
+  specialization,
+  bio,
+  image: imageUrl,
+  startTime,
+  endTime,
+  venueName,  // <--- Add this
+  owner: ownerId,
+});
+
+
+    res.json({
       success: true,
       message: "Trainer added successfully",
       trainer,
     });
   } catch (error) {
-    console.error("Create Trainer Error:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: error.message });
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

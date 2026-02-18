@@ -1,7 +1,7 @@
 import AddVenue from "../models/AddVenue.js";
 import imagekit from "../configs/imagekit.js";
 
-// ------------------ Create Venue with Image ------------------
+// Create Venue
 export const createVenue = async (req, res) => {
   try {
     const {
@@ -69,7 +69,9 @@ export const createVenue = async (req, res) => {
       maxBookingsPerUser = 5; //  LIMIT ADDED HERE
     }
 
-    console.log(`Venue type: ${venueType}, Capacity: ${capacity}, Max/User: ${maxBookingsPerUser}`);
+    console.log(
+      `Venue type: ${venueType}, Capacity: ${capacity}, Max/User: ${maxBookingsPerUser}`,
+    );
 
     const venue = await AddVenue.create({
       ownerId: req.user._id,
@@ -85,7 +87,7 @@ export const createVenue = async (req, res) => {
       isActive: true,
       capacity: capacity,
       bookedCount: 0,
-      maxBookingsPerUser, //  NEW FIELD
+      maxBookingsPerUser,
     });
 
     return res.json({
@@ -95,11 +97,14 @@ export const createVenue = async (req, res) => {
     });
   } catch (error) {
     console.error("Create Venue Error:", error);
-    return res.json({ success: false, message: error.message || "Server error" });
+    return res.json({
+      success: false,
+      message: error.message || "Server error",
+    });
   }
 };
 
-// ------------------ Get All Venues ------------------
+// Get All Venues for user
 export const getAllVenues = async (req, res) => {
   try {
     const venues = await AddVenue.find().sort({ createdAt: -1 });
@@ -109,7 +114,7 @@ export const getAllVenues = async (req, res) => {
   }
 };
 
-// ------------------ Get Owner Venues ------------------
+// Get Owner Venues
 export const getOwnerVenues = async (req, res) => {
   try {
     const ownerId = req.user._id;
@@ -120,7 +125,7 @@ export const getOwnerVenues = async (req, res) => {
   }
 };
 
-// ------------------ Get Single Venue by ID ------------------
+// Get Single Venue by ID
 export const getVenueById = async (req, res) => {
   try {
     const venue = await AddVenue.findById(req.params.id);
@@ -132,13 +137,14 @@ export const getVenueById = async (req, res) => {
   }
 };
 
-// ------------------ Get Venue With All Slots ------------------
+// Get Venue With All Slots
 export const getVenueWithSlots = async (req, res) => {
   try {
     const { id } = req.params;
 
     const mainVenue = await AddVenue.findById(id);
-    if (!mainVenue) return res.json({ success: false, message: "Venue not found" });
+    if (!mainVenue)
+      return res.json({ success: false, message: "Venue not found" });
 
     const allSlots = await AddVenue.find({
       venueName: mainVenue.venueName,
@@ -158,7 +164,7 @@ export const getVenueWithSlots = async (req, res) => {
         image: slot.image,
         capacity: slot.capacity,
         bookedCount: slot.bookedCount,
-        maxBookingsPerUser: slot.maxBookingsPerUser, // ✅ included
+        maxBookingsPerUser: slot.maxBookingsPerUser,
       });
     });
 

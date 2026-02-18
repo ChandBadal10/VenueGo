@@ -18,7 +18,7 @@ export const registerVenue = async (req, res) => {
       return res.json({ success: false, message: "Venue Image is required" });
     }
 
-    // Upload image to ImageKit - FIXED VERSION
+    // Upload image to ImageKit
     let imageUpload;
     try {
       // Convert buffer to base64
@@ -58,7 +58,7 @@ export const registerVenue = async (req, res) => {
   }
 };
 
-// ------------------ Check Venue Status ------------------
+//Check Venue Status
 export const checkVenueStatus = async (req, res) => {
   try {
     const venue = await Venue.findOne({ ownerId: req.user._id });
@@ -70,7 +70,7 @@ export const checkVenueStatus = async (req, res) => {
   }
 };
 
-// ------------------ Delete Venue ------------------
+// Delete Venue
 export const deleteVenueGroup = async (req, res) => {
   try {
     const { venueName, location } = req.body;
@@ -85,7 +85,7 @@ export const deleteVenueGroup = async (req, res) => {
   }
 };
 
-// ------------------ Toggle Availability ------------------
+//  Toggle Availability
 export const toggleVenueAvailability = async (req, res) => {
   try {
     const { venueName, location } = req.body;

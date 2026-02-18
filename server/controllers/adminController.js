@@ -151,18 +151,10 @@ export const getAdminDashboard = async (req, res) => {
   try {
 
     const totalUsers = await User.countDocuments({ role: "user" });
-
-
     const ownerIds = await AddVenue.distinct("ownerId");
     const totalVenueOwners = ownerIds.length;
-
-
     const totalVenues = await AddVenue.countDocuments({ isActive: true });
-
-
     const totalBookings = await Booking.countDocuments();
-
-
     const revenueResult = await Booking.aggregate([
       { $match: { status: "confirmed" } },
       { $group: { _id: null, total: { $sum: "$price" } } }
