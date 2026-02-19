@@ -1,13 +1,7 @@
 import express from "express";
 import { protect } from "../middleware/auth.js";
 import upload from "../configs/multer.js";
-import {
-  createTrainer,
-  getOwnerTrainers,
-  getAllTrainers,
-  getTrainerById,
-  deleteTrainer,
-} from "../controllers/trainerController.js";
+import { createTrainer, getOwnerTrainers, getAllTrainers, getTrainerById, deleteTrainer } from "../controllers/trainerController.js";
 
 const addTrainerRouter = express.Router();
 

@@ -27,6 +27,8 @@ import AddTrainer from "./pages/owner/AddTrainer";
 import AuthSuccess from "./pages/AuthSuccess";
 import AllVenueBookings from "./pages/admin/AllVenueBookings";
 import ManageTrainer from "./pages/owner/ManageTrainer";
+import TrainerDetails from "./pages/TrainerDetails";
+import TrainerBookings from "./pages/owner/AlBookingsTrainer";
 
 
 
@@ -54,6 +56,7 @@ const App = () => {
         <Route path="/venueCard" element={<VenueCard />} />
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="/trainer" element={<Trainer />} />
+        <Route path="/trainer-details/:id" element={<TrainerDetails />} />
         <Route path="/reset-password" element={<ReserPassword />} />
 
         {/* owner registration */}
@@ -71,6 +74,7 @@ const App = () => {
           <Route path="manage-venue" element={<ManageVenue />} />
           <Route path="add-trainer" element={<AddTrainer />} />
           <Route path="all-bookings" element={<AllBookings />} />
+          <Route path="trainer-bookings" element={<TrainerBookings />} />
           <Route path="manage-trainer" element={<ManageTrainer />} />
         </Route>
 
