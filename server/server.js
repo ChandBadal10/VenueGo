@@ -14,6 +14,7 @@ import authRoute from "./routes/authRoute.js";
 import passport from "passport";
 import "./configs/passport.js"
 import trainerRouter from "./routes/addTrainer.js";
+import trainerBookingRouter from "./routes/trainerBookingRoutes.js";
 
 
 
@@ -39,6 +40,7 @@ app.use("/api/addvenue", addVenueRouter);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/trainers", trainerRouter);
+app.use("/api/trainer-bookings", trainerBookingRouter)
 
 
 

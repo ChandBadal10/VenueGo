@@ -24,10 +24,11 @@ const Sidebar = () => {
   const navItems = [
     { label: "Dashboard", path: "/venue-dashboard" },
     { label: "Add Venue", path: "/venue-dashboard/add-venue" },
-    { label: "Manage Venues", path: "/venue-dashboard/manage-venue" },
     { label: "Add Trainer", path: "/venue-dashboard/add-trainer" },
-    { label: "All Bookings", path: "/venue-dashboard/all-bookings" },
+    { label: "Manage Venues", path: "/venue-dashboard/manage-venue" },
     { label: "Manage Trainer", path: "/venue-dashboard/manage-trainer" },
+    { label: "All Booked Venues", path: "/venue-dashboard/all-bookings" },
+    { label: "All Booked Trainers", path: "/venue-dashboard/trainer-bookings" },
   ];
 
   return (

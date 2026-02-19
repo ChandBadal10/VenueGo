@@ -58,7 +58,7 @@ const addVenueSchema = new mongoose.Schema(
       default: true
     },
 
-    // Auto-set based on venue type
+
     capacity: {
       type: Number,
       default: 1
