@@ -15,12 +15,13 @@ import passport from "passport";
 import "./configs/passport.js"
 import trainerRouter from "./routes/addTrainer.js";
 import trainerBookingRouter from "./routes/trainerBookingRoutes.js";
-
+import { startReminderScheduler } from "./configs/reminderScheduler.js";
 
 
 // Initialize Express App
 const app = express()
-await connectDB()
+await connectDB();
+
 
 const allowedOrigins = ["http://localhost:5173"]
 
@@ -51,4 +52,7 @@ app.use(passport.initialize());
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, ()=> console.log(`Server running on port ${PORT}`))
+app.listen(PORT, ()=> {
+    console.log(`Server running on port ${PORT}`);
+    startReminderScheduler()
+})
