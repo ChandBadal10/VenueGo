@@ -4,6 +4,7 @@ import VenueCard from '../components/VenueCard'
 import Footer from '../components/Footer'
 import Testimonial from '../components/Testimonial'
 import Newsletter from '../components/Newsletter'
+import TrainerCard from '../components/TrainerCard'
 
 
 const Home = () => {
@@ -11,9 +12,11 @@ const Home = () => {
     <div>
       <Hero />
       <VenueCard />
+      <TrainerCard />
       <Testimonial />
       <Newsletter />
       <Footer />
+
 
 
     </div>
