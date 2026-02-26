@@ -88,15 +88,15 @@ export const createBooking = async (req, res) => {
 
     // Debug logs — remove in production
     const nowUTC = new Date();
-    // console.log("Local input:         ", date, startTime, "(Nepal time)");
-    // console.log("startDateTime (UTC): ", startDateTime.toISOString());
-    // console.log("reminderTime  (UTC): ", reminderTime.toISOString());
-    // console.log("now           (UTC): ", nowUTC.toISOString());
-    // console.log(
-    //   "Reminder fires in:  ",
-    //   Math.round((reminderTime - nowUTC) / 1000 / 60),
-    //   "minutes from now"
-    // );
+    console.log("Local input:         ", date, startTime, "(Nepal time)");
+    console.log("startDateTime (UTC): ", startDateTime.toISOString());
+    console.log("reminderTime  (UTC): ", reminderTime.toISOString());
+    console.log("now           (UTC): ", nowUTC.toISOString());
+    console.log(
+      "Reminder fires in:  ",
+      Math.round((reminderTime - nowUTC) / 1000 / 60),
+      "minutes from now"
+    );
 
     // CREATE BOOKING
     const booking = await Booking.create({

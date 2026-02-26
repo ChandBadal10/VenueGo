@@ -5,14 +5,14 @@ import User from "../models/User.js";
 import transporter from "../configs/nodeMailer.js";
 
 export const startReminderScheduler = () => {
-  // console.log("✅ Reminder scheduler started...");
+  console.log("✅ Reminder scheduler started...");
 
   // Runs every minute
   cron.schedule("* * * * *", async () => {
     const now = new Date(); // always UTC in Node.js
 
     // Debug: log every tick so you can confirm the scheduler is running
-    // console.log(`[Reminder Scheduler] Tick at: ${now.toISOString()}`);
+    console.log(`[Reminder Scheduler] Tick at: ${now.toISOString()}`);
 
     try {
       // Find all confirmed bookings where:
@@ -25,9 +25,9 @@ export const startReminderScheduler = () => {
         status: "confirmed",
       });
 
-      // console.log(
-      //   `[Reminder Scheduler] Bookings due for reminder: ${bookings.length}`,
-      // );
+      console.log(
+        `[Reminder Scheduler] Bookings due for reminder: ${bookings.length}`,
+      );
 
       for (let booking of bookings) {
         try {

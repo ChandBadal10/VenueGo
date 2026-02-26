@@ -11,12 +11,12 @@ const transporter = nodemailer.createTransport({
     tls: { rejectUnauthorized: false }
 });
 
-// transporter.verify((error) => {
-//     if (error) {
-//         console.error("❌ SMTP Failed:", error.message);
-//     } else {
-//         console.log("✅ SMTP ready to send emails");
-//     }
-// });
+transporter.verify((error) => {
+    if (error) {
+        console.error("❌ SMTP Failed:", error.message);
+    } else {
+        console.log("✅ SMTP ready to send emails");
+    }
+});
 
 export default transporter;
