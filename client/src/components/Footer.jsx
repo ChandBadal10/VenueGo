@@ -6,34 +6,34 @@ const Footer = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-gray-900 text-gray-200 pt-12">
+    <div className="bg-gray-900 dark:bg-gray-800 text-gray-200 dark:text-gray-200 pt-12">
       <div className="max-w-7xl mx-auto px-4 md:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
         {/* BRAND */}
         <div className="text-center sm:text-left">
           <h1
             onClick={() => navigate("/")}
-            className="text-2xl cursor-pointer font-bold text-white mb-4"
+            className="text-2xl cursor-pointer font-bold text-white dark:text-white mb-4"
           >
             Venue<span className="text-blue-600">Go</span>
           </h1>
 
-          <p className="text-gray-400 text-sm md:text-base">
+          <p className="text-gray-400 dark:text-gray-300 text-sm md:text-base">
             Smart Sports Venue Booking Platform. Book your perfect venue anytime, anywhere.
           </p>
 
           {/* SOCIAL ICONS */}
           <div className="flex justify-center sm:justify-start gap-6 mt-6 text-lg">
-            <a href="#" className="hover:text-blue-600 transition p-2">
+            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition p-2">
               <FaFacebookF />
             </a>
-            <a href="#" className="hover:text-blue-600 transition p-2">
+            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition p-2">
               <FaTwitter />
             </a>
-            <a href="#" className="hover:text-blue-600 transition p-2">
+            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition p-2">
               <FaInstagram />
             </a>
-            <a href="#" className="hover:text-blue-600 transition p-2">
+            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition p-2">
               <FaLinkedinIn />
             </a>
           </div>
@@ -41,31 +41,31 @@ const Footer = () => {
 
         {/* QUICK LINKS */}
         <div className="text-center sm:text-left">
-          <h3 className="text-xl font-semibold text-white mb-4">
+          <h3 className="text-xl font-semibold text-white dark:text-white mb-4">
             Quick Links
           </h3>
 
           <ul className="space-y-3 text-sm md:text-base">
             <li>
-              <Link to="/" className="hover:text-blue-600 transition">
+              <Link to="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition">
                 Home
               </Link>
             </li>
 
             <li>
-              <Link to="/venues" className="hover:text-blue-600 transition">
+              <Link to="/venues" className="hover:text-blue-600 dark:hover:text-blue-400 transition">
                 Venues
               </Link>
             </li>
 
             <li>
-              <Link to="/my-bookings" className="hover:text-blue-600 transition">
+              <Link to="/my-bookings" className="hover:text-blue-600 dark:hover:text-blue-400 transition">
                 My Bookings
               </Link>
             </li>
 
             <li>
-              <Link to="/trainer" className="hover:text-blue-600 transition">
+              <Link to="/trainer" className="hover:text-blue-600 dark:hover:text-blue-400 transition">
                 Trainer
               </Link>
             </li>
@@ -74,7 +74,7 @@ const Footer = () => {
 
         {/* CONTACT */}
         <div className="text-center sm:text-left text-sm md:text-base">
-          <h3 className="text-xl font-semibold text-white mb-4">
+          <h3 className="text-xl font-semibold text-white dark:text-white mb-4">
             Contact
           </h3>
 
@@ -87,11 +87,11 @@ const Footer = () => {
 
         {/* NEWSLETTER */}
         <div className="text-center sm:text-left">
-          <h3 className="text-xl font-semibold text-white mb-4">
+          <h3 className="text-xl font-semibold text-white dark:text-white mb-4">
             Subscribe
           </h3>
 
-          <p className="text-gray-400 mb-4 text-sm md:text-base">
+          <p className="text-gray-400 dark:text-gray-300 mb-4 text-sm md:text-base">
             Get updates about new venues and offers
           </p>
 
@@ -99,10 +99,10 @@ const Footer = () => {
             <input
               type="email"
               placeholder="Your email"
-              className="w-full px-4 py-2 rounded-md sm:rounded-l-lg sm:rounded-r-none outline-none text-gray-900"
+              className="w-full px-4 py-2 rounded-md sm:rounded-l-lg sm:rounded-r-none outline-none text-gray-900 dark:text-gray-200 dark:bg-gray-700 placeholder-gray-500 dark:placeholder-gray-400"
             />
 
-            <button className="bg-blue-600 px-4 py-2 rounded-md sm:rounded-r-lg sm:rounded-l-none text-white hover:bg-blue-700 transition">
+            <button className="bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-500 px-4 py-2 rounded-md sm:rounded-r-lg sm:rounded-l-none text-white transition">
               Subscribe
             </button>
           </div>
@@ -110,7 +110,7 @@ const Footer = () => {
       </div>
 
       {/* COPYRIGHT */}
-      <div className="border-t border-gray-800 mt-12 py-6 text-center text-gray-500 text-sm md:text-base">
+      <div className="border-t border-gray-800 dark:border-gray-700 mt-12 py-6 text-center text-gray-500 dark:text-gray-400 text-sm md:text-base">
         &copy; {new Date().getFullYear()} VenueGo. All rights reserved.
       </div>
     </div>

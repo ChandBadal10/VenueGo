@@ -61,33 +61,33 @@ const TrainerCard = () => {
 
   return (
     <div className="px-6 pb-20 max-w-7xl mx-auto mt-20">
-      <h2 className="text-3xl font-bold text-center mb-3">Meet Our Trainers</h2>
-      <p className="text-center text-gray-600 mb-8">
+      <h2 className="text-3xl font-bold text-center mb-3 dark:text-gray-100">Meet Our Trainers</h2>
+      <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
         Expert trainers to help you achieve your fitness goals
       </p>
 
       {/* Filter Bar */}
-      <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-4 mb-8">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700 p-4 mb-8">
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-300 w-5 h-5" />
             <input
               type="text"
               placeholder="Search by name, specialization, or venue..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className="w-full pl-12 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
 
           {/* Specialization Filter */}
           <div className="relative min-w-[200px]">
-            <SlidersHorizontal className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+            <SlidersHorizontal className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-300 w-5 h-5 pointer-events-none" />
             <select
               value={specializationFilter}
               onChange={(e) => setSpecializationFilter(e.target.value)}
-              className="w-full pl-12 pr-10 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none bg-white cursor-pointer"
+              className="w-full pl-12 pr-10 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 cursor-pointer"
             >
               {uniqueSpecializations.map((s) => (
                 <option key={s} value={s}>
@@ -99,11 +99,11 @@ const TrainerCard = () => {
 
           {/* Venue Filter */}
           <div className="relative min-w-[200px]">
-            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-300 w-5 h-5 pointer-events-none" />
             <select
               value={venueFilter}
               onChange={(e) => setVenueFilter(e.target.value)}
-              className="w-full pl-12 pr-10 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none bg-white cursor-pointer"
+              className="w-full pl-12 pr-10 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 cursor-pointer"
             >
               {uniqueVenues.map((v) => (
                 <option key={v} value={v}>
@@ -115,11 +115,11 @@ const TrainerCard = () => {
         </div>
 
         {isFiltering && (
-          <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
+          <div className="mt-4 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
             <span>Showing {filtered.length} of {trainers.length} trainers</span>
             <button
               onClick={() => { setSearchQuery(""); setSpecializationFilter("all"); setVenueFilter("all"); }}
-              className="text-blue-600 hover:text-blue-700 font-medium ml-2"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-500 font-medium ml-2"
             >
               Clear all filters
             </button>
@@ -131,11 +131,11 @@ const TrainerCard = () => {
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-10">
         {filtered.length === 0 && (
           <div className="col-span-full text-center py-12">
-            <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-gray-400" />
+            <div className="bg-gray-100 dark:bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-gray-400 dark:text-gray-300" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No trainers found</h3>
-            <p className="text-gray-500">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No trainers found</h3>
+            <p className="text-gray-500 dark:text-gray-300">
               {isFiltering ? "Try adjusting your search or filters" : "No trainers available right now"}
             </p>
           </div>
@@ -149,7 +149,7 @@ const TrainerCard = () => {
           return (
             <div
               key={trainer._id}
-              className="bg-white rounded-2xl shadow-md hover:shadow-xl border transition overflow-hidden cursor-pointer"
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-md dark:shadow-lg hover:shadow-xl border dark:border-gray-700 transition overflow-hidden cursor-pointer"
               onClick={() => navigate(`/trainer-details/${trainer._id}`)}
             >
               {/* Image */}
@@ -170,45 +170,42 @@ const TrainerCard = () => {
               )}
 
               <div className="p-5">
-                <h3 className="font-semibold text-lg text-gray-900">{trainer.name}</h3>
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100">{trainer.name}</h3>
 
-                <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1 mt-1">
                   <SlidersHorizontal className="w-4 h-4" />
                   {trainer.specialization}
                 </p>
 
-                <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1 mt-1">
                   <MapPin className="w-4 h-4" />
                   {trainer.venueName}
                 </p>
 
                 {firstSlot && (
-                  <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1 mt-1">
                     <Clock className="w-4 h-4" />
                     {formatTime(firstSlot.startTime)} – {formatTime(firstSlot.endTime)}
                     {availableSlots.length > 1 && (
-                      <span className="text-gray-400 ml-1">+{availableSlots.length - 1} more</span>
+                      <span className="text-gray-400 dark:text-gray-500 ml-1">+{availableSlots.length - 1} more</span>
                     )}
                   </p>
                 )}
 
                 <div className="flex items-center justify-between mt-3">
-                  <p className="text-blue-600 font-semibold">{getPriceRange(slots)}</p>
-                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                  <p className="text-blue-600 dark:text-blue-400 font-semibold">{getPriceRange(slots)}</p>
+                  <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 px-2 py-1 rounded-full">
                     {availableSlots.length} slot{availableSlots.length !== 1 ? "s" : ""}
                   </span>
                 </div>
 
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-gray-500 dark:text-gray-300 mt-2">
                   {slots.length} slot{slots.length !== 1 ? "s" : ""} available
                 </p>
 
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/trainer-details/${trainer._id}`);
-                  }}
-                  className="mt-4 w-full bg-blue-600 text-white py-2.5 rounded-xl hover:bg-blue-700 transition font-medium"
+                  onClick={(e) => { e.stopPropagation(); navigate(`/trainer-details/${trainer._id}`); }}
+                  className="mt-4 w-full bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600 py-2.5 rounded-xl transition font-medium"
                 >
                   Book Now
                 </button>
@@ -222,7 +219,7 @@ const TrainerCard = () => {
       <div className="text-center mt-10">
         <button
           onClick={() => navigate("/trainer")}
-          className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-medium"
+          className="px-8 py-3 bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600 rounded-xl transition font-medium"
         >
           View All Trainers
         </button>

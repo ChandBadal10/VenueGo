@@ -222,7 +222,8 @@ export const deleteAccount = async (req, res) => {
     const userId = req.user._id; // from protect middleware
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (!user)
+      return res.status(404).json({ success: false, message: "User not found" });
 
     await User.findByIdAndDelete(userId);
 
@@ -257,10 +258,7 @@ export const updateProfile = async (req, res) => {
       // Check if email already exists
       const existingUser = await User.findOne({ email });
 
-      if (
-        existingUser &&
-        existingUser._id.toString() !== userId.toString()
-      ) {
+      if ( existingUser && existingUser._id.toString() !== userId.toString())  {
         return res.status(400).json({
           success: false,
           message: "Email already in use",

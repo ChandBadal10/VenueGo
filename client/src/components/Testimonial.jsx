@@ -7,16 +7,16 @@ const Testimonial = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
 
         {/* Card 1 */}
-        <div className="w-full flex flex-col items-center border border-gray-300 p-6 md:p-10 rounded-lg">
+        <div className="w-full flex flex-col items-center border border-gray-300 dark:border-gray-700 p-6 md:p-10 rounded-lg bg-white dark:bg-gray-800">
           <img
             className="h-20 w-20 rounded-full"
             src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200"
             alt="userImage1"
           />
-          <h2 className="text-lg text-gray-900 font-medium mt-2">
+          <h2 className="text-lg font-medium mt-2 text-gray-900 dark:text-gray-100">
             Ankush Sharma
           </h2>
-          <p className="text-sm text-gray-500">Footballer</p>
+          <p className="text-sm text-gray-500 dark:text-gray-300">Footballer</p>
 
           <div className="flex items-center justify-center mt-3 gap-1">
             {[...Array(5)].map((_, i) => (
@@ -36,7 +36,7 @@ const Testimonial = () => {
             ))}
           </div>
 
-          <p className="text-center text-sm md:text-[15px] mt-3 text-gray-500">
+          <p className="text-center text-sm md:text-[15px] mt-3 text-gray-500 dark:text-gray-300">
             "I’ve been booking this venue for football for nearly two years, and
             the pitch quality and management have consistently made our games
             easier and better."
@@ -44,16 +44,16 @@ const Testimonial = () => {
         </div>
 
         {/* Card 2 */}
-        <div className="w-full flex flex-col items-center border border-gray-300 p-6 md:p-10 rounded-lg">
+        <div className="w-full flex flex-col items-center border border-gray-300 dark:border-gray-700 p-6 md:p-10 rounded-lg bg-white dark:bg-gray-800">
           <img
             className="h-20 w-20 rounded-full"
             src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200"
             alt="userImage2"
           />
-          <h2 className="text-lg text-gray-900 font-medium mt-2">
+          <h2 className="text-lg font-medium mt-2 text-gray-900 dark:text-gray-100">
             Swayam Shrestha
           </h2>
-          <p className="text-sm text-gray-500">Cricketer</p>
+          <p className="text-sm text-gray-500 dark:text-gray-300">Cricketer</p>
 
           <div className="flex items-center justify-center mt-3 gap-1">
             {[...Array(5)].map((_, i) => (
@@ -73,23 +73,23 @@ const Testimonial = () => {
             ))}
           </div>
 
-          <p className="text-center text-sm md:text-[15px] mt-3 text-gray-500">
+          <p className="text-center text-sm md:text-[15px] mt-3 text-gray-500 dark:text-gray-300">
             "I’ve been playing cricket here for almost two years, and the ground
             conditions are always excellent, making every match smooth and enjoyable."
           </p>
         </div>
 
         {/* Card 3 */}
-        <div className="w-full flex flex-col items-center border border-gray-300 p-6 md:p-10 rounded-lg">
+        <div className="w-full flex flex-col items-center border border-gray-300 dark:border-gray-700 p-6 md:p-10 rounded-lg bg-white dark:bg-gray-800">
           <img
             className="h-20 w-20 rounded-full"
             src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200"
             alt="userImage3"
           />
-          <h2 className="text-lg text-gray-900 font-medium mt-2">
+          <h2 className="text-lg font-medium mt-2 text-gray-900 dark:text-gray-100">
             Sagal Chand
           </h2>
-          <p className="text-sm text-gray-500">Basketball Player</p>
+          <p className="text-sm text-gray-500 dark:text-gray-300">Basketball Player</p>
 
           <div className="flex items-center justify-center mt-3 gap-1">
             {[...Array(5)].map((_, i) => (
@@ -109,7 +109,7 @@ const Testimonial = () => {
             ))}
           </div>
 
-          <p className="text-center text-sm md:text-[15px] mt-3 text-gray-500">
+          <p className="text-center text-sm md:text-[15px] mt-3 text-gray-500 dark:text-gray-300">
             "I’ve been using this court for basketball for almost two years, and
             the smooth playing surface and great environment make every session enjoyable."
           </p>

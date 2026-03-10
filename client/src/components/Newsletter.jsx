@@ -4,18 +4,18 @@ const Newsletter = () => {
   return (
     <div className="flex flex-col items-center justify-center text-center space-y-2 mb-20 px-4">
 
-      <h1 className="md:text-4xl text-2xl font-semibold">
+      <h1 className="md:text-4xl text-2xl font-semibold text-gray-900 dark:text-gray-100">
         Never Miss a Deal!
       </h1>
 
-      <p className="md:text-lg text-sm text-gray-500/70 pb-6 md:pb-8 max-w-lg">
+      <p className="md:text-lg text-sm text-gray-500/70 dark:text-gray-300/70 pb-6 md:pb-8 max-w-lg">
         Subscribe to get the latest offers, new arrivals, and exclusive discounts
       </p>
 
       <form className="flex flex-col md:flex-row items-center w-full max-w-2xl gap-3 md:gap-0">
 
         <input
-          className="border border-gray-300 rounded-md md:rounded-r-none h-12 md:h-13 outline-none w-full px-3 text-gray-500"
+          className="border border-gray-300 dark:border-gray-700 rounded-md md:rounded-r-none h-12 md:h-13 outline-none w-full px-3 text-gray-500 dark:text-gray-200 dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-400"
           type="email"
           placeholder="Enter your email id"
           required
