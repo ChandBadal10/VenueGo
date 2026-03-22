@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { useAppContext } from "../context/AppContext"; // ✅ use context
 
 const VenueDetails = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const { axios, token, navigate } = useAppContext(); // ✅ axios has baseURL + token, no hardcoded URLs
+
   const [venue, setVenue] = useState(null);
   const [allVenues, setAllVenues] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,40 +30,32 @@ const VenueDetails = () => {
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-
     const compareDate = new Date(dateString);
     compareDate.setHours(0, 0, 0, 0);
-
-    if (compareDate.getTime() === today.getTime()) {
-      return "Today";
-    } else if (compareDate.getTime() === tomorrow.getTime()) {
-      return "Tomorrow";
-    } else {
-      return date.toLocaleDateString("en-US", { weekday: "short" });
-    }
+    if (compareDate.getTime() === today.getTime()) return "Today";
+    if (compareDate.getTime() === tomorrow.getTime()) return "Tomorrow";
+    return date.toLocaleDateString("en-US", { weekday: "short" });
   };
 
   useEffect(() => {
     const fetchVenue = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/addvenue/${id}`);
+        // ✅ No hardcoded URL — axios.defaults.baseURL is set in AppContext
+        const res = await axios.get(`/api/addvenue/${id}`);
 
         if (res.data.success) {
           setVenue(res.data.venue);
 
-          const allRes = await axios.get("http://localhost:3000/api/addvenue/all");
+          const allRes = await axios.get("/api/addvenue/all");
 
           if (allRes.data.success) {
             const normalize = (val) => val?.toString().trim().toLowerCase();
-
             const matchingVenues = allRes.data.venues.filter(
               (v) =>
                 normalize(v.venueName) === normalize(res.data.venue.venueName) &&
                 normalize(v.location) === normalize(res.data.venue.location)
             );
-
             setAllVenues(matchingVenues);
-
             if (matchingVenues.length > 0) {
               const dates = [...new Set(matchingVenues.map((v) => v.date))].sort();
               setSelectedDate(dates[0]);
@@ -76,31 +69,21 @@ const VenueDetails = () => {
         setLoading(false);
       }
     };
-
     fetchVenue();
   }, [id]);
 
-  // Fetch availability for all slots on selected date
   useEffect(() => {
     const fetchAvailability = async () => {
       if (!selectedDate || allVenues.length === 0) return;
-
       const slotsForDate = allVenues.filter((v) => v.date === selectedDate);
-
       const availabilityPromises = slotsForDate.map(async (slot) => {
         try {
-          const response = await axios.get("http://localhost:3000/api/bookings/slots", {
-            params: {
-              venueId: slot._id,
-              date: selectedDate,
-            },
+          // ✅ No hardcoded URL
+          const response = await axios.get("/api/bookings/slots", {
+            params: { venueId: slot._id, date: selectedDate },
           });
-
-          return {
-            slotId: slot._id,
-            ...response.data,
-          };
-        } catch (error) {
+          return { slotId: slot._id, ...response.data };
+        } catch {
           return {
             slotId: slot._id,
             capacity: slot.capacity || 1,
@@ -110,33 +93,17 @@ const VenueDetails = () => {
           };
         }
       });
-
       const results = await Promise.all(availabilityPromises);
       const availabilityMap = {};
-      results.forEach((result) => {
-        availabilityMap[result.slotId] = result;
-      });
-
+      results.forEach((r) => { availabilityMap[r.slotId] = r; });
       setSlotAvailability(availabilityMap);
     };
-
     fetchAvailability();
   }, [selectedDate, allVenues]);
 
-  const isSlotFull = (slotId) => {
-    const availability = slotAvailability[slotId];
-    return availability?.isFull || false;
-  };
-
-  const getAvailableSlots = (slotId) => {
-    const availability = slotAvailability[slotId];
-    return availability?.availableSlots || 0;
-  };
-
-  const getCapacity = (slotId) => {
-    const availability = slotAvailability[slotId];
-    return availability?.capacity || 1;
-  };
+  const isSlotFull = (slotId) => slotAvailability[slotId]?.isFull || false;
+  const getAvailableSlots = (slotId) => slotAvailability[slotId]?.availableSlots || 0;
+  const getCapacity = (slotId) => slotAvailability[slotId]?.capacity || 1;
 
   const getSlotsByDate = () => {
     const grouped = {};
@@ -155,8 +122,7 @@ const VenueDetails = () => {
   };
 
   const handleBookNow = async () => {
-    const token = localStorage.getItem("token");
-
+    // ✅ Use token from AppContext — no localStorage.getItem("token") needed
     if (!token) {
       toast.error("Please login to book a venue");
       navigate("/login");
@@ -175,62 +141,28 @@ const VenueDetails = () => {
 
     setBookingLoading(true);
 
-    try {
-      const bookingData = {
+    // ✅ Save to localStorage — survives eSewa's full page redirect
+    // sessionStorage is wiped on redirect, localStorage is not
+    localStorage.setItem(
+      "orderInfo",
+      JSON.stringify({
         venueId: selectedSlot._id,
+        totalPrice: calculatePrice(selectedSlot),
         venueName: venue.venueName,
         venueType: venue.venueType,
-        price: calculatePrice(selectedSlot),
         date: selectedDate,
         startTime: selectedSlot.startTime,
         endTime: selectedSlot.endTime,
         location: venue.location,
         description: venue.description,
-      };
+      })
+    );
 
-      const response = await axios.post(
-        "http://localhost:3000/api/bookings/create",
-        bookingData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.data.success) {
-        toast.success("Booking confirmed successfully!");
-
-        // Refresh availability
-        const res = await axios.get("http://localhost:3000/api/bookings/slots", {
-          params: {
-            venueId: selectedSlot._id,
-            date: selectedDate,
-          },
-        });
-
-        if (res.data.success) {
-          setSlotAvailability((prev) => ({
-            ...prev,
-            [selectedSlot._id]: res.data,
-          }));
-        }
-
-        setSelectedSlot(null);
-
-        setTimeout(() => {
-          navigate("/my-bookings");
-        }, 1500);
-      } else {
-        toast.error(response.data.message || "Failed to create booking");
-      }
-    } catch (error) {
-      console.error("Error creating booking:", error);
-      toast.error(error.response?.data?.message || "Failed to create booking");
-    } finally {
+    toast.success("Redirecting to payment...");
+    setTimeout(() => {
       setBookingLoading(false);
-    }
+      navigate("/esewa-payment");
+    }, 800);
   };
 
   if (loading) return <h2 className="p-10 text-center">Loading venue...</h2>;
@@ -260,17 +192,11 @@ const VenueDetails = () => {
               <h1 className="text-3xl font-bold text-gray-800 mb-2">{venue.venueName}</h1>
               <p className="text-gray-600 flex items-center mb-4">
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                    clipRule="evenodd"
-                  />
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
                 {venue.location}
               </p>
-
               <p className="text-gray-700 leading-relaxed mb-6">{venue.description}</p>
-
               {venue.capacity > 1 && (
                 <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4">
                   <p className="text-purple-700 font-medium text-sm">
@@ -282,7 +208,6 @@ const VenueDetails = () => {
                 </div>
               )}
             </div>
-
             <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
               <p className="text-3xl font-bold text-blue-600">
                 {(() => {
@@ -316,10 +241,7 @@ const VenueDetails = () => {
                   {availableDates.map((date) => (
                     <button
                       key={date}
-                      onClick={() => {
-                        setSelectedDate(date);
-                        setSelectedSlot(null);
-                      }}
+                      onClick={() => { setSelectedDate(date); setSelectedSlot(null); }}
                       className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all ${
                         selectedDate === date
                           ? "bg-blue-600 text-white border-blue-600"
@@ -328,10 +250,7 @@ const VenueDetails = () => {
                     >
                       <div className="text-xs font-medium">{formatDate(date)}</div>
                       <div className="text-sm font-bold mt-1">
-                        {new Date(date).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
+                        {new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                       </div>
                     </button>
                   ))}
@@ -339,10 +258,7 @@ const VenueDetails = () => {
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Select Time Slot
-                </label>
-
+                <label className="block text-sm font-semibold text-gray-700 mb-3">Select Time Slot</label>
                 {currentSlots.length === 0 ? (
                   <p className="text-gray-500 text-sm bg-gray-50 p-4 rounded-lg">No slots available for this date</p>
                 ) : (
@@ -352,9 +268,7 @@ const VenueDetails = () => {
                       const availableSlots = getAvailableSlots(slot._id);
                       const capacity = getCapacity(slot._id);
                       const isSelected = selectedSlot?._id === slot._id;
-                      const start = parseInt(slot.startTime.split(":")[0]);
-                      const end = parseInt(slot.endTime.split(":")[0]);
-                      const duration = end - start;
+                      const duration = parseInt(slot.endTime.split(":")[0]) - parseInt(slot.startTime.split(":")[0]);
 
                       return (
                         <button
@@ -369,38 +283,24 @@ const VenueDetails = () => {
                               : "bg-white border-gray-300 hover:border-blue-400 hover:shadow-sm"
                           }`}
                         >
-                          <div
-                            className={`font-semibold text-sm ${
-                              isFull ? "text-red-700" : isSelected ? "text-green-700" : "text-gray-800"
-                            }`}
-                          >
+                          <div className={`font-semibold text-sm ${isFull ? "text-red-700" : isSelected ? "text-green-700" : "text-gray-800"}`}>
                             {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
                           </div>
-                          <div className="text-xs mt-1 text-gray-600">
-                            {duration} hour{duration > 1 ? "s" : ""}
-                          </div>
-
+                          <div className="text-xs mt-1 text-gray-600">{duration} hour{duration > 1 ? "s" : ""}</div>
                           {capacity > 1 && (
                             <div className="mt-2 pt-2 border-t border-gray-200">
                               {isFull ? (
                                 <div className="text-xs font-semibold text-red-600">FULLY BOOKED</div>
                               ) : (
                                 <div className="flex items-center justify-between text-xs">
-                                  <span className="text-gray-600">
-                                    {availableSlots}/{capacity} spots
-                                  </span>
-                                  <span
-                                    className={`font-semibold ${
-                                      availableSlots <= 3 ? "text-orange-600" : "text-green-600"
-                                    }`}
-                                  >
+                                  <span className="text-gray-600">{availableSlots}/{capacity} spots</span>
+                                  <span className={`font-semibold ${availableSlots <= 3 ? "text-orange-600" : "text-green-600"}`}>
                                     {availableSlots <= 3 ? "Few left" : "Available"}
                                   </span>
                                 </div>
                               )}
                             </div>
                           )}
-
                           {capacity === 1 && isFull && (
                             <div className="text-xs mt-1 text-red-600 font-semibold">BOOKED</div>
                           )}
@@ -416,11 +316,7 @@ const VenueDetails = () => {
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-700 font-medium">Date:</span>
                     <span className="text-gray-900 font-bold">
-                      {new Date(selectedDate).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
+                      {new Date(selectedDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </span>
                   </div>
                   <div className="flex justify-between items-center mb-2">
@@ -453,7 +349,7 @@ const VenueDetails = () => {
                     : "bg-blue-600 text-white hover:bg-blue-700 active:scale-95"
                 }`}
               >
-                {bookingLoading ? "Processing..." : !selectedSlot ? "Select a Slot to Book" : "Confirm Booking"}
+                {bookingLoading ? "Processing..." : !selectedSlot ? "Select a Slot to Book" : "Confirm Booking & Pay with eSewa"}
               </button>
             </>
           )}

@@ -15,7 +15,6 @@ const generateToken = (userId) => {
 
 
 
-
 // Register User
 
 export const registerUser = async (req, res) => {
@@ -116,8 +115,6 @@ export const getUserData = async (req, res) => {
 
     }
 }
-
-
 
 
 
@@ -272,7 +269,6 @@ export const updateProfile = async (req, res) => {
 
     //    CHANGE PASSWORD
 
-
     if (oldPassword && newPassword) {
 
       // Check old password
@@ -311,6 +307,3 @@ export const updateProfile = async (req, res) => {
     });
   }
 };
-
-
-

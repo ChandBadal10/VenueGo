@@ -24,7 +24,6 @@ const AddVenue = () => {
       return;
     }
 
-    // Validate required fields
     if (
       !venue.venueName ||
       !venue.venueType ||
@@ -69,7 +68,6 @@ const AddVenue = () => {
       if (data.success) {
         toast.success(data.message || "Venue added successfully");
 
-        // Reset form
         setVenue({
           venueName: "",
           venueType: "",
@@ -80,6 +78,7 @@ const AddVenue = () => {
           location: "",
           description: "",
         });
+
         setImage(null);
 
         navigate("/venue-dashboard");
@@ -93,18 +92,23 @@ const AddVenue = () => {
   };
 
   return (
-    <div className="px-4 py-10 md:px-10 flex-1">
-      <h1 className="text-2xl font-semibold mb-1">Add New Venue</h1>
-      <p className="text-gray-500 mb-6">
+    <div className="px-4 py-10 md:px-10 flex-1 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 min-h-screen">
+
+      <h1 className="text-2xl font-semibold mb-1">
+        Add New Venue
+      </h1>
+
+      <p className="text-gray-500 dark:text-gray-400 mb-6">
         Fill in details to list a new venue for booking, including pricing,
         availability, and venue specifications.
       </p>
 
-      <form className="flex flex-col gap-6 text-gray-600 text-sm max-w-xl">
+      <form className="flex flex-col gap-6 text-sm max-w-xl">
+
         {/* Image Upload */}
         <div className="flex items-center gap-3">
           <label htmlFor="venue-image" className="cursor-pointer">
-            <div className="h-20 w-20 bg-gray-200 rounded-md overflow-hidden flex items-center justify-center">
+            <div className="h-20 w-20 bg-gray-200 dark:bg-gray-700 rounded-md overflow-hidden flex items-center justify-center">
               {image ? (
                 <img
                   src={URL.createObjectURL(image)}
@@ -112,9 +116,12 @@ const AddVenue = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="text-xs text-gray-400">Upload</span>
+                <span className="text-xs text-gray-400">
+                  Upload
+                </span>
               )}
             </div>
+
             <input
               type="file"
               id="venue-image"
@@ -124,14 +131,18 @@ const AddVenue = () => {
             />
           </label>
         </div>
-        <p className="text-sm text-gray-500">Upload a picture of your venue</p>
+
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Upload a picture of your venue
+        </p>
 
         {/* Venue Name + Category */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
           <div>
             <label className="text-sm">Venue Name</label>
             <input
-              className="w-full mt-1 bg-gray-200 px-4 py-2 rounded-md outline-none"
+              className="w-full mt-1 bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-md outline-none"
               type="text"
               placeholder="e.g. Velocity Futsal"
               value={venue.venueName}
@@ -144,7 +155,7 @@ const AddVenue = () => {
           <div>
             <label className="text-sm">Category</label>
             <select
-              className="w-full mt-1 bg-gray-200 px-4 py-2 rounded-md outline-none"
+              className="w-full mt-1 bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-md outline-none"
               value={venue.venueType}
               onChange={(e) =>
                 setVenue({ ...venue, venueType: e.target.value })
@@ -162,14 +173,16 @@ const AddVenue = () => {
               <option value="Swimming">Swimming</option>
             </select>
           </div>
+
         </div>
 
-        {/* Price, Date, Time */}
+        {/* Price / Date / Time */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
           <div>
             <label className="text-sm">Price per Hour</label>
             <input
-              className="w-full mt-1 bg-gray-200 px-4 py-2 rounded-md outline-none"
+              className="w-full mt-1 bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-md outline-none"
               type="number"
               placeholder="1500"
               value={venue.price}
@@ -181,7 +194,7 @@ const AddVenue = () => {
             <label className="text-sm">Date</label>
             <input
               type="date"
-              className="w-full mt-1 bg-gray-200 px-4 py-2 rounded-md outline-none"
+              className="w-full mt-1 bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-md outline-none"
               value={venue.date}
               onChange={(e) => setVenue({ ...venue, date: e.target.value })}
             />
@@ -191,7 +204,7 @@ const AddVenue = () => {
             <label className="text-sm">Start Time</label>
             <input
               type="time"
-              className="w-full mt-1 bg-gray-200 px-4 py-2 rounded-md outline-none"
+              className="w-full mt-1 bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-md outline-none"
               value={venue.startTime}
               onChange={(e) =>
                 setVenue({ ...venue, startTime: e.target.value })
@@ -203,13 +216,14 @@ const AddVenue = () => {
             <label className="text-sm">End Time</label>
             <input
               type="time"
-              className="w-full mt-1 bg-gray-200 px-4 py-2 rounded-md outline-none"
+              className="w-full mt-1 bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-md outline-none"
               value={venue.endTime}
               onChange={(e) =>
                 setVenue({ ...venue, endTime: e.target.value })
               }
             />
           </div>
+
         </div>
 
         {/* Location */}
@@ -218,7 +232,7 @@ const AddVenue = () => {
           <input
             type="text"
             placeholder="e.g. Shantinagar, Kathmandu"
-            className="w-full mt-1 bg-gray-200 px-4 py-2 rounded-md outline-none"
+            className="w-full mt-1 bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-md outline-none"
             value={venue.location}
             onChange={(e) => setVenue({ ...venue, location: e.target.value })}
           />
@@ -230,7 +244,7 @@ const AddVenue = () => {
           <textarea
             rows="4"
             placeholder="e.g. Great futsal."
-            className="w-full mt-1 bg-gray-200 px-4 py-2 rounded-md outline-none resize-none"
+            className="w-full mt-1 bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-md outline-none resize-none"
             value={venue.description}
             onChange={(e) =>
               setVenue({ ...venue, description: e.target.value })
@@ -238,14 +252,15 @@ const AddVenue = () => {
           />
         </div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <button
           type="button"
           onClick={handleAddVenue}
-          className="bg-gray-300 px-6 py-2 rounded-md font-medium hover:bg-gray-400"
+          className="bg-gray-300 dark:bg-gray-700 dark:text-white px-6 py-2 rounded-md font-medium hover:bg-gray-400 dark:hover:bg-gray-600"
         >
           Add Venue
         </button>
+
       </form>
     </div>
   );

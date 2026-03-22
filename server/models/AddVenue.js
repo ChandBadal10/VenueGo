@@ -70,8 +70,8 @@ const addVenueSchema = new mongoose.Schema(
     },
 
     maxBookingsPerUser: {
-  type: Number,
-  default: 0,
+    type: Number,
+    default: 0,
 },
   },
   { timestamps: true }

@@ -104,6 +104,9 @@ export const createVenue = async (req, res) => {
   }
 };
 
+
+
+
 // Get All Venues for user
 export const getAllVenues = async (req, res) => {
   try {

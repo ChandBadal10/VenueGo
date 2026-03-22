@@ -54,23 +54,18 @@ export default function Login() {
   return (
     <div
       onClick={() => setShowLogin(false)}
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-black/50 to-black/40 p-6"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-black/50 to-black/40 dark:from-black/70 dark:to-black/80 p-6"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-2xl bg-white grid grid-cols-1 md:grid-cols-2"
+        className="w-full max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-2xl bg-white dark:bg-gray-900 grid grid-cols-1 md:grid-cols-2"
       >
         {/* Left artwork / brand panel */}
         <div className="relative hidden md:flex flex-col items-center justify-center gap-6 p-10 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white">
-          {/* <div className="rounded-lg bg-white/10 p-4 backdrop-blur-sm">
-            <svg width="92" height="92" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L2 7v7c0 5 5 9 10 9s10-4 10-9V7l-10-5z" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div> */}
-
           <h2 className="text-2xl font-semibold">
             Welcome to <span className="font-extrabold">VenueGo</span>
           </h2>
+
           <p className="text-center max-w-xs text-sm/relaxed">
             Secure, fast and delightful authentication.{" "}
             {state === "login"
@@ -96,10 +91,10 @@ export default function Login() {
         >
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-700">
+              <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
                 {state === "login" ? "Sign in" : "Create account"}
               </h3>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 dark:text-gray-400">
                 Fast, secure access to your dashboard
               </p>
             </div>
@@ -107,7 +102,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setShowLogin(false)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             >
               ✕
             </button>
@@ -115,12 +110,14 @@ export default function Login() {
 
           {state === "register" && (
             <label className="relative group">
-              <span className="text-xs text-gray-500">Name</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Name
+              </span>
               <input
                 onChange={(e) => setName(e.target.value)}
                 value={name}
                 placeholder="Your full name"
-                className="mt-1 w-full rounded-lg border border-gray-200 p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                className="mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-700 p-3 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
                 type="text"
                 required
               />
@@ -128,12 +125,14 @@ export default function Login() {
           )}
 
           <label className="relative group">
-            <span className="text-xs text-gray-500">Email</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              Email
+            </span>
             <input
               onChange={(e) => setEmail(e.target.value)}
               value={email}
               placeholder="Your email address"
-              className="mt-1 w-full rounded-lg border border-gray-200 p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              className="mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-700 p-3 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
               type="email"
               required
             />
@@ -141,7 +140,9 @@ export default function Login() {
 
           <label className="relative group">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Password</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Password
+              </span>
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
@@ -155,7 +156,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               placeholder="••••••••"
-              className="mt-1 w-full rounded-lg border border-gray-200 p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              className="mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-700 p-3 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
               type={showPassword ? "text" : "password"}
               required
             />
@@ -183,13 +184,13 @@ export default function Login() {
           <button
             onClick={() => window.open("http://localhost:3000/auth/google", "_self")}
             type="button"
-            className="w-full py-3 rounded-lg border border-gray-300 flex items-center justify-center gap-3 text-gray-700 font-medium hover:bg-gray-50 transition-all"
+            className="w-full py-3 rounded-lg border border-gray-300 dark:border-gray-700 flex items-center justify-center gap-3 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
           >
             <FcGoogle className="text-xl" />
             Continue with Google
           </button>
 
-          <div className="mt-3 text-center text-sm text-gray-500">
+          <div className="mt-3 text-center text-sm text-gray-500 dark:text-gray-400">
             {state === "register" ? (
               <>
                 Already have account?{" "}
@@ -213,7 +214,7 @@ export default function Login() {
             )}
           </div>
 
-          <div className="mt-4 text-center text-xs text-gray-400">
+          <div className="mt-4 text-center text-xs text-gray-400 dark:text-gray-500">
             By continuing you agree to our{" "}
             <span className="text-blue-600">Terms</span> and{" "}
             <span className="text-blue-600">Privacy</span>.

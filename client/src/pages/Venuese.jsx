@@ -41,19 +41,17 @@ export default function VenueSection() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-gray-900">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading venues...</p>
+          <p className="text-gray-600 dark:text-gray-300">Loading venues...</p>
         </div>
       </div>
     );
   }
 
-  // Only active venues
   const activeVenues = venues.filter((v) => v.isActive === true);
 
-  // Search + Filter
   const filteredVenues = activeVenues.filter((v) => {
     const matchSearch =
       normalize(v.venueName).includes(normalize(search)) ||
@@ -67,7 +65,6 @@ export default function VenueSection() {
     return matchSearch && matchFilter;
   });
 
-  // Group by venue name + location
   const groupedVenues = Object.values(
     filteredVenues.reduce((acc, v) => {
       const key = normalize(v.venueName) + "_" + normalize(v.location);
@@ -78,7 +75,7 @@ export default function VenueSection() {
           venueName: v.venueName,
           location: v.location,
           venueType: v.venueType || v.category,
-          image: v.image || "", // ImageKit URL
+          image: v.image || "",
           slots: [],
         };
       }
@@ -89,10 +86,9 @@ export default function VenueSection() {
         startTime: v.startTime,
         endTime: v.endTime,
         price: v.price,
-        image: v.image, // ImageKit URL
+        image: v.image,
       });
 
-      // Use first available image if main image is missing
       if (!acc[key].image && v.image) {
         acc[key].image = v.image;
       }
@@ -102,7 +98,7 @@ export default function VenueSection() {
   );
 
   return (
-    <div className="w-full bg-slate-50">
+    <div className="w-full bg-slate-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-6 py-10">
 
         {/* Filter + Search Header */}
@@ -113,21 +109,21 @@ export default function VenueSection() {
               Browse our selection of premium venues
             </p>
 
-            {/* Search Bar */}
+            {/* Search */}
             <div className="flex items-center gap-4 mb-5">
-              <div className="flex-1 bg-white rounded-full px-5 py-3 flex items-center gap-3">
+              <div className="flex-1 bg-white dark:bg-gray-800 rounded-full px-5 py-3 flex items-center gap-3">
                 <Search className="w-5 h-5 text-gray-400" />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search by name or location..."
-                  className="w-full outline-none text-gray-700 text-sm"
+                  className="w-full outline-none text-gray-700 dark:text-gray-200 bg-transparent text-sm"
                 />
               </div>
             </div>
 
-            {/* Filter Pills */}
+            {/* Filters */}
             <div className="flex gap-3 flex-wrap">
               {filters.map((filter) => (
                 <button
@@ -145,7 +141,7 @@ export default function VenueSection() {
             </div>
           </div>
 
-          <p className="mt-6 text-sm text-gray-600">
+          <p className="mt-6 text-sm text-gray-600 dark:text-gray-300">
             Showing{" "}
             <span className="font-semibold">{groupedVenues.length}</span> venues
           </p>
@@ -153,13 +149,18 @@ export default function VenueSection() {
 
         {/* Venue Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
           {groupedVenues.length === 0 && (
             <div className="col-span-full text-center py-12">
-              <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="bg-gray-100 dark:bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No venues found</h3>
-              <p className="text-gray-500">
+
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                No venues found
+              </h3>
+
+              <p className="text-gray-500 dark:text-gray-400">
                 {search || activeFilter !== "All"
                   ? "Try adjusting your search or filters"
                   : "No venues available right now"}
@@ -168,16 +169,18 @@ export default function VenueSection() {
           )}
 
           {groupedVenues.map((venue) => {
-            // Use ImageKit URL directly - NO FALLBACK to dummy image
-            const venueImage = venue.image || (venue.slots.length > 0 && venue.slots[0].image) || null;
+            const venueImage =
+              venue.image ||
+              (venue.slots.length > 0 && venue.slots[0].image) ||
+              null;
 
             return (
               <div
                 key={venue._id}
                 onClick={() => navigate(`/venue-details/${venue._id}`)}
-                className="bg-white rounded-xl shadow hover:shadow-xl transition cursor-pointer overflow-hidden group"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-xl transition cursor-pointer overflow-hidden group"
               >
-                {/* Display image only if it exists */}
+
                 {venueImage ? (
                   <div className="relative overflow-hidden">
                     <img
@@ -185,8 +188,7 @@ export default function VenueSection() {
                       className="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300"
                       alt={venue.venueName}
                       onError={(e) => {
-                        // If ImageKit image fails to load, hide it and show placeholder
-                        e.target.style.display = 'none';
+                        e.target.style.display = "none";
                         e.target.parentElement.innerHTML = `
                           <div class="h-44 w-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                             <div class="text-center text-white">
@@ -199,7 +201,6 @@ export default function VenueSection() {
                     />
                   </div>
                 ) : (
-                  // Placeholder if no image available
                   <div className="h-44 w-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                     <div className="text-center text-white">
                       <div className="text-6xl mb-2">🏟️</div>
@@ -209,10 +210,11 @@ export default function VenueSection() {
                 )}
 
                 <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                  <h3 className="font-semibold text-gray-900 dark:text-white text-lg mb-1">
                     {venue.venueName}
                   </h3>
-                  <p className="text-sm text-gray-600 flex items-center gap-1 mb-2">
+
+                  <p className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1 mb-2">
                     <MapPin className="w-3 h-3" />
                     {venue.location}
                   </p>
@@ -221,20 +223,24 @@ export default function VenueSection() {
                     <p className="text-blue-600 font-semibold text-sm">
                       {getPriceRange(venue.slots)}
                     </p>
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+
+                    <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full">
                       {venue.venueType}
                     </span>
                   </div>
 
-                  <p className="text-xs text-gray-500">
-                    {venue.slots.length} slot{venue.slots.length !== 1 ? 's' : ''} available
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {venue.slots.length} slot{venue.slots.length !== 1 ? "s" : ""} available
                   </p>
                 </div>
+
               </div>
             );
           })}
+
         </div>
       </div>
+
       <Footer />
     </div>
   );

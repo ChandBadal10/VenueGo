@@ -18,15 +18,11 @@ const ResetPassword = () => {
 
   const inputRefs = useRef([]);
 
-
-
   const handleInput = (e, index) => {
     if (e.target.value.length > 0 && index < inputRefs.current.length - 1) {
       inputRefs.current[index + 1].focus();
     }
   };
-
-
 
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && e.target.value === "" && index > 0) {
@@ -40,7 +36,6 @@ const ResetPassword = () => {
       if (inputRefs.current[i]) inputRefs.current[i].value = char;
     });
   };
-
 
   // Step 1: Send OTP
   const onSubmitEmail = async (e) => {
@@ -75,7 +70,7 @@ const ResetPassword = () => {
       });
       if (data.success) {
         toast.success(data.message);
-        localStorage.removeItem("token"); // Remove old token
+        localStorage.removeItem("token");
         navigate("/");
       } else toast.error(data.message);
     } catch (error) {
@@ -84,101 +79,110 @@ const ResetPassword = () => {
   };
 
   return (
-  <div className="min-h-screen flex items-center justify-center bg-white px-4">
-    {!isEmailSent && (
-      <form
-        onSubmit={onSubmitEmail}
-        className="bg-white border border-gray-200 p-8 rounded-xl shadow-sm w-full max-w-md"
-      >
-        <h1 className="text-2xl font-semibold text-center mb-2 text-gray-900">
-          Reset Password
-        </h1>
+    // DARK MODE BACKGROUND
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 px-4">
 
-        <p className="text-center mb-6 text-gray-500 text-sm">
-          Enter your registered email
-        </p>
+      {!isEmailSent && (
+        <form
+          onSubmit={onSubmitEmail}
+          // DARK MODE CARD
+          className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-8 rounded-xl shadow-sm w-full max-w-md"
+        >
+          <h1 className="text-2xl font-semibold text-center mb-2 text-gray-900 dark:text-white">
+            {/* DARK MODE TEXT */}
+            Reset Password
+          </h1>
 
-        <input
-          type="email"
-          placeholder="Enter your email"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none mb-4"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+          <p className="text-center mb-6 text-gray-500 dark:text-gray-400 text-sm">
+            Enter your registered email
+          </p>
 
-        <button className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-          Send OTP
-        </button>
-      </form>
-    )}
+          <input
+            type="email"
+            placeholder="Enter your email"
+            // DARK MODE INPUT
+            className="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none mb-4"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-    {isEmailSent && !isOtpSubmitted && (
-      <form
-        onSubmit={onSubmitOTP}
-        onPaste={handlePaste}
-        className="bg-white border border-gray-200 p-8 rounded-xl shadow-sm w-full max-w-md"
-      >
-        <h1 className="text-2xl font-semibold text-center mb-2 text-gray-900">
-          Enter OTP
-        </h1>
+          <button className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Send OTP
+          </button>
+        </form>
+      )}
 
-        <p className="text-center mb-6 text-gray-500 text-sm">
-          Enter the 6-digit code sent to your email
-        </p>
+      {isEmailSent && !isOtpSubmitted && (
+        <form
+          onSubmit={onSubmitOTP}
+          onPaste={handlePaste}
+          // DARK MODE CARD
+          className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-8 rounded-xl shadow-sm w-full max-w-md"
+        >
+          <h1 className="text-2xl font-semibold text-center mb-2 text-gray-900 dark:text-white">
+            Enter OTP
+          </h1>
 
-        <div className="flex justify-between mb-8">
-          {Array(6)
-            .fill(0)
-            .map((_, i) => (
-              <input
-                key={i}
-                type="text"
-                maxLength="1"
-                ref={(el) => (inputRefs.current[i] = el)}
-                required
-                onInput={(e) => handleInput(e, i)}
-                onKeyDown={(e) => handleKeyDown(e, i)}
-                className="w-11 h-11 border border-gray-300 rounded-lg text-center text-xl focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-            ))}
-        </div>
+          <p className="text-center mb-6 text-gray-500 dark:text-gray-400 text-sm">
+            Enter the 6-digit code sent to your email
+          </p>
 
-        <button className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-          Submit OTP
-        </button>
-      </form>
-    )}
+          <div className="flex justify-between mb-8">
+            {Array(6)
+              .fill(0)
+              .map((_, i) => (
+                <input
+                  key={i}
+                  type="text"
+                  maxLength="1"
+                  ref={(el) => (inputRefs.current[i] = el)}
+                  required
+                  onInput={(e) => handleInput(e, i)}
+                  onKeyDown={(e) => handleKeyDown(e, i)}
+                  // DARK MODE OTP INPUT
+                  className="w-11 h-11 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg text-center text-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              ))}
+          </div>
 
-    {isEmailSent && isOtpSubmitted && (
-      <form
-        onSubmit={onSubmitNewPassword}
-        className="bg-white border border-gray-200 p-8 rounded-xl shadow-sm w-full max-w-md"
-      >
-        <h1 className="text-2xl font-semibold text-center mb-2 text-gray-900">
-          Set New Password
-        </h1>
+          <button className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Submit OTP
+          </button>
+        </form>
+      )}
 
-        <p className="text-center mb-6 text-gray-500 text-sm">
-          Enter your new password
-        </p>
+      {isEmailSent && isOtpSubmitted && (
+        <form
+          onSubmit={onSubmitNewPassword}
+          // DARK MODE CARD
+          className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-8 rounded-xl shadow-sm w-full max-w-md"
+        >
+          <h1 className="text-2xl font-semibold text-center mb-2 text-gray-900 dark:text-white">
+            Set New Password
+          </h1>
 
-        <input
-          type="password"
-          placeholder="New Password"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none mb-4"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          required
-        />
+          <p className="text-center mb-6 text-gray-500 dark:text-gray-400 text-sm">
+            Enter your new password
+          </p>
 
-        <button className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-          Reset Password
-        </button>
-      </form>
-    )}
-  </div>
-);
+          <input
+            type="password"
+            placeholder="New Password"
+            // DARK MODE INPUT
+            className="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none mb-4"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+          />
+
+          <button className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Reset Password
+          </button>
+        </form>
+      )}
+    </div>
+  );
 };
 
 export default ResetPassword;

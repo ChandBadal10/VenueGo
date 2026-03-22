@@ -29,7 +29,9 @@ import AllVenueBookings from "./pages/admin/AllVenueBookings";
 import ManageTrainer from "./pages/owner/ManageTrainer";
 import TrainerDetails from "./pages/TrainerDetails";
 import TrainerBookings from "./pages/owner/AlBookingsTrainer";
-
+import EsewaPayment from "./pages/EsewaPayment";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentFailure from "./pages/PaymentFailure";
 
 
 
@@ -58,6 +60,10 @@ const App = () => {
         <Route path="/trainer" element={<Trainer />} />
         <Route path="/trainer-details/:id" element={<TrainerDetails />} />
         <Route path="/reset-password" element={<ReserPassword />} />
+        <Route path="/esewa-payment" element={<EsewaPayment />} />
+        {/* <Route path="/esewa-payment" element={<EsewaPayment />} /> */}
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-failure" element={<PaymentFailure />} />
 
         {/* owner registration */}
         <Route path="/owner" element={<RegisterationPage />} />

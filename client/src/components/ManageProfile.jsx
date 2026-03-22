@@ -79,16 +79,16 @@ const ManageProfile = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/70 backdrop-blur-sm p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl transform transition-all"
+        className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-2xl transform transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 px-8 py-10 rounded-t-3xl overflow-hidden">
-          {/* Decorative circles */}
+
           <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20"></div>
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full -ml-16 -mb-16"></div>
 
@@ -100,7 +100,7 @@ const ManageProfile = ({ isOpen, onClose }) => {
           </button>
 
           <div className="relative text-center">
-            <div className="w-20 h-20 bg-white rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
+            <div className="w-20 h-20 bg-white dark:bg-gray-800 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
               <FaUser className="text-blue-600 text-3xl" />
             </div>
             <h2 className="text-3xl font-bold text-white mb-2">
@@ -115,9 +115,10 @@ const ManageProfile = ({ isOpen, onClose }) => {
         {/* Form */}
         <form onSubmit={handleUpdate} className="p-8">
           <div className="grid md:grid-cols-2 gap-6 mb-6">
-            {/* Name Input */}
+
+            {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Full Name
               </label>
               <div className="relative">
@@ -129,16 +130,16 @@ const ManageProfile = ({ isOpen, onClose }) => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-gray-50 hover:bg-white"
+                  className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-gray-50 dark:bg-gray-800 dark:text-gray-200 hover:bg-white dark:hover:bg-gray-700"
                   placeholder="Enter your name"
                   required
                 />
               </div>
             </div>
 
-            {/* Email Input */}
+            {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Email Address
               </label>
               <div className="relative">
@@ -150,7 +151,7 @@ const ManageProfile = ({ isOpen, onClose }) => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-gray-50 hover:bg-white"
+                  className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-gray-50 dark:bg-gray-800 dark:text-gray-200 hover:bg-white dark:hover:bg-gray-700"
                   placeholder="Enter your email"
                   required
                 />
@@ -161,10 +162,10 @@ const ManageProfile = ({ isOpen, onClose }) => {
           {/* Divider */}
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
+              <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="px-4 bg-white text-sm font-semibold text-gray-500 flex items-center gap-2">
+              <span className="px-4 bg-white dark:bg-gray-900 text-sm font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-2">
                 <FaLock className="text-blue-600" />
                 Change Password (Optional)
               </span>
@@ -172,95 +173,58 @@ const ManageProfile = ({ isOpen, onClose }) => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Current Password */}
+
+            {/* Old Password */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Current Password
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <FaLock className="text-gray-400 text-sm" />
-                </div>
-                <input
-                  type={showOldPassword ? "text" : "password"}
-                  name="oldPassword"
-                  value={formData.oldPassword}
-                  onChange={handleChange}
-                  className="w-full pl-11 pr-11 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-gray-50 hover:bg-white"
-                  placeholder="Enter current password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowOldPassword(!showOldPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showOldPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-                </button>
-              </div>
+              <input
+                type={showOldPassword ? "text" : "password"}
+                name="oldPassword"
+                value={formData.oldPassword}
+                onChange={handleChange}
+                className="w-full pl-11 pr-11 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 dark:text-gray-200"
+                placeholder="Enter current password"
+              />
             </div>
 
             {/* New Password */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 New Password
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <FaLock className="text-gray-400 text-sm" />
-                </div>
-                <input
-                  type={showNewPassword ? "text" : "password"}
-                  name="newPassword"
-                  value={formData.newPassword}
-                  onChange={handleChange}
-                  className="w-full pl-11 pr-11 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-gray-50 hover:bg-white"
-                  placeholder="Enter new password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showNewPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-                </button>
-              </div>
+              <input
+                type={showNewPassword ? "text" : "password"}
+                name="newPassword"
+                value={formData.newPassword}
+                onChange={handleChange}
+                className="w-full pl-11 pr-11 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 dark:text-gray-200"
+                placeholder="Enter new password"
+              />
             </div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Buttons */}
           <div className="flex gap-3 mt-8">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3.5 text-base rounded-xl border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all font-semibold text-gray-700"
+              className="flex-1 px-6 py-3.5 text-base rounded-xl border-2 border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-semibold text-gray-700 dark:text-gray-300"
             >
               Cancel
             </button>
+
             <button
               type="submit"
               disabled={isLoading || isSaved}
               className={`flex-1 px-6 py-3.5 text-base rounded-xl font-semibold text-white transition-all flex items-center justify-center gap-2 shadow-lg ${
                 isSaved
-                  ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
-                  : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-              } disabled:opacity-60 disabled:cursor-not-allowed`}
+                  ? "bg-gradient-to-r from-green-500 to-emerald-600"
+                  : "bg-gradient-to-r from-blue-600 to-indigo-600"
+              }`}
             >
-              {isLoading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Updating...
-                </>
-              ) : isSaved ? (
-                <>
-                  <FaCheck />
-                  Saved!
-                </>
-              ) : (
-                <>
-                  <FaSave />
-                  Update Profile
-                </>
-              )}
+              {isLoading ? "Updating..." : isSaved ? "Saved!" : "Update Profile"}
             </button>
           </div>
         </form>

@@ -2,8 +2,9 @@ import Venue from "../models/Venue.js";
 import AddVenue from "../models/AddVenue.js";
 import imagekit from "../configs/imagekit.js";
 
-// ------------------ Register Venue ------------------
 
+
+// ------------------ Register Venue ------------------
 
 export const registerVenue = async (req, res) => {
   try {

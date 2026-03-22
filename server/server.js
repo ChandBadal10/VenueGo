@@ -16,6 +16,7 @@ import "./configs/passport.js"
 import trainerRouter from "./routes/addTrainer.js";
 import trainerBookingRouter from "./routes/trainerBookingRoutes.js";
 import { startReminderScheduler } from "./configs/reminderScheduler.js";
+import paymentRouter from "./routes/paymentRoutes.js";
 
 
 // Initialize Express App
@@ -23,8 +24,11 @@ const app = express()
 await connectDB();
 
 
-const allowedOrigins = ["http://localhost:5173"]
-
+// ✅ Updated: Added Render frontend URL
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://venuego-frontend.onrender.com"
+]
 // Middleware
 app.use(cors({origin: allowedOrigins, credentials: true}));
 app.use(express.json());
@@ -41,7 +45,8 @@ app.use("/api/addvenue", addVenueRouter);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/trainers", trainerRouter);
-app.use("/api/trainer-bookings", trainerBookingRouter)
+app.use("/api/trainer-bookings", trainerBookingRouter);
+app.use("/api/payment", paymentRouter);
 
 
 
