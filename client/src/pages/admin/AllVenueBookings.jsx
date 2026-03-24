@@ -15,18 +15,10 @@ const AllBookings = () => {
 
   const fetchBookings = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:3000/api/bookings/admin/all",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (res.data.success) {
-        setBookings(res.data.bookings);
-      }
+      const res = await axios.get("http://localhost:3000/api/bookings/admin/all", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.data.success) setBookings(res.data.bookings);
     } catch (error) {
       toast.error("Failed to load bookings");
     } finally {
@@ -34,14 +26,10 @@ const AllBookings = () => {
     }
   };
 
-  useEffect(() => {
-    fetchBookings();
-  }, []);
+  useEffect(() => { fetchBookings(); }, []);
 
-  // Get unique venues for filter
   const uniqueVenues = ["all", ...new Set(bookings.map(b => b.venueName).filter(Boolean))];
 
-  // Filter bookings
   const filteredBookings = bookings.filter((booking) => {
     const query = searchQuery.toLowerCase();
     const matchesSearch =
@@ -49,87 +37,76 @@ const AllBookings = () => {
       booking.userId?.email?.toLowerCase().includes(query) ||
       booking.venueName?.toLowerCase().includes(query) ||
       booking.date?.includes(query);
-
     const matchesVenue = venueFilter === "all" || booking.venueName === venueFilter;
-
     return matchesSearch && matchesVenue;
   });
 
-  // Sort bookings
   const sortedBookings = [...filteredBookings].sort((a, b) => {
-    if (sortBy === "date") {
-      return new Date(b.date) - new Date(a.date);
-    } else if (sortBy === "price") {
-      return b.price - a.price;
-    } else if (sortBy === "name") {
-      return (a.userId?.name || "").localeCompare(b.userId?.name || "");
-    }
+    if (sortBy === "date") return new Date(b.date) - new Date(a.date);
+    else if (sortBy === "price") return b.price - a.price;
+    else if (sortBy === "name") return (a.userId?.name || "").localeCompare(b.userId?.name || "");
     return 0;
   });
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading bookings...</p>
+          <p className="text-gray-600 dark:text-gray-300 text-lg">Loading bookings...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
       <div className="max-w-7xl mx-auto">
+
         {/* Title */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">All Bookings</h1>
-          <p className="text-gray-600 mt-1">View and manage all bookings for your venues</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">All Bookings</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">View and manage all bookings for your venues</p>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search Bar */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search by customer name, email, venue, or date..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
               />
             </div>
-
-            {/* Venue Filter */}
             <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300 w-5 h-5" />
               <select
                 value={venueFilter}
                 onChange={(e) => setVenueFilter(e.target.value)}
-                className="pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none appearance-none bg-white cursor-pointer min-w-[200px]"
+                className="pl-10 pr-10 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none appearance-none cursor-pointer min-w-[200px]"
               >
                 <option value="all">All Venues</option>
                 {uniqueVenues.slice(1).map(venue => (
                   <option key={venue} value={venue}>{venue}</option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300 w-5 h-5 pointer-events-none" />
             </div>
-
-            {/* Sort By */}
             <div className="relative">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="pl-4 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none appearance-none bg-white cursor-pointer min-w-[180px]"
+                className="pl-4 pr-10 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none appearance-none cursor-pointer min-w-[180px]"
               >
                 <option value="date">Sort by Date</option>
                 <option value="price">Sort by Price</option>
                 <option value="name">Sort by Name</option>
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300 w-5 h-5 pointer-events-none" />
             </div>
           </div>
         </div>
@@ -139,18 +116,17 @@ const AllBookings = () => {
           {sortedBookings.map((booking) => (
             <div
               key={booking._id}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition"
             >
               <div className="p-6">
                 <div className="flex flex-col lg:flex-row gap-6">
-                  {/* Customer Info */}
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                        <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-1">
                           {booking.userId?.name || "N/A"}
                         </h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                           <Mail className="w-4 h-4" />
                           <span>{booking.userId?.email || "N/A"}</span>
                         </div>
@@ -160,44 +136,41 @@ const AllBookings = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-3">
                         <div className="flex items-center gap-3 text-sm">
-                          <div className="bg-indigo-100 p-2 rounded-lg">
-                            <MapPin className="w-4 h-4 text-indigo-600" />
+                          <div className="bg-indigo-100 dark:bg-indigo-700/20 p-2 rounded-lg">
+                            <MapPin className="w-4 h-4 text-indigo-600 dark:text-indigo-300" />
                           </div>
                           <div>
-                            <p className="text-gray-500 text-xs">Venue</p>
-                            <p className="font-medium text-gray-900">{booking.venueName}</p>
+                            <p className="text-gray-500 dark:text-gray-400 text-xs">Venue</p>
+                            <p className="font-medium text-gray-900 dark:text-white">{booking.venueName}</p>
                           </div>
                         </div>
-
                         <div className="flex items-center gap-3 text-sm">
-                          <div className="bg-green-100 p-2 rounded-lg">
-                            <DollarSign className="w-4 h-4 text-green-600" />
+                          <div className="bg-green-100 dark:bg-green-700/20 p-2 rounded-lg">
+                            <DollarSign className="w-4 h-4 text-green-600 dark:text-green-300" />
                           </div>
                           <div>
-                            <p className="text-gray-500 text-xs">Amount</p>
-                            <p className="font-bold text-green-600">Rs {booking.price}</p>
+                            <p className="text-gray-500 dark:text-gray-400 text-xs">Amount</p>
+                            <p className="font-bold text-green-600 dark:text-green-300">Rs {booking.price}</p>
                           </div>
                         </div>
                       </div>
-
                       <div className="space-y-3">
                         <div className="flex items-center gap-3 text-sm">
-                          <div className="bg-blue-100 p-2 rounded-lg">
-                            <Calendar className="w-4 h-4 text-blue-600" />
+                          <div className="bg-blue-100 dark:bg-blue-700/20 p-2 rounded-lg">
+                            <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-300" />
                           </div>
                           <div>
-                            <p className="text-gray-500 text-xs">Date</p>
-                            <p className="font-medium text-gray-900">{booking.date}</p>
+                            <p className="text-gray-500 dark:text-gray-400 text-xs">Date</p>
+                            <p className="font-medium text-gray-900 dark:text-white">{booking.date}</p>
                           </div>
                         </div>
-
                         <div className="flex items-center gap-3 text-sm">
-                          <div className="bg-purple-100 p-2 rounded-lg">
-                            <Clock className="w-4 h-4 text-purple-600" />
+                          <div className="bg-purple-100 dark:bg-purple-700/20 p-2 rounded-lg">
+                            <Clock className="w-4 h-4 text-purple-600 dark:text-purple-300" />
                           </div>
                           <div>
-                            <p className="text-gray-500 text-xs">Time</p>
-                            <p className="font-medium text-gray-900">
+                            <p className="text-gray-500 dark:text-gray-400 text-xs">Time</p>
+                            <p className="font-medium text-gray-900 dark:text-white">
                               {booking.startTime} – {booking.endTime}
                             </p>
                           </div>
@@ -206,11 +179,10 @@ const AllBookings = () => {
                     </div>
                   </div>
 
-                  {/* Actions */}
                   <div className="flex lg:flex-col gap-2 lg:justify-center">
                     <button
                       onClick={() => setSelectedBooking(booking)}
-                      className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm whitespace-nowrap"
+                      className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition text-sm whitespace-nowrap"
                     >
                       <Eye className="w-4 h-4" />
                       View Details
@@ -222,13 +194,13 @@ const AllBookings = () => {
           ))}
 
           {sortedBookings.length === 0 && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
               <div className="max-w-sm mx-auto">
-                <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Calendar className="w-8 h-8 text-gray-400" />
+                <div className="bg-gray-100 dark:bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Calendar className="w-8 h-8 text-gray-400 dark:text-gray-300" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No bookings found</h3>
-                <p className="text-gray-500">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No bookings found</h3>
+                <p className="text-gray-500 dark:text-gray-400">
                   {searchQuery || venueFilter !== "all"
                     ? "Try adjusting your search criteria or filters"
                     : "No bookings have been made yet"}
@@ -241,14 +213,14 @@ const AllBookings = () => {
 
       {/* Detail Modal */}
       {selectedBooking && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-start mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Booking Details</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Booking Details</h2>
                 <button
                   onClick={() => setSelectedBooking(null)}
-                  className="text-gray-400 hover:text-gray-600 transition"
+                  className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white transition"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -259,46 +231,46 @@ const AllBookings = () => {
               <div className="space-y-6">
                 <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg p-6 text-white">
                   <h3 className="text-xl font-bold mb-2">{selectedBooking.venueName}</h3>
-                  <p className="text-indigo-100">Booking ID: {selectedBooking._id}</p>
+                  <p className="text-indigo-200 text-xs">Booking ID: {selectedBooking._id}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                      <User className="w-5 h-5 text-indigo-600" />
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <User className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                       Customer Information
                     </h3>
-                    <div className="space-y-2 text-sm bg-gray-50 p-4 rounded-lg">
+                    <div className="space-y-3 text-sm bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                       <div>
-                        <span className="text-gray-600">Name:</span>
-                        <p className="font-medium text-gray-900">{selectedBooking.userId?.name || "N/A"}</p>
+                        <span className="text-gray-400 dark:text-gray-300 text-xs uppercase tracking-wide">Name</span>
+                        <p className="font-medium text-gray-900 dark:text-white">{selectedBooking.userId?.name || "N/A"}</p>
                       </div>
                       <div>
-                        <span className="text-gray-600">Email:</span>
-                        <p className="font-medium text-gray-900">{selectedBooking.userId?.email || "N/A"}</p>
+                        <span className="text-gray-400 dark:text-gray-300 text-xs uppercase tracking-wide">Email</span>
+                        <p className="font-medium text-gray-900 dark:text-white">{selectedBooking.userId?.email || "N/A"}</p>
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-indigo-600" />
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                       Booking Information
                     </h3>
-                    <div className="space-y-2 text-sm bg-gray-50 p-4 rounded-lg">
+                    <div className="space-y-3 text-sm bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                       <div>
-                        <span className="text-gray-600">Date:</span>
-                        <p className="font-medium text-gray-900">{selectedBooking.date}</p>
+                        <span className="text-gray-400 dark:text-gray-300 text-xs uppercase tracking-wide">Date</span>
+                        <p className="font-medium text-gray-900 dark:text-white">{selectedBooking.date}</p>
                       </div>
                       <div>
-                        <span className="text-gray-600">Time:</span>
-                        <p className="font-medium text-gray-900">
+                        <span className="text-gray-400 dark:text-gray-300 text-xs uppercase tracking-wide">Time</span>
+                        <p className="font-medium text-gray-900 dark:text-white">
                           {selectedBooking.startTime} – {selectedBooking.endTime}
                         </p>
                       </div>
                       <div>
-                        <span className="text-gray-600">Amount:</span>
-                        <p className="font-bold text-green-600 text-lg">Rs {selectedBooking.price}</p>
+                        <span className="text-gray-400 dark:text-gray-300 text-xs uppercase tracking-wide">Amount</span>
+                        <p className="font-bold text-green-600 dark:text-green-300 text-lg">Rs {selectedBooking.price}</p>
                       </div>
                     </div>
                   </div>
@@ -307,7 +279,7 @@ const AllBookings = () => {
                 <div className="flex gap-3 pt-4">
                   <button
                     onClick={() => setSelectedBooking(null)}
-                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                   >
                     Close
                   </button>

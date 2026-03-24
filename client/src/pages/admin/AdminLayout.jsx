@@ -4,19 +4,23 @@ import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Top Navbar */}
+    // ✅ h-screen + overflow-hidden locks the total height to the viewport
+    <div className="h-screen overflow-hidden flex flex-col bg-gray-50 dark:bg-gray-900">
+
+      {/* Navbar — fixed at top, never scrolls */}
       <AdminNavbar />
 
-      {/* Sidebar + Content */}
-      <div className="flex flex-1">
-        {/* Sidebar */}
+      {/* Sidebar + Content row */}
+      <div className="flex flex-1 overflow-hidden">
+
+        {/* Sidebar — fixed height, never scrolls */}
         <AdminSidebar />
 
-        {/* Main Content */}
-        <main className="flex-1 p-8 overflow-y-auto">
+        {/* Main Content — only this scrolls */}
+        <main className="flex-1 overflow-y-auto p-8">
           <Outlet />
         </main>
+
       </div>
     </div>
   );

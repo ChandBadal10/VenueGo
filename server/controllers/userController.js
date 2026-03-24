@@ -87,7 +87,7 @@ export const loginUser = async (req, res) => {
             success: true,
             token,
             role: user.role,
-            user: { id: user._Id, name: user.name, email: user.email, role: user.role}
+            user: { id: user._id, name: user.name, email: user.email, role: user.role}
         })
 
 
@@ -136,7 +136,7 @@ export const sendResetOtp = async (req, res) => {
         const otp = String(Math.floor(100000 + Math.random() * 900000));
 
         user.resetOtp = otp;
-        user.resetOtpExpiredAt = Date.now() + 15 * 60 * 1000;
+        user.resetOtpExpiredAt = Date.now() + 5 * 60 * 1000;
 
         await user.save();
 
