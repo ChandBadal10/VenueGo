@@ -24,7 +24,7 @@ const app = express()
 await connectDB();
 
 
-// ✅ Updated: Added Render frontend URL
+//  Updated: Added Render frontend URL
 const allowedOrigins = [
   "http://localhost:5173",
   "https://venuego-frontend.onrender.com"
@@ -55,9 +55,10 @@ app.use ("/auth", authRoute)
 app.use(passport.initialize());
 
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, ()=> {
+if (process.env.NODE_ENV !== "test") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    startReminderScheduler()
-})
+    startReminderScheduler(); // run scheduler only in production/dev
+  });
+}

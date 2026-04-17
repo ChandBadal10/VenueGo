@@ -21,7 +21,7 @@ export const generateSignature = (req, res) => {
       });
     }
 
-    // ✅ No spaces — exact format eSewa expects
+    //  No spaces — exact format eSewa expects
     const dataToSign = `total_amount=${total_amount},transaction_uuid=${transaction_uuid},product_code=${product_code}`;
 
     const signature = crypto
@@ -29,7 +29,7 @@ export const generateSignature = (req, res) => {
       .update(dataToSign)
       .digest("base64");
 
-    // ✅ All zero-value fields sent as strings to avoid type issues
+    //  All zero-value fields sent as strings to avoid type issues
     return res.json({
       success: true,
       paymentUrl: process.env.ESEWA_PAYMENT_URL,

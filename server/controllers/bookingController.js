@@ -17,22 +17,12 @@ function toUTC(date, time) {
   return new Date(localMs - TIMEZONE_OFFSET_MINUTES * 60 * 1000);
 }
 
-/**
- * CREATE BOOKING (WITH CAPACITY CHECK)
- */
+
+  // CREATE BOOKING WITH CAPACITY CHECK
+
 export const createBooking = async (req, res) => {
   try {
-    const {
-      venueId,
-      venueName,
-      venueType,
-      price,
-      date,
-      startTime,
-      endTime,
-      location,
-      description,
-    } = req.body;
+    const { venueId, venueName, venueType, price, date, startTime, endTime, location, description, } = req.body;
 
     if (!venueId || !date || !startTime || !endTime) {
       return res.json({ success: false, message: "Missing booking details" });
@@ -181,7 +171,6 @@ export const getBookedSlots = async (req, res) => {
 
 
 //get all bookings for venue owner
-
 
 export const getOwnerBookings = async (req, res) => {
   try {

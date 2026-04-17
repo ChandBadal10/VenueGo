@@ -61,7 +61,7 @@ const addVenueSchema = new mongoose.Schema(
 
     capacity: {
       type: Number,
-      default: 1
+      required: true,
     },
 
     bookedCount: {

@@ -107,6 +107,7 @@ const Navbar = () => {
           <Link to="/venues" className="hover:text-blue-600 transition">Venues</Link>
           <Link to="/my-bookings" className="hover:text-blue-600 transition">My Bookings</Link>
           <Link to="/trainer" className="hover:text-blue-600 transition">Trainer</Link>
+          {/* <Link to="/tournament" className="hover:text-blue-600 transition">Tournament</Link> */}
         </div>
 
         {/* Right Side Actions */}

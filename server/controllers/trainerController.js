@@ -6,23 +6,11 @@ export const createTrainer = async (req, res) => {
   try {
     const ownerId = req.user.id;
 
-    const {
-      name,
-      email,
-      phone,
-      experience,
-      specialization,
-      bio,
-      venueName,
-      slotDate,
-      startTime,
-      endTime,
-      price,
-    } = req.body;
+    const { name, email, phone, experience, specialization, bio, venueName, slotDate, startTime, endTime, price, } = req.body;
 
     if (
-      !name || !email || !phone || !experience || !specialization ||
-      !venueName || !slotDate || !startTime || !endTime || !price
+      !name || !email || !phone || !experience || !specialization || !venueName || !slotDate || !startTime || !endTime || !price
+
     ) {
       return res.status(400).json({ success: false, message: "Fill all required fields" });
     }
@@ -106,9 +94,7 @@ export const getAllTrainers = async (req, res) => {
 export const getOwnerTrainers = async (req, res) => {
   try {
     const ownerId = req.user.id;
-    const trainers = await Trainer.find({ owner: ownerId }).sort({
-      createdAt: -1,
-    });
+    const trainers = await Trainer.find({ owner: ownerId }).sort({ createdAt: -1, });
     return res.json({ success: true, trainers });
   } catch (error) {
     console.error("Get Owner Trainers Error:", error);

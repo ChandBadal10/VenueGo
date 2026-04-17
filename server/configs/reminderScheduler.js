@@ -5,7 +5,7 @@ import User from "../models/User.js";
 import transporter from "../configs/nodeMailer.js";
 
 export const startReminderScheduler = () => {
-  // console.log("✅ Reminder scheduler started...");
+  // console.log(" Reminder scheduler started...");
 
   // Runs every minute
   cron.schedule("* * * * *", async () => {

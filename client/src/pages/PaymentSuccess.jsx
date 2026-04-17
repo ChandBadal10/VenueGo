@@ -67,7 +67,7 @@ const PaymentSuccess = () => {
             paymentStatus: "paid",
           },
           {
-            // ✅ Explicitly pass token in case AppContext hasn't hydrated yet
+            //  Explicitly pass token in case AppContext hasn't hydrated yet
             headers: {
               Authorization: authToken,
             },
@@ -75,7 +75,7 @@ const PaymentSuccess = () => {
         );
 
         if (response.data.success) {
-          localStorage.removeItem("orderInfo"); // ✅ clean up
+          localStorage.removeItem("orderInfo"); //  clean up
           setStatus("success");
           toast.success("Booking confirmed!");
         } else {

@@ -12,7 +12,7 @@ const generateToken = (admin) => {
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-// -------------------- Admin Login -------------------- //
+// Admin Login
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -41,7 +41,7 @@ export const adminLogin = async (req, res) => {
   }
 };
 
-// -------------------- Pending Venues -------------------- //
+// Pending Venues
 export const getPendingVenues = async (req, res) => {
   try {
     const venues = await Venue.find({ status: "pending" });
@@ -52,7 +52,7 @@ export const getPendingVenues = async (req, res) => {
   }
 };
 
-// -------------------- Approve Venue -------------------- //
+//  Approve Venue
 export const approveVenue = async (req, res) => {
   try {
     const { venueId } = req.body;
@@ -78,7 +78,7 @@ export const approveVenue = async (req, res) => {
   }
 };
 
-// -------------------- Reject Venue -------------------- //
+//  Reject Venue
 export const rejectVenue = async (req, res) => {
   try {
     const { venueId } = req.body;
@@ -104,11 +104,11 @@ export const rejectVenue = async (req, res) => {
   }
 };
 
-// -------------------- Admin Dashboard -------------------- //
+//  Admin Dashboard
 export const getAdminDashboard = async (req, res) => {
   try {
 
-    // ── Basic stats ────────────────────────────────────────────────────────
+    //  Basic stats
     const totalUsers = await User.countDocuments({ role: "user" });
     const ownerIds = await AddVenue.distinct("ownerId");
     const totalVenueOwners = ownerIds.length;
@@ -121,7 +121,7 @@ export const getAdminDashboard = async (req, res) => {
     ]);
     const totalRevenue = revenueResult[0]?.total || 0;
 
-    // ── Monthly Revenue ────────────────────────────────────────────────────
+    // Monthly Revenue
     const monthlyRevenue = await Booking.aggregate([
       { $match: { status: "confirmed" } },
       {
@@ -140,7 +140,7 @@ export const getAdminDashboard = async (req, res) => {
       revenue: item.revenue
     }));
 
-    // ── Weekly Bookings (current week only — resets every Sunday) ──────────
+    //  Weekly Bookings (current week only — resets every Sunday)
     // Get this week's Sunday at midnight (00:00:00)
     const now = new Date();
     const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, ...
@@ -192,7 +192,7 @@ export const getAdminDashboard = async (req, res) => {
       totalBookings,
       totalRevenue,
       revenueData,
-      bookingData, // ✅ always 7 items, resets every Sunday
+      bookingData, //  always 7 items, resets every Sunday
       weekStart: weekStart.toISOString(), // optional: useful for frontend to display
       admin: {
         id: req.admin._id,
@@ -207,6 +207,9 @@ export const getAdminDashboard = async (req, res) => {
   }
 };
 
+
+
+
 // -------------------- Manage Venues -------------------- //
 export const getAllVenuesAdmin = async (req, res) => {
   try {
@@ -218,6 +221,9 @@ export const getAllVenuesAdmin = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+
+//delete venue by admin
 
 export const deleteVenueGroupAdmin = async (req, res) => {
   try {
@@ -242,6 +248,11 @@ export const deleteVenueGroupAdmin = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+
+
+// toggle venue availability by admin
+
 
 export const toggleVenueAvailabilityAdmin = async (req, res) => {
   try {

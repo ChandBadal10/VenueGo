@@ -1,7 +1,7 @@
 import AddVenue from "../models/AddVenue.js";
 import imagekit from "../configs/imagekit.js";
 
-// Create Venue
+// CREATE VENUE
 export const createVenue = async (req, res) => {
   try {
     const {
@@ -13,81 +13,77 @@ export const createVenue = async (req, res) => {
       endTime,
       location,
       description,
+      capacity,
     } = req.body;
 
     if (
-      !venueName ||
-      !venueType ||
+      !venueName?.trim() ||
+      !venueType?.trim() ||
       !price ||
       !date ||
       !startTime ||
       !endTime ||
-      !location ||
-      !description
+      !location?.trim() ||
+      !description?.trim() ||
+      capacity === undefined ||
+      capacity === ""
     ) {
-      return res.json({ success: false, message: "All fields are required" });
+      return res.json({
+        success: false,
+        message: "All fields are required",
+      });
     }
 
-    // Image upload
+    // Validate capacity is a positive number
+    if (isNaN(Number(capacity)) || Number(capacity) <= 0) {
+      return res.json({
+        success: false,
+        message: "Capacity must be a positive number",
+      });
+    }
+
+    // IMAGE UPLOAD
     let imageUrl = "";
+
     if (req.file) {
       try {
         const base64File = req.file.buffer.toString("base64");
-        const imageUpload = await imagekit.upload({
+
+        const upload = await imagekit.upload({
           file: base64File,
           fileName: `${Date.now()}_${req.file.originalname}`,
           folder: "/venues",
         });
-        imageUrl = imageUpload.url;
-        console.log("Image uploaded successfully:", imageUrl);
+
+        imageUrl = upload.url;
       } catch (err) {
-        console.error("ImageKit upload failed:", err);
         return res.json({
           success: false,
-          message: "Image upload failed: " + (err.message || "Unknown error"),
+          message: "Image upload failed",
         });
       }
     } else {
-      return res.json({ success: false, message: "Venue image is required" });
+      return res.json({
+        success: false,
+        message: "Venue image is required",
+      });
     }
 
-    // AUTO-SET CAPACITY & USER BOOKING LIMIT BASED ON VENUE TYPE
-    let capacity = 1;
-    let maxBookingsPerUser = 0; // 0 = unlimited
-
-    const venueTypeLower = venueType.toLowerCase();
-
-    if (
-      venueTypeLower.includes("gym") ||
-      venueTypeLower.includes("swimming") ||
-      venueTypeLower.includes("pool") ||
-      venueTypeLower.includes("fitness") ||
-      venueTypeLower.includes("yoga") ||
-      venueTypeLower.includes("dance")
-    ) {
-      capacity = 20;
-      maxBookingsPerUser = 5; //  LIMIT ADDED HERE
-    }
-
-    console.log(
-      `Venue type: ${venueType}, Capacity: ${capacity}, Max/User: ${maxBookingsPerUser}`,
-    );
-
+    // CREATE VENUE
     const venue = await AddVenue.create({
       ownerId: req.user._id,
-      venueName,
-      venueType,
-      price,
+      venueName: venueName.trim(),
+      venueType: venueType.trim(),
+      price: Number(price),
       date,
       startTime,
       endTime,
-      location,
-      description,
+      location: location.trim(),
+      description: description.trim(),
       image: imageUrl,
       isActive: true,
-      capacity: capacity,
+      capacity: Number(capacity),
       bookedCount: 0,
-      maxBookingsPerUser,
     });
 
     return res.json({
@@ -104,10 +100,7 @@ export const createVenue = async (req, res) => {
   }
 };
 
-
-
-
-// Get All Venues for user
+// GET ALL VENUES
 export const getAllVenues = async (req, res) => {
   try {
     const venues = await AddVenue.find().sort({ createdAt: -1 });
@@ -117,22 +110,25 @@ export const getAllVenues = async (req, res) => {
   }
 };
 
-// Get Owner Venues
+// OWNER VENUES
 export const getOwnerVenues = async (req, res) => {
   try {
-    const ownerId = req.user._id;
-    const venues = await AddVenue.find({ ownerId }).sort({ createdAt: -1 });
+    const venues = await AddVenue.find({ ownerId: req.user._id }).sort({
+      createdAt: -1,
+    });
     return res.json({ success: true, venues });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
 };
 
-// Get Single Venue by ID
+// SINGLE VENUE
 export const getVenueById = async (req, res) => {
   try {
     const venue = await AddVenue.findById(req.params.id);
-    if (!venue) return res.json({ success: false, message: "Venue not found" });
+    if (!venue) {
+      return res.json({ success: false, message: "Venue not found" });
+    }
 
     return res.json({ success: true, venue });
   } catch (error) {
@@ -140,14 +136,15 @@ export const getVenueById = async (req, res) => {
   }
 };
 
-// Get Venue With All Slots
+// VENUE WITH SLOTS
 export const getVenueWithSlots = async (req, res) => {
   try {
     const { id } = req.params;
 
     const mainVenue = await AddVenue.findById(id);
-    if (!mainVenue)
+    if (!mainVenue) {
       return res.json({ success: false, message: "Venue not found" });
+    }
 
     const allSlots = await AddVenue.find({
       venueName: mainVenue.venueName,
@@ -155,8 +152,12 @@ export const getVenueWithSlots = async (req, res) => {
     }).sort({ date: 1, startTime: 1 });
 
     const slotsByDate = {};
+
     allSlots.forEach((slot) => {
-      if (!slotsByDate[slot.date]) slotsByDate[slot.date] = [];
+      if (!slotsByDate[slot.date]) {
+        slotsByDate[slot.date] = [];
+      }
+
       slotsByDate[slot.date].push({
         _id: slot._id,
         startTime: slot.startTime,
@@ -167,7 +168,7 @@ export const getVenueWithSlots = async (req, res) => {
         image: slot.image,
         capacity: slot.capacity,
         bookedCount: slot.bookedCount,
-        maxBookingsPerUser: slot.maxBookingsPerUser,
+        availableSlots: slot.capacity - slot.bookedCount,
       });
     });
 
