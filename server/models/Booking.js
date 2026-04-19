@@ -54,15 +54,28 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    startDateTime: { type: Date, required: true },
-    reminderTime: { type: Date, required: true },
-    reminderSent: { type: Boolean, default: false },
+
+    startDateTime: {
+       type: Date,
+       required: true
+    },
+
+    reminderTime: {
+      type: Date,
+      required: true
+    },
+
+    reminderSent: {
+      type: Boolean,
+      default: false
+    },
 
     status: {
       type: String,
       enum: ["confirmed", "cancelled"],
       default: "confirmed"
-    }
+    },
+
   },
   { timestamps: true }
 );

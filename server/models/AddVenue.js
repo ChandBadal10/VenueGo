@@ -72,7 +72,19 @@ const addVenueSchema = new mongoose.Schema(
     maxBookingsPerUser: {
     type: Number,
     default: 0,
-},
+    },
+
+    averageRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+
+    totalReviews: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

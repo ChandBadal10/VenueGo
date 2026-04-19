@@ -17,7 +17,7 @@ import trainerRouter from "./routes/addTrainer.js";
 import trainerBookingRouter from "./routes/trainerBookingRoutes.js";
 import { startReminderScheduler } from "./configs/reminderScheduler.js";
 import paymentRouter from "./routes/paymentRoutes.js";
-
+import reviewRouter from "./routes/reviewRoutes.js";
 
 // Initialize Express App
 const app = express()
@@ -47,7 +47,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/trainers", trainerRouter);
 app.use("/api/trainer-bookings", trainerBookingRouter);
 app.use("/api/payment", paymentRouter);
-
+app.use("/api/reviews", reviewRouter);
 
 
 
