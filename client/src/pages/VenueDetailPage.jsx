@@ -21,14 +21,31 @@ const VenueDetails = () => {
   const [totalReviews, setTotalReviews] = useState(0);
   const [breakdown, setBreakdown] = useState({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
   const [canReview, setCanReview] = useState(false);
-  const [alreadyReviewed, setAlreadyReviewed] = useState(false);
   const [reviewLoading, setReviewLoading] = useState(false);
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
   const [deletingId, setDeletingId] = useState(null);
+
+  // ─── EDIT STATES ──────────────────────────────────────────────────────────
+  const [editingReviewId, setEditingReviewId] = useState(null); // which review is being edited
+  const [editRating, setEditRating] = useState(0);
+  const [editHoverRating, setEditHoverRating] = useState(0);
+  const [editComment, setEditComment] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
   // ─────────────────────────────────────────────────────────────────────────
+
+  // Get logged in user id safely from token
+  const getLoggedInUserId = () => {
+    try {
+      if (!token) return null;
+      return JSON.parse(atob(token.split(".")[1]))?.id;
+    } catch {
+      return null;
+    }
+  };
+  const loggedInUserId = getLoggedInUserId();
 
   const formatTime = (time24) => {
     if (!time24) return "";
@@ -113,7 +130,6 @@ const VenueDetails = () => {
         const res = await axios.get(`/api/reviews/can-review/${id}`);
         if (res.data.success) {
           setCanReview(res.data.canReview);
-          setAlreadyReviewed(res.data.alreadyReviewed);
         }
       } catch (err) {
         console.error("Error checking review eligibility:", err);
@@ -192,7 +208,7 @@ const VenueDetails = () => {
     setTimeout(() => { setBookingLoading(false); navigate("/esewa-payment"); }, 800);
   };
 
-  // ─── SUBMIT REVIEW ────────────────────────────────────────────────────────
+  // ─── SUBMIT NEW REVIEW ────────────────────────────────────────────────────
   const handleSubmitReview = async () => {
     if (!token) { toast.error("Please login to leave a review"); navigate("/login"); return; }
     if (userRating === 0) { toast.error("Please select a star rating"); return; }
@@ -211,8 +227,6 @@ const VenueDetails = () => {
         setReviews((prev) => [res.data.review, ...prev]);
         setAverageRating(res.data.averageRating);
         setTotalReviews(res.data.totalReviews);
-        setCanReview(false);
-        setAlreadyReviewed(true);
         setUserRating(0);
         setComment("");
       } else {
@@ -222,6 +236,53 @@ const VenueDetails = () => {
       toast.error("Something went wrong");
     } finally {
       setReviewLoading(false);
+    }
+  };
+
+  // ─── START EDITING A REVIEW ───────────────────────────────────────────────
+  const handleStartEdit = (review) => {
+    setEditingReviewId(review._id);
+    setEditRating(review.rating);
+    setEditComment(review.comment);
+    setEditHoverRating(0);
+  };
+
+  // ─── CANCEL EDITING ───────────────────────────────────────────────────────
+  const handleCancelEdit = () => {
+    setEditingReviewId(null);
+    setEditRating(0);
+    setEditComment("");
+    setEditHoverRating(0);
+  };
+
+  // ─── SAVE EDITED REVIEW ───────────────────────────────────────────────────
+  const handleSaveEdit = async (reviewId) => {
+    if (editRating === 0) { toast.error("Please select a star rating"); return; }
+    if (editComment.trim().length < 5) { toast.error("Comment must be at least 5 characters"); return; }
+
+    setEditLoading(true);
+    try {
+      const res = await axios.put(`/api/reviews/${reviewId}`, {
+        rating: editRating,
+        comment: editComment.trim(),
+      });
+
+      if (res.data.success) {
+        toast.success("Review updated!");
+        // Replace the old review with the updated one in the list
+        setReviews((prev) =>
+          prev.map((r) => (r._id === reviewId ? res.data.review : r))
+        );
+        setAverageRating(res.data.averageRating);
+        setTotalReviews(res.data.totalReviews);
+        handleCancelEdit();
+      } else {
+        toast.error(res.data.message || "Failed to update review");
+      }
+    } catch (err) {
+      toast.error("Something went wrong");
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -235,8 +296,6 @@ const VenueDetails = () => {
         setReviews((prev) => prev.filter((r) => r._id !== reviewId));
         setAverageRating(res.data.averageRating);
         setTotalReviews(res.data.totalReviews);
-        setCanReview(true);
-        setAlreadyReviewed(false);
       } else {
         toast.error(res.data.message);
       }
@@ -247,7 +306,7 @@ const VenueDetails = () => {
     }
   };
 
-  // ─── STAR COMPONENT ───────────────────────────────────────────────────────
+  // ─── STAR DISPLAY COMPONENT ───────────────────────────────────────────────
   const StarDisplay = ({ rating, size = "w-4 h-4" }) => (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => (
@@ -260,6 +319,37 @@ const VenueDetails = () => {
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       ))}
+    </div>
+  );
+
+  // ─── INTERACTIVE STAR PICKER ──────────────────────────────────────────────
+  const StarPicker = ({ value, hover, onRate, onHover, onLeave }) => (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          onClick={() => onRate(star)}
+          onMouseEnter={() => onHover(star)}
+          onMouseLeave={onLeave}
+          className="focus:outline-none transition-transform hover:scale-110"
+        >
+          <svg
+            className={`w-8 h-8 transition-colors ${
+              star <= (hover || value) ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"
+            }`}
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        </button>
+      ))}
+      {(hover || value) > 0 && (
+        <span className="ml-2 text-sm text-gray-600 dark:text-gray-400 self-center">
+          {["", "Poor", "Fair", "Good", "Very Good", "Excellent"][hover || value]}
+        </span>
+      )}
     </div>
   );
 
@@ -291,8 +381,8 @@ const VenueDetails = () => {
               </div>
               <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{venue.venueName}</h1>
 
-              {/* ✅ Average rating shown under venue name */}
-              {totalReviews > 0 && (
+              {/* Average rating shown under venue name */}
+              {totalReviews > 0 ? (
                 <div className="flex items-center gap-2 mb-3">
                   <StarDisplay rating={Math.round(averageRating)} size="w-5 h-5" />
                   <span className="text-yellow-500 font-bold">{averageRating}</span>
@@ -300,6 +390,8 @@ const VenueDetails = () => {
                     ({totalReviews} review{totalReviews !== 1 ? "s" : ""})
                   </span>
                 </div>
+              ) : (
+                <p className="text-sm text-gray-400 mb-3">No reviews yet</p>
               )}
 
               <p className="text-gray-600 dark:text-gray-400 flex items-center mb-4">
@@ -346,7 +438,6 @@ const VenueDetails = () => {
             </div>
           ) : (
             <>
-              {/* Date Selector */}
               <div className="mb-6">
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                   Select Date ({availableDates.length} date{availableDates.length !== 1 ? "s" : ""} available)
@@ -371,7 +462,6 @@ const VenueDetails = () => {
                 </div>
               </div>
 
-              {/* Time Slots */}
               <div className="mb-6">
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Select Time Slot</label>
                 {currentSlots.length === 0 ? (
@@ -434,7 +524,6 @@ const VenueDetails = () => {
                 )}
               </div>
 
-              {/* Selected Slot Summary */}
               {selectedSlot && (
                 <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 mb-6">
                   <div className="flex justify-between items-center mb-2">
@@ -464,7 +553,6 @@ const VenueDetails = () => {
                 </div>
               )}
 
-              {/* Book Now Button */}
               <button
                 onClick={handleBookNow}
                 disabled={bookingLoading || !selectedSlot}
@@ -491,19 +579,13 @@ const VenueDetails = () => {
           {/* Rating Summary */}
           {totalReviews > 0 && (
             <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-5 mb-6 flex flex-col md:flex-row gap-6 items-center">
-
-              {/* Big average number */}
               <div className="text-center flex-shrink-0">
-                <div className="text-6xl font-bold text-gray-800 dark:text-white">
-                  {averageRating}
-                </div>
+                <div className="text-6xl font-bold text-gray-800 dark:text-white">{averageRating}</div>
                 <StarDisplay rating={Math.round(averageRating)} size="w-6 h-6" />
                 <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   {totalReviews} review{totalReviews !== 1 ? "s" : ""}
                 </div>
               </div>
-
-              {/* Star breakdown bars */}
               <div className="flex-1 w-full">
                 {[5, 4, 3, 2, 1].map((star) => (
                   <div key={star} className="flex items-center gap-2 mb-1.5">
@@ -514,70 +596,34 @@ const VenueDetails = () => {
                     <div className="flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                       <div
                         className="bg-yellow-400 h-2 rounded-full transition-all duration-500"
-                        style={{
-                          width: totalReviews > 0
-                            ? `${((breakdown[star] || 0) / totalReviews) * 100}%`
-                            : "0%",
-                        }}
+                        style={{ width: totalReviews > 0 ? `${((breakdown[star] || 0) / totalReviews) * 100}%` : "0%" }}
                       />
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400 w-4">
-                      {breakdown[star] || 0}
-                    </span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 w-4">{breakdown[star] || 0}</span>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* ✅ Review Form — only shown if user can review */}
+          {/* ✅ Submit new review form */}
           {token && canReview && (
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-5 mb-6">
               <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-4">
                 Leave a Review
               </h3>
-
-              {/* Interactive star selector */}
               <div className="mb-4">
-                <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">
-                  Your Rating
-                </label>
-                <div className="flex gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setUserRating(star)}
-                      onMouseEnter={() => setHoverRating(star)}
-                      onMouseLeave={() => setHoverRating(0)}
-                      className="focus:outline-none transition-transform hover:scale-110"
-                    >
-                      <svg
-                        className={`w-9 h-9 transition-colors ${
-                          star <= (hoverRating || userRating)
-                            ? "text-yellow-400"
-                            : "text-gray-300 dark:text-gray-600"
-                        }`}
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    </button>
-                  ))}
-                  {userRating > 0 && (
-                    <span className="ml-2 text-sm text-gray-600 dark:text-gray-400 self-center">
-                      {["", "Poor", "Fair", "Good", "Very Good", "Excellent"][userRating]}
-                    </span>
-                  )}
-                </div>
+                <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">Your Rating</label>
+                <StarPicker
+                  value={userRating}
+                  hover={hoverRating}
+                  onRate={setUserRating}
+                  onHover={setHoverRating}
+                  onLeave={() => setHoverRating(0)}
+                />
               </div>
-
-              {/* Comment box */}
               <div className="mb-4">
-                <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">
-                  Your Comment
-                </label>
+                <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">Your Comment</label>
                 <textarea
                   rows={3}
                   placeholder="Share your experience at this venue..."
@@ -588,11 +634,8 @@ const VenueDetails = () => {
                              bg-white dark:bg-gray-700 text-gray-800 dark:text-white
                              text-sm outline-none focus:border-blue-400 resize-none"
                 />
-                <div className="text-right text-xs text-gray-400 mt-1">
-                  {comment.length}/500
-                </div>
+                <div className="text-right text-xs text-gray-400 mt-1">{comment.length}/500</div>
               </div>
-
               <button
                 onClick={handleSubmitReview}
                 disabled={reviewLoading || userRating === 0}
@@ -607,19 +650,7 @@ const VenueDetails = () => {
             </div>
           )}
 
-          {/* Already reviewed message */}
-          {token && alreadyReviewed && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-xl p-4 mb-6 flex items-center gap-2">
-              <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <p className="text-sm text-green-700 dark:text-green-400 font-medium">
-                You have already reviewed this venue. Delete your review to submit a new one.
-              </p>
-            </div>
-          )}
-
-          {/* Not logged in message */}
+          {/* Not logged in */}
           {!token && (
             <div className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl p-4 mb-6 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -647,48 +678,112 @@ const VenueDetails = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {reviews.map((review) => (
-                <div
-                  key={review._id}
-                  className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-5 border border-gray-100 dark:border-gray-700"
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      {/* Avatar */}
-                      <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                        {review.userId?.name?.charAt(0)?.toUpperCase() || "U"}
+              {reviews.map((review) => {
+                const isOwner = review.userId?._id === loggedInUserId;
+                const isEditing = editingReviewId === review._id;
+
+                return (
+                  <div
+                    key={review._id}
+                    className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-5 border border-gray-100 dark:border-gray-700"
+                  >
+                    {/* Review header */}
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                          {review.userId?.name?.charAt(0)?.toUpperCase() || "U"}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-800 dark:text-white text-sm">
+                            {review.userId?.name || "User"}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {new Date(review.createdAt).toLocaleDateString("en-US", {
+                              month: "short", day: "numeric", year: "numeric",
+                            })}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold text-gray-800 dark:text-white text-sm">
-                          {review.userId?.name || "User"}
-                        </p>
-                        <p className="text-xs text-gray-400">
-                          {new Date(review.createdAt).toLocaleDateString("en-US", {
-                            month: "short", day: "numeric", year: "numeric",
-                          })}
-                        </p>
-                      </div>
+
+                      {/* Edit + Delete buttons for review owner */}
+                      {isOwner && !isEditing && (
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => handleStartEdit(review)}
+                            className="text-xs text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 font-medium transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteReview(review._id)}
+                            disabled={deletingId === review._id}
+                            className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors disabled:opacity-50"
+                          >
+                            {deletingId === review._id ? "Deleting..." : "Delete"}
+                          </button>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Delete button — only shown for the review author */}
-                    {token && review.userId?._id === JSON.parse(atob(token.split(".")[1]))?.id && (
-                      <button
-                        onClick={() => handleDeleteReview(review._id)}
-                        disabled={deletingId === review._id}
-                        className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors disabled:opacity-50"
-                      >
-                        {deletingId === review._id ? "Deleting..." : "Delete"}
-                      </button>
+                    {/* ✅ EDIT MODE — inline edit form */}
+                    {isEditing ? (
+                      <div className="mt-3 border-t border-gray-200 dark:border-gray-600 pt-4">
+                        <div className="mb-3">
+                          <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Edit Rating</label>
+                          <StarPicker
+                            value={editRating}
+                            hover={editHoverRating}
+                            onRate={setEditRating}
+                            onHover={setEditHoverRating}
+                            onLeave={() => setEditHoverRating(0)}
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Edit Comment</label>
+                          <textarea
+                            rows={3}
+                            value={editComment}
+                            onChange={(e) => setEditComment(e.target.value)}
+                            maxLength={500}
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                       bg-white dark:bg-gray-700 text-gray-800 dark:text-white
+                                       text-sm outline-none focus:border-blue-400 resize-none"
+                          />
+                          <div className="text-right text-xs text-gray-400 mt-1">{editComment.length}/500</div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleSaveEdit(review._id)}
+                            disabled={editLoading}
+                            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                              editLoading
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-blue-600 text-white hover:bg-blue-700"
+                            }`}
+                          >
+                            {editLoading ? "Saving..." : "Save Changes"}
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            disabled={editLoading}
+                            className="px-4 py-2 rounded-lg text-xs font-semibold bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Normal view mode */
+                      <>
+                        <StarDisplay rating={review.rating} size="w-4 h-4" />
+                        <p className="text-gray-700 dark:text-gray-300 text-sm mt-2 leading-relaxed">
+                          {review.comment}
+                        </p>
+                      </>
                     )}
                   </div>
-
-                  <StarDisplay rating={review.rating} size="w-4 h-4" />
-
-                  <p className="text-gray-700 dark:text-gray-300 text-sm mt-2 leading-relaxed">
-                    {review.comment}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
