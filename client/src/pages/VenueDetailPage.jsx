@@ -29,21 +29,29 @@ const VenueDetails = () => {
   const [deletingId, setDeletingId] = useState(null);
 
   // ─── EDIT STATES ──────────────────────────────────────────────────────────
-  const [editingReviewId, setEditingReviewId] = useState(null); // which review is being edited
+  const [editingReviewId, setEditingReviewId] = useState(null);
   const [editRating, setEditRating] = useState(0);
   const [editHoverRating, setEditHoverRating] = useState(0);
   const [editComment, setEditComment] = useState("");
   const [editLoading, setEditLoading] = useState(false);
-  // ─────────────────────────────────────────────────────────────────────────
 
-  // Get logged in user id safely from token
+  // ─── ANIMATION STATES ─────────────────────────────────────────────────────
+  const [pageVisible, setPageVisible] = useState(false);
+  const [slotsVisible, setSlotsVisible] = useState(false);
+  const [reviewsVisible, setReviewsVisible] = useState(false);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPageVisible(true), 100);
+    const t2 = setTimeout(() => setSlotsVisible(true), 300);
+    const t3 = setTimeout(() => setReviewsVisible(true), 500);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+
   const getLoggedInUserId = () => {
     try {
       if (!token) return null;
       return JSON.parse(atob(token.split(".")[1]))?.id;
-    } catch {
-      return null;
-    }
+    } catch { return null; }
   };
   const loggedInUserId = getLoggedInUserId();
 
@@ -122,15 +130,13 @@ const VenueDetails = () => {
     fetchReviews();
   }, [id]);
 
-  // ─── CHECK IF USER CAN REVIEW ─────────────────────────────────────────────
+  // ─── CHECK CAN REVIEW ─────────────────────────────────────────────────────
   useEffect(() => {
     const checkCanReview = async () => {
       if (!token) return;
       try {
         const res = await axios.get(`/api/reviews/can-review/${id}`);
-        if (res.data.success) {
-          setCanReview(res.data.canReview);
-        }
+        if (res.data.success) setCanReview(res.data.canReview);
       } catch (err) {
         console.error("Error checking review eligibility:", err);
       }
@@ -191,7 +197,6 @@ const VenueDetails = () => {
     if (!token) { toast.error("Please login to book a venue"); navigate("/login"); return; }
     if (!selectedSlot) { toast.error("Please select a time slot"); return; }
     if (isSlotFull(selectedSlot._id)) { toast.error("This slot is fully booked"); return; }
-
     setBookingLoading(true);
     localStorage.setItem("orderInfo", JSON.stringify({
       venueId: selectedSlot._id,
@@ -208,20 +213,14 @@ const VenueDetails = () => {
     setTimeout(() => { setBookingLoading(false); navigate("/esewa-payment"); }, 800);
   };
 
-  // ─── SUBMIT NEW REVIEW ────────────────────────────────────────────────────
+  // ─── REVIEW HANDLERS ──────────────────────────────────────────────────────
   const handleSubmitReview = async () => {
     if (!token) { toast.error("Please login to leave a review"); navigate("/login"); return; }
     if (userRating === 0) { toast.error("Please select a star rating"); return; }
     if (comment.trim().length < 5) { toast.error("Comment must be at least 5 characters"); return; }
-
     setReviewLoading(true);
     try {
-      const res = await axios.post("/api/reviews/create", {
-        venueId: id,
-        rating: userRating,
-        comment: comment.trim(),
-      });
-
+      const res = await axios.post("/api/reviews/create", { venueId: id, rating: userRating, comment: comment.trim() });
       if (res.data.success) {
         toast.success("Review submitted!");
         setReviews((prev) => [res.data.review, ...prev]);
@@ -232,14 +231,10 @@ const VenueDetails = () => {
       } else {
         toast.error(res.data.message || "Failed to submit review");
       }
-    } catch (err) {
-      toast.error("Something went wrong");
-    } finally {
-      setReviewLoading(false);
-    }
+    } catch { toast.error("Something went wrong"); }
+    finally { setReviewLoading(false); }
   };
 
-  // ─── START EDITING A REVIEW ───────────────────────────────────────────────
   const handleStartEdit = (review) => {
     setEditingReviewId(review._id);
     setEditRating(review.rating);
@@ -247,7 +242,6 @@ const VenueDetails = () => {
     setEditHoverRating(0);
   };
 
-  // ─── CANCEL EDITING ───────────────────────────────────────────────────────
   const handleCancelEdit = () => {
     setEditingReviewId(null);
     setEditRating(0);
@@ -255,38 +249,25 @@ const VenueDetails = () => {
     setEditHoverRating(0);
   };
 
-  // ─── SAVE EDITED REVIEW ───────────────────────────────────────────────────
   const handleSaveEdit = async (reviewId) => {
     if (editRating === 0) { toast.error("Please select a star rating"); return; }
     if (editComment.trim().length < 5) { toast.error("Comment must be at least 5 characters"); return; }
-
     setEditLoading(true);
     try {
-      const res = await axios.put(`/api/reviews/${reviewId}`, {
-        rating: editRating,
-        comment: editComment.trim(),
-      });
-
+      const res = await axios.put(`/api/reviews/${reviewId}`, { rating: editRating, comment: editComment.trim() });
       if (res.data.success) {
         toast.success("Review updated!");
-        // Replace the old review with the updated one in the list
-        setReviews((prev) =>
-          prev.map((r) => (r._id === reviewId ? res.data.review : r))
-        );
+        setReviews((prev) => prev.map((r) => (r._id === reviewId ? res.data.review : r)));
         setAverageRating(res.data.averageRating);
         setTotalReviews(res.data.totalReviews);
         handleCancelEdit();
       } else {
         toast.error(res.data.message || "Failed to update review");
       }
-    } catch (err) {
-      toast.error("Something went wrong");
-    } finally {
-      setEditLoading(false);
-    }
+    } catch { toast.error("Something went wrong"); }
+    finally { setEditLoading(false); }
   };
 
-  // ─── DELETE REVIEW ────────────────────────────────────────────────────────
   const handleDeleteReview = async (reviewId) => {
     setDeletingId(reviewId);
     try {
@@ -299,20 +280,17 @@ const VenueDetails = () => {
       } else {
         toast.error(res.data.message);
       }
-    } catch (err) {
-      toast.error("Failed to delete review");
-    } finally {
-      setDeletingId(null);
-    }
+    } catch { toast.error("Failed to delete review"); }
+    finally { setDeletingId(null); }
   };
 
-  // ─── STAR DISPLAY COMPONENT ───────────────────────────────────────────────
+  // ─── SUB-COMPONENTS ───────────────────────────────────────────────────────
   const StarDisplay = ({ rating, size = "w-4 h-4" }) => (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => (
         <svg
           key={star}
-          className={`${size} ${star <= rating ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}`}
+          className={`${size} transition-colors duration-200 ${star <= rating ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}`}
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -322,7 +300,6 @@ const VenueDetails = () => {
     </div>
   );
 
-  // ─── INTERACTIVE STAR PICKER ──────────────────────────────────────────────
   const StarPicker = ({ value, hover, onRate, onHover, onLeave }) => (
     <div className="flex gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
@@ -332,10 +309,10 @@ const VenueDetails = () => {
           onClick={() => onRate(star)}
           onMouseEnter={() => onHover(star)}
           onMouseLeave={onLeave}
-          className="focus:outline-none transition-transform hover:scale-110"
+          className="focus:outline-none transition-transform hover:scale-125 active:scale-110"
         >
           <svg
-            className={`w-8 h-8 transition-colors ${
+            className={`w-8 h-8 transition-colors duration-150 ${
               star <= (hover || value) ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"
             }`}
             fill="currentColor"
@@ -346,14 +323,22 @@ const VenueDetails = () => {
         </button>
       ))}
       {(hover || value) > 0 && (
-        <span className="ml-2 text-sm text-gray-600 dark:text-gray-400 self-center">
+        <span className="ml-2 text-sm text-gray-600 dark:text-gray-400 self-center" style={{ animation: "fadeIn 0.2s ease" }}>
           {["", "Poor", "Fair", "Good", "Very Good", "Excellent"][hover || value]}
         </span>
       )}
     </div>
   );
 
-  if (loading) return <h2 className="p-10 text-center text-gray-800 dark:text-gray-200">Loading venue...</h2>;
+  if (loading) return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-gray-600 dark:text-gray-300">Loading venue...</p>
+      </div>
+    </div>
+  );
+
   if (!venue) return <h2 className="p-10 text-center text-red-600">Venue not found</h2>;
 
   const slotsByDate = getSlotsByDate();
@@ -362,26 +347,33 @@ const VenueDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10 px-4 transition-colors">
-      <div className="max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+      <div
+        className="max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+        style={{
+          opacity: pageVisible ? 1 : 0,
+          transform: pageVisible ? "translateY(0)" : "translateY(24px)",
+          transition: "opacity 0.6s ease, transform 0.6s ease",
+        }}
+      >
 
         {/* ─── Top section — image + info ─────────────────────────────────── */}
         <div className="grid md:grid-cols-2 gap-6 p-6">
-          <div>
+          <div className="overflow-hidden rounded-lg group">
             <img
               src={venue.image || "https://images.unsplash.com/photo-1600679472829-3044539ce8ed"}
               alt={venue.venueName}
-              className="rounded-lg w-full h-[350px] object-cover"
+              className="rounded-lg w-full h-[350px] object-cover transition-transform duration-500 group-hover:scale-105"
             />
           </div>
 
           <div className="flex flex-col justify-between">
             <div>
-              <div className="inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-sm font-medium mb-2">
+              <div className="inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-sm font-medium mb-2
+                transition-transform duration-200 hover:scale-105">
                 {venue.venueType}
               </div>
               <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{venue.venueName}</h1>
 
-              {/* Average rating shown under venue name */}
               {totalReviews > 0 ? (
                 <div className="flex items-center gap-2 mb-3">
                   <StarDisplay rating={Math.round(averageRating)} size="w-5 h-5" />
@@ -402,7 +394,8 @@ const VenueDetails = () => {
               </p>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">{venue.description}</p>
               {venue.capacity > 1 && (
-                <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-3 mb-4">
+                <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-3 mb-4
+                  transition-all duration-300 hover:shadow-md">
                   <p className="text-purple-700 dark:text-purple-300 font-medium text-sm">
                     <svg className="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
@@ -412,7 +405,9 @@ const VenueDetails = () => {
                 </div>
               )}
             </div>
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700
+              transition-all duration-300 hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500">
               <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                 {(() => {
                   if (!allVenues.length) return "Rs 0 / hour";
@@ -429,7 +424,14 @@ const VenueDetails = () => {
         <div className="border-t border-gray-200 dark:border-gray-700"></div>
 
         {/* ─── Booking Slots Section ───────────────────────────────────────── */}
-        <div className="p-6">
+        <div
+          className="p-6"
+          style={{
+            opacity: slotsVisible ? 1 : 0,
+            transform: slotsVisible ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 0.6s ease, transform 0.6s ease",
+          }}
+        >
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Available Booking Slots</h2>
 
           {availableDates.length === 0 ? (
@@ -447,10 +449,10 @@ const VenueDetails = () => {
                     <button
                       key={date}
                       onClick={() => { setSelectedDate(date); setSelectedSlot(null); }}
-                      className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all ${
+                      className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 active:scale-95 ${
                         selectedDate === date
-                          ? "bg-blue-600 text-white border-blue-600"
-                          : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-blue-400"
+                          ? "bg-blue-600 text-white border-blue-600 shadow-md"
+                          : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-blue-400 hover:-translate-y-0.5"
                       }`}
                     >
                       <div className="text-xs font-medium">{formatDate(date)}</div>
@@ -482,12 +484,15 @@ const VenueDetails = () => {
                           key={index}
                           onClick={() => !isFull && setSelectedSlot(slot)}
                           disabled={isFull}
-                          className={`p-4 rounded-lg border-2 transition-all ${
+                          style={{
+                            animation: `fadeInSlot 0.4s ease ${index * 60}ms both`,
+                          }}
+                          className={`p-4 rounded-lg border-2 transition-all duration-200 ${
                             isFull
                               ? "bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700 cursor-not-allowed opacity-60"
                               : isSelected
-                              ? "bg-green-50 dark:bg-green-900/20 border-green-500 dark:border-green-500 shadow-md"
-                              : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:border-blue-400 hover:shadow-sm"
+                              ? "bg-green-50 dark:bg-green-900/20 border-green-500 dark:border-green-500 shadow-md scale-[1.02]"
+                              : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:border-blue-400 hover:shadow-md hover:-translate-y-0.5 active:scale-95"
                           }`}
                         >
                           <div className={`font-semibold text-sm ${
@@ -525,7 +530,10 @@ const VenueDetails = () => {
               </div>
 
               {selectedSlot && (
-                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 mb-6">
+                <div
+                  className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 mb-6"
+                  style={{ animation: "fadeIn 0.3s ease" }}
+                >
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-700 dark:text-gray-300 font-medium">Date:</span>
                     <span className="text-gray-900 dark:text-white font-bold">
@@ -556,10 +564,10 @@ const VenueDetails = () => {
               <button
                 onClick={handleBookNow}
                 disabled={bookingLoading || !selectedSlot}
-                className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
+                className={`w-full py-4 rounded-lg font-bold text-lg transition-all duration-300 ${
                   bookingLoading || !selectedSlot
                     ? "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700 active:scale-95"
+                    : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95"
                 }`}
               >
                 {bookingLoading ? "Processing..." : !selectedSlot ? "Select a Slot to Book" : "Confirm Booking & Pay with eSewa"}
@@ -571,14 +579,20 @@ const VenueDetails = () => {
         <div className="border-t border-gray-200 dark:border-gray-700"></div>
 
         {/* ─── REVIEWS SECTION ─────────────────────────────────────────────── */}
-        <div className="p-6">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-            Reviews & Ratings
-          </h2>
+        <div
+          className="p-6"
+          style={{
+            opacity: reviewsVisible ? 1 : 0,
+            transform: reviewsVisible ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 0.6s ease, transform 0.6s ease",
+          }}
+        >
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Reviews & Ratings</h2>
 
           {/* Rating Summary */}
           {totalReviews > 0 && (
-            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-5 mb-6 flex flex-col md:flex-row gap-6 items-center">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-5 mb-6 flex flex-col md:flex-row gap-6 items-center
+              transition-all duration-300 hover:shadow-md">
               <div className="text-center flex-shrink-0">
                 <div className="text-6xl font-bold text-gray-800 dark:text-white">{averageRating}</div>
                 <StarDisplay rating={Math.round(averageRating)} size="w-6 h-6" />
@@ -593,9 +607,9 @@ const VenueDetails = () => {
                     <svg className="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
-                    <div className="flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                    <div className="flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-2 overflow-hidden">
                       <div
-                        className="bg-yellow-400 h-2 rounded-full transition-all duration-500"
+                        className="bg-yellow-400 h-2 rounded-full transition-all duration-700 ease-out"
                         style={{ width: totalReviews > 0 ? `${((breakdown[star] || 0) / totalReviews) * 100}%` : "0%" }}
                       />
                     </div>
@@ -606,12 +620,11 @@ const VenueDetails = () => {
             </div>
           )}
 
-          {/* ✅ Submit new review form */}
+          {/* Submit review form */}
           {token && canReview && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-5 mb-6">
-              <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-4">
-                Leave a Review
-              </h3>
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-5 mb-6
+              transition-all duration-300 hover:shadow-md">
+              <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-4">Leave a Review</h3>
               <div className="mb-4">
                 <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">Your Rating</label>
                 <StarPicker
@@ -631,18 +644,19 @@ const VenueDetails = () => {
                   onChange={(e) => setComment(e.target.value)}
                   maxLength={500}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600
-                             bg-white dark:bg-gray-700 text-gray-800 dark:text-white
-                             text-sm outline-none focus:border-blue-400 resize-none"
+                    bg-white dark:bg-gray-700 text-gray-800 dark:text-white
+                    text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800
+                    resize-none transition-all duration-200"
                 />
                 <div className="text-right text-xs text-gray-400 mt-1">{comment.length}/500</div>
               </div>
               <button
                 onClick={handleSubmitReview}
                 disabled={reviewLoading || userRating === 0}
-                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
                   reviewLoading || userRating === 0
                     ? "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700 active:scale-95"
+                    : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md active:scale-95"
                 }`}
               >
                 {reviewLoading ? "Submitting..." : "Submit Review"}
@@ -654,7 +668,10 @@ const VenueDetails = () => {
           {!token && (
             <div className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl p-4 mb-6 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                <button onClick={() => navigate("/login")} className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+                <button
+                  onClick={() => navigate("/login")}
+                  className="text-blue-600 dark:text-blue-400 font-semibold hover:underline transition-colors duration-200"
+                >
                   Log in
                 </button>{" "}
                 and book this venue to leave a review.
@@ -662,7 +679,7 @@ const VenueDetails = () => {
             </div>
           )}
 
-          {/* ─── Reviews List ─────────────────────────────────────────────── */}
+          {/* Reviews List */}
           {reviewsLoading ? (
             <div className="flex justify-center py-8">
               <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -678,46 +695,43 @@ const VenueDetails = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {reviews.map((review) => {
+              {reviews.map((review, index) => {
                 const isOwner = review.userId?._id === loggedInUserId;
                 const isEditing = editingReviewId === review._id;
 
                 return (
                   <div
                     key={review._id}
-                    className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-5 border border-gray-100 dark:border-gray-700"
+                    className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-5 border border-gray-100 dark:border-gray-700
+                      transition-all duration-300 hover:shadow-md hover:border-gray-200 dark:hover:border-gray-600"
+                    style={{ animation: `fadeIn 0.4s ease ${index * 80}ms both` }}
                   >
-                    {/* Review header */}
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                        <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0
+                          transition-transform duration-200 hover:scale-110">
                           {review.userId?.name?.charAt(0)?.toUpperCase() || "U"}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-800 dark:text-white text-sm">
-                            {review.userId?.name || "User"}
-                          </p>
+                          <p className="font-semibold text-gray-800 dark:text-white text-sm">{review.userId?.name || "User"}</p>
                           <p className="text-xs text-gray-400">
-                            {new Date(review.createdAt).toLocaleDateString("en-US", {
-                              month: "short", day: "numeric", year: "numeric",
-                            })}
+                            {new Date(review.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                           </p>
                         </div>
                       </div>
 
-                      {/* Edit + Delete buttons for review owner */}
                       {isOwner && !isEditing && (
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => handleStartEdit(review)}
-                            className="text-xs text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 font-medium transition-colors"
+                            className="text-xs text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 font-medium transition-colors duration-200 hover:underline"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDeleteReview(review._id)}
                             disabled={deletingId === review._id}
-                            className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors disabled:opacity-50"
+                            className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors duration-200 disabled:opacity-50"
                           >
                             {deletingId === review._id ? "Deleting..." : "Delete"}
                           </button>
@@ -725,9 +739,8 @@ const VenueDetails = () => {
                       )}
                     </div>
 
-                    {/* ✅ EDIT MODE — inline edit form */}
                     {isEditing ? (
-                      <div className="mt-3 border-t border-gray-200 dark:border-gray-600 pt-4">
+                      <div className="mt-3 border-t border-gray-200 dark:border-gray-600 pt-4" style={{ animation: "fadeIn 0.25s ease" }}>
                         <div className="mb-3">
                           <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Edit Rating</label>
                           <StarPicker
@@ -746,8 +759,9 @@ const VenueDetails = () => {
                             onChange={(e) => setEditComment(e.target.value)}
                             maxLength={500}
                             className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                                       bg-white dark:bg-gray-700 text-gray-800 dark:text-white
-                                       text-sm outline-none focus:border-blue-400 resize-none"
+                              bg-white dark:bg-gray-700 text-gray-800 dark:text-white
+                              text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800
+                              resize-none transition-all duration-200"
                           />
                           <div className="text-right text-xs text-gray-400 mt-1">{editComment.length}/500</div>
                         </div>
@@ -755,10 +769,10 @@ const VenueDetails = () => {
                           <button
                             onClick={() => handleSaveEdit(review._id)}
                             disabled={editLoading}
-                            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
                               editLoading
                                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                : "bg-blue-600 text-white hover:bg-blue-700"
+                                : "bg-blue-600 text-white hover:bg-blue-700 active:scale-95"
                             }`}
                           >
                             {editLoading ? "Saving..." : "Save Changes"}
@@ -766,19 +780,17 @@ const VenueDetails = () => {
                           <button
                             onClick={handleCancelEdit}
                             disabled={editLoading}
-                            className="px-4 py-2 rounded-lg text-xs font-semibold bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all"
+                            className="px-4 py-2 rounded-lg text-xs font-semibold bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300
+                              hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-200 active:scale-95"
                           >
                             Cancel
                           </button>
                         </div>
                       </div>
                     ) : (
-                      /* Normal view mode */
                       <>
                         <StarDisplay rating={review.rating} size="w-4 h-4" />
-                        <p className="text-gray-700 dark:text-gray-300 text-sm mt-2 leading-relaxed">
-                          {review.comment}
-                        </p>
+                        <p className="text-gray-700 dark:text-gray-300 text-sm mt-2 leading-relaxed">{review.comment}</p>
                       </>
                     )}
                   </div>
@@ -787,9 +799,18 @@ const VenueDetails = () => {
             </div>
           )}
         </div>
-        {/* ─── END REVIEWS SECTION ─────────────────────────────────────────── */}
-
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInSlot {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };

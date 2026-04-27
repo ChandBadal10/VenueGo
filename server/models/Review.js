@@ -43,7 +43,7 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ✅ NO unique index — one user can leave multiple reviews
+//  NO unique index here — one user can leave multiple reviews
 
 const Review = mongoose.models.Review || mongoose.model("Review", reviewSchema);
 
