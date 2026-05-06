@@ -52,6 +52,7 @@ export const generateSignature = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to generate payment signature",
+
     });
   }
 };
