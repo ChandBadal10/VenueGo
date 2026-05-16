@@ -1,13 +1,12 @@
 import express from "express"
 import "dotenv/config";
 import cors from "cors";
+import https from "https"; // ✅ added
 import connectDB from "./configs/db.js";
 import userRouter from "./routes/userRoutes.js";
 import adminRouter from "./routes/adminRoutes.js"
 import venueRouter from "./routes/venueRoutes.js";
 import addVenueRouter from "./routes/addVenueRoutes.js";
-
-
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js"
 import authRoute from "./routes/authRoute.js";
@@ -19,24 +18,25 @@ import { startReminderScheduler } from "./configs/reminderScheduler.js";
 import paymentRouter from "./routes/paymentRoutes.js";
 import reviewRouter from "./routes/reviewRoutes.js";
 
-// Initialize Express App
-const app = express()
+const app = express();
 await connectDB();
 
-
-//  Updated: Added Render frontend URL
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://venuego-frontend.onrender.com"
-]
-// Middleware
-app.use(cors({origin: allowedOrigins, credentials: true}));
+  "https://venuego-client.onrender.com"
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
+app.use(passport.initialize());
 
-
-
-app.get("/", (req,res)=> res.send("Server is running"))
-
+app.get("/", (req, res) => res.send("Server is running"));
 
 app.use("/api/user", userRouter);
 app.use("/api/admin", adminRouter);
@@ -48,17 +48,23 @@ app.use("/api/trainers", trainerRouter);
 app.use("/api/trainer-bookings", trainerBookingRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/reviews", reviewRouter);
-
-
-
-app.use ("/auth", authRoute)
-app.use(passport.initialize());
-
+app.use("/auth", authRoute);
 
 if (process.env.NODE_ENV !== "test") {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    startReminderScheduler(); // run scheduler only in production/dev
+    startReminderScheduler();
+
+    // ✅ Keep-alive ping — prevents Render free tier from sleeping
+    setInterval(() => {
+      https.get("https://venuego-backend.onrender.com", (res) => {
+        console.log(`Keep-alive ping: ${res.statusCode}`);
+      }).on("error", (err) => {
+        console.log("Ping error:", err.message);
+      });
+    }, 14 * 60 * 1000); // every 14 minutes
   });
 }
+
+export default app;

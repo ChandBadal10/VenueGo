@@ -182,13 +182,13 @@ export default function Login() {
           </button>
 
           <button
-            onClick={() => window.open("http://localhost:3000/auth/google", "_self")}
-            type="button"
-            className="w-full py-3 rounded-lg border border-gray-300 dark:border-gray-700 flex items-center justify-center gap-3 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
-          >
-            <FcGoogle className="text-xl" />
-            Continue with Google
-          </button>
+  onClick={() => window.open(`${backendUrl}/auth/google`, "_self")}
+  type="button"
+  className="w-full py-3 rounded-lg border border-gray-300 dark:border-gray-700 flex items-center justify-center gap-3 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
+>
+  <FcGoogle className="text-xl" />
+  Continue with Google
+</button>
 
           <div className="mt-3 text-center text-sm text-gray-500 dark:text-gray-400">
             {state === "register" ? (
