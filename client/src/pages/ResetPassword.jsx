@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const ResetPassword = () => {
-  const backendUrl = useContext(AppContext)?.backendUrl || "http://localhost:3000";
+  const backendUrl = useContext(AppContext)?.backendUrl || "https://venuego-backend.onrender.com";
   axios.defaults.withCredentials = true;
 
   const navigate = useNavigate();

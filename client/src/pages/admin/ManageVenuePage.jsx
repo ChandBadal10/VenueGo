@@ -16,7 +16,7 @@ const ManageVenuePage = () => {
 
   const fetchVenues = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/admin/venues", {
+      const res = await axios.get("https://venuego-backend.onrender.com/api/admin/venues", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.data.success) {
@@ -72,7 +72,7 @@ const ManageVenuePage = () => {
     if (!selectedVenue) return;
     try {
       const res = await axios.delete(
-        "http://localhost:3000/api/admin/venue/delete-group",
+        "https://venuego-backend.onrender.com/api/admin/venue/delete-group",
         { headers: { Authorization: `Bearer ${token}` }, data: selectedVenue }
       );
       if (res.data.success) {
@@ -93,7 +93,7 @@ const ManageVenuePage = () => {
   const toggleAvailability = async (venueName, location) => {
     try {
       const res = await axios.patch(
-        "http://localhost:3000/api/admin/venue/toggle-availability",
+        "https://venuego-backend.onrender.com/api/admin/venue/toggle-availability",
         { venueName, location },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -42,7 +42,7 @@ const RegistrationPage = () => {
 
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/api/venue/register", {
+      const res = await fetch("https://venuego-backend.onrender.com/api/venue/register", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: data,

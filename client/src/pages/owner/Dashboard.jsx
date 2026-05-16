@@ -23,7 +23,7 @@ const Dashboard = () => {
 
   const fetchDashboard = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/dashboard/owner", {
+      const res = await axios.get("https://venuego-backend.onrender.com/api/dashboard/owner", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

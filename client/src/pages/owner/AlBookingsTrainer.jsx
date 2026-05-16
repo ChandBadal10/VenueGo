@@ -15,7 +15,7 @@ const TrainerBookings = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(
-        "http://localhost:3000/api/trainer-bookings/trainer",
+        "https://venuego-backend.onrender.com/api/trainer-bookings/trainer",
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.data.success) {

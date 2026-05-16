@@ -37,7 +37,7 @@ const TrainerDetails = () => {
   useEffect(() => {
     const fetchTrainer = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/trainers/${id}`);
+        const res = await axios.get(`https://venuego-backend.onrender.com/api/trainers/${id}`);
         if (res.data.success) {
           setTrainer(res.data.trainer);
           const slots = res.data.trainer.slots || [];
@@ -119,7 +119,7 @@ const TrainerDetails = () => {
       };
 
       const response = await axios.post(
-        "http://localhost:3000/api/trainer-bookings/create",
+        "https://venuego-backend.onrender.com/api/trainer-bookings/create",
         bookingData,
         {
           headers: {

@@ -25,7 +25,7 @@ export default function Trainer() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/trainers/all")
+      .get("https://venuego-backend.onrender.com/api/trainers/all")
       .then((res) => { if (res.data.success) setTrainers(res.data.trainers); })
       .catch(console.error)
       .finally(() => setLoading(false));

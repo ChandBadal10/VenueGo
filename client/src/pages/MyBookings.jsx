@@ -100,7 +100,7 @@ const MyBookings = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/bookings/user", {
+      .get("https://venuego-backend.onrender.com/api/bookings/user", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => { if (res.data.success) setBookings(res.data.bookings); })

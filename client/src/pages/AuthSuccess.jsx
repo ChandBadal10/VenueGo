@@ -21,7 +21,7 @@ const AuthSuccess = () => {
 
         try {
           const res = await axios.get(
-            "http://localhost:3000/auth/me"
+            "https://venuego-backend.onrender.com/auth/me"
           );
 
           if (res.data.success) {

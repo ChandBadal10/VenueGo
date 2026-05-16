@@ -15,7 +15,7 @@ const AllBookings = () => {
 
   const fetchBookings = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/bookings/admin/all", {
+      const res = await axios.get("https://venuego-backend.onrender.com/api/bookings/admin/all", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.data.success) setBookings(res.data.bookings);

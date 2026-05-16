@@ -13,7 +13,7 @@ const AdminApproveVenues = () => {
   useEffect(() => {
     const fetchVenues = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/admin/venues/pending", {
+        const res = await fetch("https://venuego-backend.onrender.com/api/admin/venues/pending", {
           headers: { Authorization: "Bearer " + localStorage.getItem("token") },
         });
         const data = await res.json();
@@ -31,7 +31,7 @@ const AdminApproveVenues = () => {
 
   const handleApprove = async (id) => {
     try {
-      const res = await fetch("http://localhost:3000/api/admin/venue/approve", {
+      const res = await fetch("https://venuego-backend.onrender.com/api/admin/venue/approve", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,7 +46,7 @@ const AdminApproveVenues = () => {
 
   const handleReject = async (id) => {
     try {
-      const res = await fetch("http://localhost:3000/api/admin/venue/reject", {
+      const res = await fetch("https://venuego-backend.onrender.com/api/admin/venue/reject", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

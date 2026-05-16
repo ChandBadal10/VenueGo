@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import { Search, MapPin } from "lucide-react";
-
+import { useAppContext } from "../context/AppContext";
 const normalize = (val) => val?.toString().trim().toLowerCase();
 
 const getPriceRange = (slots) => {
@@ -140,7 +140,7 @@ export default function VenueSection() {
   const [loading, setLoading] = useState(true);
   const [headerVisible, setHeaderVisible] = useState(false);
   const navigate = useNavigate();
-
+  const { axios } = useAppContext();
   const filters = ["All", "Futsal", "Cricket", "Basketball", "Table Tennis", "GYM"];
 
   useEffect(() => {
@@ -149,9 +149,8 @@ export default function VenueSection() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/addvenue/all")
-      .then((res) => res.json())
-      .then((data) => {
+    axios.get("/api/addvenue/all")
+      .then(({ data }) => {
         if (data.success) setVenues(data.venues);
         setLoading(false);
       })

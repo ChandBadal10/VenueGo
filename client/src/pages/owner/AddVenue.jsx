@@ -58,7 +58,7 @@ const AddVenue = () => {
       formData.append("capacity", venue.capacity);
       formData.append("image", image);
 
-      const res = await fetch("http://localhost:3000/api/addvenue/create", {
+      const res = await fetch("https://venuego-backend.onrender.com/api/addvenue/create", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

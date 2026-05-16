@@ -183,7 +183,7 @@ const VenueCard = () => {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/addvenue/all")
+    fetch("https://venuego-backend.onrender.com/api/addvenue/all")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) setVenues(data.venues);
