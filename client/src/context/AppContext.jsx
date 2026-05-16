@@ -12,13 +12,28 @@ export const AppProvider = ({ children }) => {
     // Configure Axios for backend
     axios.defaults.baseURL = backendUrl;
     axios.defaults.withCredentials = true;
+    axios.defaults.timeout = 60000; // 60s timeout for cold starts
 
     const [token, setToken] = useState(null);
     const [user, setUser] = useState(null);
     const [showLogin, setShowLogin] = useState(false);
+    const [backendReady, setBackendReady] = useState(false);
 
-    // Fetch user data if logged in
-    const fetchUser = async () => {
+    // Wake up backend on app load
+    useEffect(() => {
+        const wakeBackend = async () => {
+            try {
+                await axios.get("/");
+                setBackendReady(true);
+            } catch {
+                setBackendReady(true);
+            }
+        };
+        wakeBackend();
+    }, []);
+
+    // Fetch user data if logged in — with retry
+    const fetchUser = async (retries = 3) => {
         try {
             const { data } = await axios.get("/api/user/data");
             if (data.success) {
@@ -27,8 +42,11 @@ export const AppProvider = ({ children }) => {
                 setUser(null);
             }
         } catch (error) {
-            toast.error(error.message);
-            setUser(null);
+            if (retries > 0) {
+                setTimeout(() => fetchUser(retries - 1), 4000);
+            } else {
+                setUser(null);
+            }
         }
     };
 
@@ -55,7 +73,7 @@ export const AppProvider = ({ children }) => {
         setToken(null);
         setUser(null);
         toast.success("You have been logged out");
-        navigate("/"); // Use navigate instead of window.location.href
+        navigate("/");
     };
 
     const value = {
@@ -70,6 +88,7 @@ export const AppProvider = ({ children }) => {
         setShowLogin,
         logout,
         backendUrl,
+        backendReady,
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
